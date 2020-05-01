@@ -10,5 +10,3 @@ if [ ! -f "jwtRS256.key" ]; then
 else
   echo "Public/private keys already exist, skipping..." ;
 fi
-
-npm run dev

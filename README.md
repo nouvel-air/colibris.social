@@ -2,26 +2,34 @@
 
 ## Getting started
 
-For the server to work, you will need to have NodeJS installed (v13+ recommended)
+Requirements:
+- Node (v13+ recommended)
+- Docker
+- Docker-compose
 
-### Generate the JWT keys
+### 1. Launch Jena Fuseki
+
+```bash
+docker-compose up
+```
+
+Go to `http://localhost:3030` and create a new dataset called `colibris`.
+
+### 2. Generate the JWT keys
 
 ```bash
 ./initialize.sh
 ```
 
-### Launch in dev mode
-```bash
-npm run dev
-```
-
-## Launch in production mode
-```bash
-npm run start
-```
-
-## Configurations
+### 3. Configure the CAS URL
 
 Edit the `.env` file or add a `.env.local` file.
 
-You will need a Jena Fuseki instance, as well as a CAS url for authentication.
+Add the URL to your CAS server.
+
+
+### 4. Launch in dev mode
+```bash
+npm install
+npm run dev
+```
