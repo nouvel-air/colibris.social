@@ -2,6 +2,8 @@
 
 ## Getting started
 
+For the server to work, you will need to have NodeJS installed (v13+ recommended)
+
 ### Generate the JWT keys
 
 ```bash
