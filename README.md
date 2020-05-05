@@ -1,3 +1,5 @@
+[![SemApps](https://badgen.net/badge/Powered%20by/SemApps/28CDFB)](https://semapps.org)
+
 # Colibris ActivityPub server
 
 ## Getting started
