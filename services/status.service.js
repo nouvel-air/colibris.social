@@ -12,7 +12,7 @@ const StatusService = {
     containerUri: urlJoin(CONFIG.HOME_URL, 'status'),
     context: {
       ldp: 'http://www.w3.org/ns/ldp#',
-      semapps: 'http://semapps.org/ns/'
+      semapps: 'http://semapps.org/ns/core#'
     },
     values: ['En réflexion', 'En cours', 'En sommeil', 'Abandonné']
   },
@@ -26,7 +26,7 @@ const StatusService = {
         // If we get an error, it means the status doesn't exist, so create it
         await this.actions.create({
           slug: slug,
-          '@context': { '@vocab': 'http://semapps.org/ns/' },
+          '@context': { '@vocab': 'http://semapps.org/ns/core#' },
           '@type': 'ProjectState',
           label: value
         });

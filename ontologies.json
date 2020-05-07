@@ -22,6 +22,6 @@
   {
     "prefix": "semapps",
     "owl": "",
-    "url": "http://semapps.org/ns/"
+    "url": "http://semapps.org/ns/core#"
   }
 ]
