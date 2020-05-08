@@ -17,8 +17,7 @@ module.exports = {
       origin: '*',
       exposedHeaders: '*'
     },
-    routes: [...SparqlEndpointRoutes],
-    defaultLdpAccept: 'text/turtle'
+    routes: [...SparqlEndpointRoutes]
   },
   dependencies: ['ldp', 'activitypub', 'webhooks', 'push'],
   async started() {

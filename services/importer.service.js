@@ -1,11 +1,10 @@
 const urlJoin = require('url-join');
 const { ImporterService } = require('@semapps/importer');
+const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
 const path = require('path');
 const slugify = require('slugify');
 const CONFIG = require('../config');
-
-// Transform PascalCase to pascal-case
-const pascalCaseToHyphens = str => str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
+const { convertWikiNames, convertWikiDate } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -24,15 +23,15 @@ module.exports = {
       await ctx.call('activitypub.actor.create', {
         slug: data.slug,
         '@context': {
-          as: 'https://www.w3.org/ns/activitystreams#',
+          '@vocab': 'https://www.w3.org/ns/activitystreams#',
           pair: 'http://virtual-assembly.org/ontologies/pair#'
         },
-        '@type': ['as:Organization', 'pair:Organization'],
+        '@type': [ACTOR_TYPES.ORGANIZATION, 'pair:Organization'],
         // PAIR
         'pair:label': data.name,
         // ActivityStreams
-        'as:name': data.name,
-        'as:preferredUsername': data.slug
+        name: data.name,
+        preferredUsername: data.slug
       });
 
       console.log(`Organization ${data.slug} created`);
@@ -46,14 +45,14 @@ module.exports = {
       const status = urlJoin(this.settings.baseUri, 'status', slugify(data.status, { lower: true }));
 
       await ctx.call('activitypub.actor.create', {
-        slug: pascalCaseToHyphens(data.slug.substring(0, 36)),
+        slug: convertWikiNames(data.slug),
         '@context': [
           'https://www.w3.org/ns/activitystreams',
           {
             pair: 'http://virtual-assembly.org/ontologies/pair#'
           }
         ],
-        '@type': ['Group', 'pair:Project'],
+        '@type': [ACTOR_TYPES.GROUP, 'pair:Project'],
         // PAIR
         'pair:label': data.name,
         'pair:description': data.content,
@@ -70,8 +69,8 @@ module.exports = {
         location: data.location,
         tag: [...themes, status],
         url: data.url,
-        published: data.published,
-        updated: data.updated
+        published: convertWikiDate(data.published),
+        updated: convertWikiDate(data.updated)
       });
 
       console.log(`Project ${data.name} created`);
@@ -87,16 +86,16 @@ module.exports = {
       await ctx.call('activitypub.actor.create', {
         slug: data.username,
         '@context': {
-          as: 'https://www.w3.org/ns/activitystreams#',
+          '@vocab': 'https://www.w3.org/ns/activitystreams#',
           pair: 'http://virtual-assembly.org/ontologies/pair#'
         },
-        '@type': ['as:Person', 'pair:Person'],
+        '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
         // PAIR
         'pair:label': data.name,
         'pair:e-mail': data.email,
         // ActivityStreams
-        'as:name': data.name,
-        'as:preferredUsername': data.username
+        name: data.name,
+        preferredUsername: data.username
       });
 
       console.log(`Actor ${data.username} created`);
@@ -120,9 +119,9 @@ module.exports = {
       await ctx.call('activitypub.outbox.post', {
         username: data.username,
         '@context': 'https://www.w3.org/ns/activitystreams',
-        '@type': 'Follow',
+        '@type': ACTIVITY_TYPES.FOLLOW,
         actor: urlJoin(this.settings.usersContainer, data.username),
-        object: urlJoin(this.settings.usersContainer, pascalCaseToHyphens(data.following.substring(0, 36)))
+        object: urlJoin(this.settings.usersContainer, convertWikiNames(data.following))
       });
 
       console.log(`Actor ${data.username} follow ${data.following}`);
@@ -130,20 +129,20 @@ module.exports = {
     async postNews(ctx) {
       const { data } = ctx.params;
 
-      const posterUri = urlJoin(this.settings.usersContainer, pascalCaseToHyphens(data.attributedTo.substring(0, 36)));
+      const posterUri = urlJoin(this.settings.usersContainer, convertWikiNames(data.attributedTo));
 
       const activity = await ctx.call('activitypub.outbox.post', {
-        username: pascalCaseToHyphens(data.attributedTo.substring(0, 36)),
+        username: convertWikiNames(data.attributedTo),
         slug: data.id,
         '@context': 'https://www.w3.org/ns/activitystreams',
-        '@type': 'Note',
+        '@type': OBJECT_TYPES.NOTE,
         to: [urlJoin(posterUri, 'followers')],
         name: data.name,
         content: data.content,
         image: data.image,
         attributedTo: posterUri,
-        published: data.published,
-        updated: data.updated
+        published: convertWikiDate(data.published),
+        updated: convertWikiDate(data.updated)
       });
 
       console.log(`Note "${data.name}" posted: ${activity.id}`);
@@ -169,6 +168,11 @@ module.exports = {
       await this.actions.import({
         action: 'createUser',
         fileName: 'users.json'
+      });
+
+      await this.actions.import({
+        action: 'addDevice',
+        fileName: 'devices.json'
       });
 
       await this.actions.import({

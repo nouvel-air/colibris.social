@@ -24,7 +24,9 @@ const ThemeService = {
       'Énergie',
       'Habitat',
       'Économie',
-      'Éducation'
+      'Éducation',
+      '(R)évolution intérieure',
+      'Santé'
     ]
   },
   async started() {

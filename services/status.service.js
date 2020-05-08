@@ -3,6 +3,7 @@ const DbService = require('moleculer-db');
 const slugify = require('slugify');
 const { TripleStoreAdapter } = require('@semapps/ldp');
 const CONFIG = require('../config');
+const { statusMapping } = require('../constants');
 
 const StatusService = {
   name: 'status',
@@ -14,7 +15,7 @@ const StatusService = {
       ldp: 'http://www.w3.org/ns/ldp#',
       semapps: 'http://semapps.org/ns/core#'
     },
-    values: ['En réflexion', 'En cours', 'En sommeil', 'Abandonné']
+    values: Object.values(statusMapping)
   },
   async started() {
     for (let value of this.settings.values) {
