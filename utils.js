@@ -2,7 +2,10 @@ const convertWikiNames = str => str.substring(0, 36).replace(/([a-zA-Z])(?=[A-Z]
 
 const convertWikiDate = str => str && str.replace(' ', 'T') + 'Z';
 
+const getSlugFromUri = str => str.replace(/\/$/, '').replace(/.*\//, '');
+
 module.exports = {
   convertWikiNames,
-  convertWikiDate
+  convertWikiDate,
+  getSlugFromUri
 };

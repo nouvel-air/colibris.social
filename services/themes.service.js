@@ -15,6 +15,7 @@ const ThemeService = {
       pair: 'http://virtual-assembly.org/ontologies/pair#'
     },
     themes: [
+      // Groupes locaux
       'Culture',
       'Social',
       'Agriculture',
@@ -25,8 +26,15 @@ const ThemeService = {
       'Habitat',
       'Économie',
       'Éducation',
-      '(R)évolution intérieure',
-      'Santé'
+      'Révolution intérieure',
+      'Santé',
+      // La Fabrique
+      'Économie locale',
+      'Arts',
+      'Oasis',
+      'Transport',
+      'Bien-être',
+      'Autre'
     ]
   },
   async started() {

@@ -4,18 +4,18 @@ const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activity
 const path = require('path');
 const slugify = require('slugify');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate } = require('../utils');
+const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
   settings: {
     importsDir: path.resolve(__dirname, '../imports'),
-    allowedActions: ['createOrganization', 'createProject', 'createUser', 'addDevice', 'followProject', 'postNews'],
+    allowedActions: ['createOrganization', 'createProject', 'createLaFabriqueProject', 'createUser', 'addDevice', 'followProject', 'postNews'],
     // Custom settings
     baseUri: CONFIG.HOME_URL,
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors')
   },
-  dependencies: ['ldp', 'activitypub.actor', 'activitypub.outbox'],
+  dependencies: ['ldp', 'activitypub.actor', 'activitypub.outbox', 'activitypub.object'],
   actions: {
     async createOrganization(ctx) {
       const { data } = ctx.params;
@@ -76,9 +76,61 @@ module.exports = {
       console.log(`Project ${data.name} created`);
     },
     async createLaFabriqueProject(ctx) {
-      // https://www.colibris-lafabrique.org/sites/default/files/projets/93796013_596931490908436_3146066610926649344_n.jpg
-      // styles/projet_large/public/
-      // https://www.colibris-lafabrique.org/sites/default/files/styles/projet_large/public/projets/93796013_596931490908436_3146066610926649344_n.jpg
+      const { data, groupSlug } = ctx.params;
+
+      if (!groupSlug) throw new Error('Missing groupSlug argument');
+
+      const [ lng, lat ] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [ undefined, undefined ];
+      const projectSlug = getSlugFromUri(data.aboutPage);
+      const themes = data.themes
+          && data.themes.split(/[\s,&]+/)
+              .map(themeLabel => urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel, { lower: true })));
+
+      // Prevent duplicates
+      // TODO save all images ?
+      try {
+        const activity = await ctx.call('activitypub.object.get', { id: projectSlug });
+        if( activity ) return;
+      } catch(e) {
+        // If the project does not exist, continue.
+      }
+
+      const activity = await ctx.call('activitypub.outbox.post', {
+        username: groupSlug,
+        '@context': [
+          'https://www.w3.org/ns/activitystreams',
+          {
+            pair: 'http://virtual-assembly.org/ontologies/pair#'
+          }
+        ],
+        type: "Create",
+        actor: urlJoin(this.settings.usersContainer, groupSlug),
+        to: urlJoin(this.settings.usersContainer, groupSlug, 'followers'),
+        object: {
+          slug: projectSlug,
+          type: "pair:Project",
+          "pair:label": data.name,
+          "pair:description": data.short_description,
+          "pair:interestOf": themes,
+          "pair:aboutPage": data.aboutPage,
+          "pair:involves": {
+            '@id': urlJoin(this.settings.usersContainer, groupSlug)
+          },
+          "location": {
+            "type": "Place",
+            "name": data.city,
+            "latitude": lat,
+            "longitude": lng
+          },
+          "image": {
+            "type": "Image",
+            // Use a resized image instead of the original image
+            "url": data.image.replace('/files/projets/', '/files/styles/projet_large/public/projets/')
+          }
+        }
+      });
+
+      console.log(`Project "${data.name}" posted: ${activity.id}`);
     },
     async createUser(ctx) {
       const { data } = ctx.params;
@@ -150,7 +202,7 @@ module.exports = {
     async importAll(ctx) {
       await this.actions.import({
         action: 'createOrganization',
-        fileName: 'groupes-locaux.json'
+        fileName: 'organizations.json'
       });
 
       await this.actions.import({
@@ -163,6 +215,12 @@ module.exports = {
         action: 'createProject',
         fileName: 'projets-rcc.json',
         groupSlug: '60-compiegnois'
+      });
+
+      await this.actions.import({
+        action: 'createLaFabriqueProject',
+        fileName: 'projets-lafabrique.json',
+        groupSlug: 'lafabrique'
       });
 
       await this.actions.import({
