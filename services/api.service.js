@@ -3,7 +3,6 @@ const urlJoin = require('url-join');
 const ApiGatewayService = require('moleculer-web');
 
 const { getContainerRoutes } = require('@semapps/ldp');
-const { Routes: SparqlEndpointRoutes } = require('@semapps/sparql-endpoint');
 const { CasConnector } = require('@semapps/connector');
 
 const CONFIG = require('../config');
@@ -16,10 +15,9 @@ module.exports = {
     cors: {
       origin: '*',
       exposedHeaders: '*'
-    },
-    routes: [...SparqlEndpointRoutes]
+    }
   },
-  dependencies: ['ldp', 'activitypub', 'webhooks', 'push'],
+  dependencies: ['ldp', 'activitypub', 'webhooks', 'push', 'sparqlEndpoint'],
   async started() {
     this.connector = new CasConnector({
       casUrl: CONFIG.CAS_URL,
@@ -52,6 +50,7 @@ module.exports = {
       ...(await this.broker.call('activitypub.getApiRoutes')),
       ...(await this.broker.call('webhooks.getApiRoutes')),
       ...(await this.broker.call('push.getApiRoutes')),
+      ...(await this.broker.call('sparqlEndpoint.getApiRoutes')),
       ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'themes'), 'themes'),
       ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'status'), 'status')
     ].forEach(route => this.addRoute(route));

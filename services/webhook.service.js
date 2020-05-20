@@ -115,6 +115,10 @@ module.exports = {
       }
 
       if( action !== 'delete' ) {
+        const image = action === 'add'
+          ? data['imagebf_image'] ? 'https://colibris.cc/groupeslocaux/files/' + data['imagebf_image'] : undefined
+          : data['filename-imagebf_image'] ? 'https://colibris.cc/groupeslocaux/files/' + data.id_fiche + '_' + data['filename-imagebf_image'] : undefined;
+
         activity = {
           '@context': 'https://www.w3.org/ns/activitystreams',
           type: action === 'edit' ? ACTIVITY_TYPES.UPDATE : ACTIVITY_TYPES.CREATE,
@@ -125,7 +129,7 @@ module.exports = {
             attributedTo: projectUri,
             name: data.bf_titre,
             content: data.bf_contenu,
-            image: data['filename-imagebf_image'] ? 'https://colibris.cc/groupeslocaux/files/' + data.id_fiche + '_' + data['filename-imagebf_image'] : undefined,
+            image,
             published: convertWikiDate(data.date_creation_fiche),
             updated: convertWikiDate(data.date_maj_fiche)
           }

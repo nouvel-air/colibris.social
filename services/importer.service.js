@@ -109,6 +109,7 @@ module.exports = {
         object: {
           slug: projectSlug,
           type: "pair:Project",
+          // PAIR
           "pair:label": data.name,
           "pair:description": data.short_description,
           "pair:interestOf": themes,
@@ -116,17 +117,20 @@ module.exports = {
           "pair:involves": {
             '@id': urlJoin(this.settings.usersContainer, groupSlug)
           },
-          "location": {
-            "type": "Place",
-            "name": data.city,
-            "latitude": lat,
-            "longitude": lng
+          // ActivityStreams
+          location: {
+            type: "Place",
+            name: data.city,
+            latitude: lat,
+            longitude: lng
           },
-          "image": {
-            "type": "Image",
+          image: {
+            type: "Image",
             // Use a resized image instead of the original image
-            "url": data.image.replace('/files/projets/', '/files/styles/projet_large/public/projets/')
-          }
+            url: data.image.replace('/files/projets/', '/files/styles/projet_large/public/projets/')
+          },
+          published: convertWikiDate(data.published),
+          updated: convertWikiDate(data.updated)
         }
       });
 
@@ -168,12 +172,16 @@ module.exports = {
     async followProject(ctx) {
       const { data } = ctx.params;
 
+      const follower = urlJoin(this.settings.usersContainer, data.username);
+      const following = urlJoin(this.settings.usersContainer, convertWikiNames(data.following));
+
       await ctx.call('activitypub.outbox.post', {
         username: data.username,
         '@context': 'https://www.w3.org/ns/activitystreams',
         '@type': ACTIVITY_TYPES.FOLLOW,
-        actor: urlJoin(this.settings.usersContainer, data.username),
-        object: urlJoin(this.settings.usersContainer, convertWikiNames(data.following))
+        actor: follower,
+        object: following,
+        to: [ urlJoin(follower, 'followers'), following ]
       });
 
       console.log(`Actor ${data.username} follow ${data.following}`);
@@ -218,12 +226,6 @@ module.exports = {
       });
 
       await this.actions.import({
-        action: 'createLaFabriqueProject',
-        fileName: 'projets-lafabrique.json',
-        groupSlug: 'lafabrique'
-      });
-
-      await this.actions.import({
         action: 'createUser',
         fileName: 'users.json'
       });
@@ -246,6 +248,12 @@ module.exports = {
       await this.actions.import({
         action: 'postNews',
         fileName: 'actualites-rcc.json'
+      });
+
+      await this.actions.import({
+        action: 'createLaFabriqueProject',
+        fileName: 'projets-lafabrique.json',
+        groupSlug: 'lafabrique'
       });
     }
   }
