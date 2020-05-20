@@ -208,47 +208,47 @@ module.exports = {
       console.log(`Note "${data.name}" posted: ${activity.id}`);
     },
     async importAll(ctx) {
-      await this.actions.import({
-        action: 'createOrganization',
-        fileName: 'organizations.json'
-      });
-
-      await this.actions.import({
-        action: 'createProject',
-        fileName: 'projets-pc.json',
-        groupSlug: '60-pays-creillois'
-      });
-
-      await this.actions.import({
-        action: 'createProject',
-        fileName: 'projets-rcc.json',
-        groupSlug: '60-compiegnois'
-      });
-
-      await this.actions.import({
-        action: 'createUser',
-        fileName: 'users.json'
-      });
-
-      await this.actions.import({
-        action: 'addDevice',
-        fileName: 'devices.json'
-      });
-
-      await this.actions.import({
-        action: 'followProject',
-        fileName: 'followers.json'
-      });
-
-      await this.actions.import({
-        action: 'postNews',
-        fileName: 'actualites-pc.json'
-      });
-
-      await this.actions.import({
-        action: 'postNews',
-        fileName: 'actualites-rcc.json'
-      });
+      // await this.actions.import({
+      //   action: 'createOrganization',
+      //   fileName: 'organizations.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createProject',
+      //   fileName: 'projets-pc.json',
+      //   groupSlug: '60-pays-creillois'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createProject',
+      //   fileName: 'projets-rcc.json',
+      //   groupSlug: '60-compiegnois'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createUser',
+      //   fileName: 'users.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'addDevice',
+      //   fileName: 'devices.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'followProject',
+      //   fileName: 'followers.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'postNews',
+      //   fileName: 'actualites-pc.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'postNews',
+      //   fileName: 'actualites-rcc.json'
+      // });
 
       await this.actions.import({
         action: 'createLaFabriqueProject',
