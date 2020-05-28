@@ -10,7 +10,15 @@ module.exports = {
   mixins: [ImporterService],
   settings: {
     importsDir: path.resolve(__dirname, '../imports'),
-    allowedActions: ['createOrganization', 'createProject', 'createLaFabriqueProject', 'createUser', 'addDevice', 'followProject', 'postNews'],
+    allowedActions: [
+      'createOrganization',
+      'createProject',
+      'createLaFabriqueProject',
+      'createUser',
+      'addDevice',
+      'followProject',
+      'postNews'
+    ],
     // Custom settings
     baseUri: CONFIG.HOME_URL,
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors')
@@ -80,18 +88,20 @@ module.exports = {
 
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
-      const [ lng, lat ] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [ undefined, undefined ];
+      const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
       const projectSlug = getSlugFromUri(data.aboutPage);
-      const themes = data.themes
-          && data.themes.split(/[\s,&]+/)
-              .map(themeLabel => urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel, { lower: true })));
+      const themes =
+        data.themes &&
+        data.themes
+          .split(/[\s,&]+/)
+          .map(themeLabel => urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel, { lower: true })));
 
       // Prevent duplicates
       // TODO save all images ?
       try {
         const activity = await ctx.call('activitypub.object.get', { id: projectSlug });
-        if( activity ) return;
-      } catch(e) {
+        if (activity) return;
+      } catch (e) {
         // If the project does not exist, continue.
       }
 
@@ -103,29 +113,29 @@ module.exports = {
             pair: 'http://virtual-assembly.org/ontologies/pair#'
           }
         ],
-        type: "Create",
+        type: 'Create',
         actor: urlJoin(this.settings.usersContainer, groupSlug),
         to: urlJoin(this.settings.usersContainer, groupSlug, 'followers'),
         object: {
           slug: projectSlug,
-          type: "pair:Project",
+          type: 'pair:Project',
           // PAIR
-          "pair:label": data.name,
-          "pair:description": data.short_description,
-          "pair:interestOf": themes,
-          "pair:aboutPage": data.aboutPage,
-          "pair:involves": {
+          'pair:label': data.name,
+          'pair:description': data.short_description,
+          'pair:interestOf': themes,
+          'pair:aboutPage': data.aboutPage,
+          'pair:involves': {
             '@id': urlJoin(this.settings.usersContainer, groupSlug)
           },
           // ActivityStreams
           location: {
-            type: "Place",
+            type: 'Place',
             name: data.city,
             latitude: lat,
             longitude: lng
           },
           image: {
-            type: "Image",
+            type: 'Image',
             // Use a resized image instead of the original image
             url: data.image.replace('/files/projets/', '/files/styles/projet_large/public/projets/')
           },
@@ -181,7 +191,7 @@ module.exports = {
         '@type': ACTIVITY_TYPES.FOLLOW,
         actor: follower,
         object: following,
-        to: [ urlJoin(follower, 'followers'), following ]
+        to: [urlJoin(follower, 'followers'), following]
       });
 
       console.log(`Actor ${data.username} follow ${data.following}`);

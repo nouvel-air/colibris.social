@@ -3,10 +3,10 @@ const groupsMapping = {
 };
 
 const statusMapping = {
-  1: "En cours",
-  2: "En sommeil",
-  3: "Abandonnée",
-  4: "En réflexion"
+  1: 'En cours',
+  2: 'En sommeil',
+  3: 'Abandonnée',
+  4: 'En réflexion'
 };
 
 const glThemesMapping = {
@@ -29,7 +29,7 @@ const laFabriqueThemesMapping = {
   107: ['Éducation'],
   108: ['Énergie'],
   109: ['Habitat', 'Oasis'],
-  111: ['Transports'],
+  111: ['Transports']
 };
 
 module.exports = {
