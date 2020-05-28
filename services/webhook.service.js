@@ -1,17 +1,17 @@
 const urlJoin = require('url-join');
 const slugify = require('slugify');
-const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES } = require('@semapps/activitypub');
+const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
-const { groupsMapping, statusMapping, themesMapping } = require('../constants');
-const { convertWikiNames, convertWikiDate } = require('../utils');
+const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping } = require('../constants');
+const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
 
 module.exports = {
   mixins: [WebhooksService],
   settings: {
     containerUri: urlJoin(CONFIG.HOME_URL, 'webhooks'),
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors'),
-    allowedActions: ['postProject', 'postNews']
+    allowedActions: ['postProject', 'postNews', 'postLaFabriqueProject']
   },
   dependencies: ['activitypub.outbox', 'activitypub.actor'],
   actions: {
@@ -29,7 +29,7 @@ module.exports = {
       if( action !== 'delete' ) {
         // Tags
         tags.push(urlJoin(CONFIG.HOME_URL, 'status', slugify(statusMapping[data.listeListeEtat], {lower: true})))
-        themesMapping[data.listeListeListeTheme2].forEach(theme =>
+        glThemesMapping[data.listeListeListeTheme2].forEach(theme =>
           tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(theme, {lower: true})))
         );
 
@@ -99,6 +99,133 @@ module.exports = {
           break;
         }
       }
+    },
+    async postLaFabriqueProject(ctx) {
+      let { data: { event_type: eventType, entity, files }, user } = ctx.params;
+      let activity, existingProject;
+
+      console.log('entity', eventType, entity);
+
+      try {
+        existingProject = await ctx.call('activitypub.object.get', { id: entity.uuid });
+        // If the project was already deleted, consider it as non-existing
+        if( existingProject.type === OBJECT_TYPES.TOMBSTONE ) existingProject = undefined;
+      } catch(e) {
+        // Do nothing if project doesn't exist...
+      }
+
+      // If the project status is not valid, consider we want to delete it
+      if ( entity.field_validation.und[0].value !== 'valid' ) {
+        eventType = 'delete';
+      }
+
+      if( !existingProject ) {
+        if( eventType === 'delete' ) {
+          // Skip instead of deleting an unexisting project
+          console.log(`Skipping project ${entity.title}...`)
+          return;
+        } else {
+          // If no project exist yet, we have a creation
+          eventType = 'insert';
+        }
+      }
+
+      /*
+       * INSERT OR UPDATE
+       */
+      if( eventType === 'insert' || eventType === 'update' ) {
+        let tags = [];
+        entity.field_proj_theme.und.forEach(theme => {
+          laFabriqueThemesMapping[theme.tid].forEach(themeLabel =>
+            tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel, {lower: true})))
+          );
+        });
+
+        let image;
+        if( entity.field_proj_photos.und[0] ) {
+          image = {
+            type: "Image",
+            url: files[entity.field_proj_photos.und[0].fid].absolute_url
+          }
+        }
+
+        let location;
+        if( entity.field_proj_adresse.und[0].locality ) {
+          location = {
+            type: "Place",
+            name: entity.field_proj_adresse.und[0].locality,
+            latitude: entity.field_geodata.und[0].lat,
+            longitude: entity.field_geodata.und[0].lon,
+          };
+        }
+
+        const description = entity.field_accroche.length > 0 ? entity.field_accroche.und[0].value : undefined;
+        const url = 'https://dev.colibris-lafabrique.org/les-projets/' + slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g });
+
+        const project = {
+          type: "pair:Project",
+          // PAIR
+          "pair:label": entity.title,
+          "pair:description": description,
+          "pair:interestOf": tags,
+          "pair:aboutPage": url,
+          "pair:involves": {
+            '@id': user
+          },
+          // ActivityStreams
+          name: entity.title,
+          content: description,
+          location,
+          image,
+          tag: tags,
+          url,
+          attributedTo: user,
+          published: new Date(entity.created * 1000).toISOString(),
+          updated: new Date(entity.changed * 1000).toISOString(),
+        };
+
+        if( eventType === 'insert' ) {
+          project.slug = entity.uuid;
+        } else {
+          project.id = existingProject.id;
+        }
+
+        activity = {
+          '@context': [
+            'https://www.w3.org/ns/activitystreams',
+            {
+              pair: 'http://virtual-assembly.org/ontologies/pair#'
+            }
+          ],
+          type: eventType === 'insert' ? ACTIVITY_TYPES.CREATE : ACTIVITY_TYPES.UPDATE,
+          actor: user,
+          to: urlJoin(user, 'followers'),
+          object: project
+        };
+      /*
+       * DELETE
+       */
+      } else if ( eventType === 'delete' ) {
+        activity = {
+          '@context': [
+            'https://www.w3.org/ns/activitystreams',
+            {
+              pair: 'http://virtual-assembly.org/ontologies/pair#'
+            }
+          ],
+          type: ACTIVITY_TYPES.DELETE,
+          actor: user,
+          to: urlJoin(user, 'followers'),
+          object: existingProject.id
+        };
+      }
+
+      const result = await ctx.call('activitypub.outbox.post', {
+        username: getSlugFromUri(user),
+        ...activity
+      });
+
+      console.log('New activity posted on URI:', result.id );
     },
     async postNews(ctx) {
       const { data: { action, data } } = ctx.params;
