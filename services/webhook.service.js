@@ -104,8 +104,6 @@ module.exports = {
       let { data: { event_type: eventType, entity, files }, user } = ctx.params;
       let activity, existingProject;
 
-      console.log('entity', eventType, entity);
-
       try {
         existingProject = await ctx.call('activitypub.object.get', { id: entity.uuid });
         // If the project was already deleted, consider it as non-existing
