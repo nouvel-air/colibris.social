@@ -21,6 +21,7 @@
     "@semapps/webhooks": "^0.1.9",
     "dotenv-flow": "^3.1.0",
     "moleculer": "^0.14.3",
+    "moleculer-bull": "^0.2.5",
     "moleculer-db": "^0.8.7",
     "moleculer-repl": "^0.6.3",
     "moleculer-web": "^0.9.0",

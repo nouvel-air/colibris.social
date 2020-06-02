@@ -8,5 +8,6 @@ module.exports = {
   settings: {
     baseUri: CONFIG.HOME_URL,
     additionalContext: getPrefixJSON(ontologies)
-  }
+  },
+  queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
 };

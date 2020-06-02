@@ -1,5 +1,6 @@
 const urlJoin = require('url-join');
 const slugify = require('slugify');
+const QueueService = require('moleculer-bull');
 const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
@@ -7,7 +8,7 @@ const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping }
 const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
 
 module.exports = {
-  mixins: [WebhooksService],
+  mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     containerUri: urlJoin(CONFIG.HOME_URL, 'webhooks'),
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors'),
@@ -233,6 +234,8 @@ module.exports = {
       });
 
       console.log('New activity posted on URI:', result.id);
+
+      return result.id;
     },
     async postNews(ctx) {
       const {
@@ -297,6 +300,8 @@ module.exports = {
       });
 
       console.log('New activity posted on URI:', activity.id);
+
+      return activity.id;
     }
   }
 };
