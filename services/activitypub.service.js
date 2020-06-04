@@ -7,7 +7,7 @@ module.exports = {
   mixins: [ActivityPubService],
   settings: {
     baseUri: CONFIG.HOME_URL,
-    additionalContext: getPrefixJSON(ontologies)
-  },
-  queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
+    additionalContext: getPrefixJSON(ontologies),
+    queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
+  }
 };
