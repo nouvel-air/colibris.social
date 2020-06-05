@@ -8,5 +8,6 @@ module.exports = {
   MAIN_DATASET: process.env.SEMAPPS_MAIN_DATASET,
   JENA_USER: process.env.SEMAPPS_JENA_USER,
   JENA_PASSWORD: process.env.SEMAPPS_JENA_PASSWORD,
-  CAS_URL: process.env.SEMAPPS_CAS_URL
+  CAS_URL: process.env.SEMAPPS_CAS_URL,
+  QUEUE_SERVICE_URL: process.env.SEMAPPS_QUEUE_SERVICE_URL
 };

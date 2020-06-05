@@ -1,5 +1,6 @@
 const urlJoin = require('url-join');
 const slugify = require('slugify');
+const QueueService = require('moleculer-bull');
 const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
@@ -7,7 +8,7 @@ const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping }
 const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
 
 module.exports = {
-  mixins: [WebhooksService],
+  mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     containerUri: urlJoin(CONFIG.HOME_URL, 'webhooks'),
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors'),
@@ -19,7 +20,7 @@ module.exports = {
       const {
         data: { action, data }
       } = ctx.params;
-      let actor,
+      let actor = {},
         tags = [];
 
       if (!Object.keys(groupsMapping).includes(data.listeListeGl)) {
@@ -96,13 +97,20 @@ module.exports = {
         }
 
         case 'delete': {
+          actor.id = urlJoin(this.settings.usersContainer, projectSlug);
           await ctx.call('activitypub.actor.remove', {
-            id: urlJoin(this.settings.usersContainer, projectSlug)
+            id: actor.id
           });
-          console.log('Deleted actor with URI:', urlJoin(this.settings.usersContainer, projectSlug));
+          console.log('Deleted actor with URI:', actor.id);
           break;
         }
+
+        default: {
+          throw new Error(`Unknown action ${action}`);
+        }
       }
+
+      return actor.id;
     },
     async postLaFabriqueProject(ctx) {
       let {
@@ -233,6 +241,8 @@ module.exports = {
       });
 
       console.log('New activity posted on URI:', result.id);
+
+      return result.id;
     },
     async postNews(ctx) {
       const {
@@ -297,6 +307,8 @@ module.exports = {
       });
 
       console.log('New activity posted on URI:', activity.id);
+
+      return activity.id;
     }
   }
 };
