@@ -20,7 +20,7 @@ module.exports = {
       const {
         data: { action, data }
       } = ctx.params;
-      let actor,
+      let actor = {},
         tags = [];
 
       if (!Object.keys(groupsMapping).includes(data.listeListeGl)) {
@@ -97,13 +97,20 @@ module.exports = {
         }
 
         case 'delete': {
+          actor.id = urlJoin(this.settings.usersContainer, projectSlug);
           await ctx.call('activitypub.actor.remove', {
-            id: urlJoin(this.settings.usersContainer, projectSlug)
+            id: actor.id
           });
-          console.log('Deleted actor with URI:', urlJoin(this.settings.usersContainer, projectSlug));
+          console.log('Deleted actor with URI:', actor.id);
           break;
         }
+
+        default: {
+          throw new Error(`Unknown action ${action}`);
+        }
       }
+
+      return actor.id;
     },
     async postLaFabriqueProject(ctx) {
       let {
