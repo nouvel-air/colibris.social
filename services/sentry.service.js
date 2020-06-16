@@ -24,13 +24,47 @@ module.exports = {
    * Events
    */
   events: {
-    'metrics.trace.span.finish'(metric) {
-      if (metric.error && this.isSentryReady() && (!this.shouldReport || this.shouldReport(metric) == true)) {
-        this.sendError(metric)
-      }
+    '$tracing.spans'(spans) {
+      // console.log('spans', spans);
+      spans.forEach(metric => {
+        if (metric.error && /*metric.service.name !== 'api' &&*/ this.isSentryReady() && (!this.shouldReport || this.shouldReport(metric) == true)) {
+          this.sendError(metric);
+        }
+      });
     }
   },
-
+  // actions: {
+  //   sendError(ctx) {
+  //     const { error, requestID, params, action, event } = ctx.params;
+  //     // console.log('sendError', ctx.params);
+  //     Sentry.withScope(scope => {
+  //       scope.setTag('id', requestID);
+  //       if( event ) {
+  //         scope.setTag('localization', 'event');
+  //         scope.setTag('service', event.service.name);
+  //         scope.setTag('event', event.name)
+  //       }
+  //
+  //       if( action ) {
+  //         scope.setTag('localization', 'action');
+  //         scope.setTag('service', action.service.name);
+  //         scope.setTag('action', action.name)
+  //       }
+  //
+  //       if( params.req ) {
+  //         scope.setExtra('params', params.req['$params']);
+  //       } else {
+  //         scope.setExtra('params', params);
+  //       }
+  //
+  //       // if (this.settings.scope && this.settings.scope.user && metric.meta && metric.meta[this.settings.scope.user]) {
+  //       //   scope.setUser(metric.meta[this.settings.scope.user])
+  //       // }
+  //
+  //       Sentry.captureException(error);
+  //     })
+  //   }
+  // },
   /**
    * Methods
    */
@@ -67,26 +101,19 @@ module.exports = {
      */
     sendError(metric) {
       Sentry.withScope(scope => {
-        scope.setTag('id', metric.requestID)
-        scope.setTag('service', this.getServiceName(metric))
-        scope.setTag('span', this.getSpanName(metric))
-        scope.setTag('type', metric.error.type)
-        scope.setTag('code', metric.error.code)
+        scope.setTag('id', metric.traceID); // Group issues by trace ID
+        scope.setTag('service', this.getServiceName(metric));
+        scope.setTag('action', metric.tags.action.name);
+        scope.setTag('callingLevel', metric.tags.callingLevel);
 
-        if (metric.error.data) {
-          scope.setExtra('data', metric.error.data)
-        }
+        scope.setExtra('logs', metric.logs);
+        scope.setExtra('params', metric.tags.params);
 
-        if (this.settings.scope && this.settings.scope.user && metric.meta && metric.meta[this.settings.scope.user]) {
-          scope.setUser(metric.meta[this.settings.scope.user])
-        }
+        // if (this.settings.scope && this.settings.scope.user && metric.meta && metric.meta[this.settings.scope.user]) {
+        //   scope.setUser(metric.meta[this.settings.scope.user])
+        // }
 
-        console.log('metric', metric);
-
-        Sentry.captureEvent({
-          message: metric.error.message,
-          stacktrace: !Array.isArray(metric.error.stack) ? [metric.error.stack] : metric.error.stack
-        })
+        Sentry.captureException(metric.error);
       })
     },
 
