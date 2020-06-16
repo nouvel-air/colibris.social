@@ -1,5 +1,5 @@
-const Sentry = require('@sentry/node')
-const SentryUtils = require('@sentry/utils')
+const Sentry = require('@sentry/node');
+const SentryUtils = require('@sentry/utils');
 const CONFIG = require('../config');
 
 module.exports = {
@@ -18,19 +18,19 @@ module.exports = {
         Sentry.withScope(scope => {
           scope.setTag('id', requestID);
 
-          if( event ) {
+          if (event) {
             scope.setTag('localization', 'event');
             scope.setTag('service', event.service.name);
-            scope.setTag('event', event.name)
+            scope.setTag('event', event.name);
           }
 
-          if( action ) {
+          if (action) {
             scope.setTag('localization', 'action');
             scope.setTag('service', action.service.name);
-            scope.setTag('action', action.name)
+            scope.setTag('action', action.name);
           }
 
-          if( params.req ) {
+          if (params.req) {
             const { req, res, ...otherParams } = params;
             scope.setExtra('params', { ...req['$params'], ...otherParams });
           } else {
@@ -48,18 +48,18 @@ module.exports = {
   },
   methods: {
     isSentryReady() {
-      return Sentry.getCurrentHub().getClient() !== undefined
+      return Sentry.getCurrentHub().getClient() !== undefined;
     }
   },
   started() {
     if (this.settings.dsn) {
-      Sentry.init({ dsn: this.settings.dsn, ...this.settings.options })
+      Sentry.init({ dsn: this.settings.dsn, ...this.settings.options });
     }
   },
   async stopped() {
     if (this.isSentryReady()) {
-      await Sentry.flush()
-      SentryUtils.getGlobalObject().__SENTRY__ = undefined
+      await Sentry.flush();
+      SentryUtils.getGlobalObject().__SENTRY__ = undefined;
     }
   }
-}
+};

@@ -172,7 +172,7 @@ module.exports = {
           };
         }
 
-        const description = entity.field_accroche.length > 0 ? entity.field_accroche.und[0].value : undefined;
+        const description = entity.field_accroche.und.length > 0 ? entity.field_accroche.und[0].value : undefined;
         const url =
           'https://dev.colibris-lafabrique.org/les-projets/' +
           slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g });

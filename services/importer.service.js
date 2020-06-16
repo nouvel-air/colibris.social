@@ -4,7 +4,7 @@ const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activity
 const path = require('path');
 const slugify = require('slugify');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
+const { convertWikiNames, convertWikiDate } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -89,7 +89,7 @@ module.exports = {
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
-      const projectSlug = getSlugFromUri(data.aboutPage);
+      const projectSlug = data.uuid;
       const themes =
         data.themes &&
         data.themes
