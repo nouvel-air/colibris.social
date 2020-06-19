@@ -30,10 +30,12 @@ module.exports = {
 
       await ctx.call('activitypub.actor.create', {
         slug: data.slug,
-        '@context': {
-          '@vocab': 'https://www.w3.org/ns/activitystreams#',
-          pair: 'http://virtual-assembly.org/ontologies/pair#'
-        },
+        '@context': [
+          'https://www.w3.org/ns/activitystreams',
+          {
+            pair: 'http://virtual-assembly.org/ontologies/pair#'
+          }
+        ],
         '@type': [ACTOR_TYPES.ORGANIZATION, 'pair:Organization'],
         // PAIR
         'pair:label': data.name,
@@ -151,10 +153,12 @@ module.exports = {
 
       await ctx.call('activitypub.actor.create', {
         slug: data.username,
-        '@context': {
-          '@vocab': 'https://www.w3.org/ns/activitystreams#',
-          pair: 'http://virtual-assembly.org/ontologies/pair#'
-        },
+        '@context': [
+          'https://www.w3.org/ns/activitystreams',
+          {
+            pair: 'http://virtual-assembly.org/ontologies/pair#'
+          }
+        ],
         '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
         // PAIR
         'pair:label': data.name,
