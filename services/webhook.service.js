@@ -174,7 +174,7 @@ module.exports = {
 
         const description = entity.field_accroche.und.length > 0 ? entity.field_accroche.und[0].value : undefined;
         const url =
-          'https://dev.colibris-lafabrique.org/les-projets/' +
+          'https://colibris-lafabrique.org/les-projets/' +
           slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g });
 
         const project = {
