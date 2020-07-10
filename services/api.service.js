@@ -17,7 +17,7 @@ module.exports = {
       exposedHeaders: '*'
     }
   },
-  dependencies: ['ldp', 'activitypub', 'webhooks', 'push', 'sparqlEndpoint'],
+  dependencies: ['ldp', 'activitypub', 'webfinger', 'webhooks', 'push', 'sparqlEndpoint'],
   async started() {
     this.connector = new CasConnector({
       casUrl: CONFIG.CAS_URL,
@@ -48,6 +48,7 @@ module.exports = {
       this.connector.getRoute(),
       ...(await this.broker.call('ldp.getApiRoutes')),
       ...(await this.broker.call('activitypub.getApiRoutes')),
+      ...(await this.broker.call('webfinger.getApiRoutes')),
       ...(await this.broker.call('webhooks.getApiRoutes')),
       ...(await this.broker.call('push.getApiRoutes')),
       ...(await this.broker.call('sparqlEndpoint.getApiRoutes')),
