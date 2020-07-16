@@ -114,7 +114,7 @@ module.exports = {
     },
     async postLaFabriqueProject(ctx) {
       let {
-        data: { event_type: eventType, entity, files },
+        data: { event_type: eventType, entity, files, nodePath },
         user
       } = ctx.params;
       let activity, existingProject;
@@ -173,9 +173,10 @@ module.exports = {
         }
 
         const description = entity.field_accroche.und.length > 0 ? entity.field_accroche.und[0].value : undefined;
+        // If node path is not present, guess it from the title
         const url =
-          'https://colibris-lafabrique.org/les-projets/' +
-          slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g });
+          'https://colibris-lafabrique.org/' +
+          (nodePath || 'les-projets/' + slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g }));
 
         const project = {
           type: 'pair:Project',
