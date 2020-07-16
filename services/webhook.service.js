@@ -163,7 +163,7 @@ module.exports = {
         }
 
         let location;
-        if (entity.field_proj_adresse.und[0].locality) {
+        if (entity.field_proj_adresse && entity.field_proj_adresse.und[0] && entity.field_proj_adresse.und[0].locality) {
           location = {
             type: 'Place',
             name: entity.field_proj_adresse.und[0].locality,
