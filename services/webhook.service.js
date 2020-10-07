@@ -169,6 +169,7 @@ module.exports = {
           entity.field_proj_adresse.und[0].locality
         ) {
           let departmentName = getDepartmentName(entity.field_proj_adresse.und[0].postal_code);
+          console.log('departmentName', departmentName, entity.field_proj_adresse.und[0]);
           if (!departmentName) {
             departmentName = getCountryName(entity.field_proj_adresse.und[0].country);
           }
