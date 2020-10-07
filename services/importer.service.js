@@ -4,7 +4,7 @@ const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activity
 const path = require('path');
 const slugify = require('slugify');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate } = require('../utils');
+const { convertWikiNames, convertWikiDate, getDepartmentName } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -107,6 +107,9 @@ module.exports = {
         // If the project does not exist, continue.
       }
 
+      let departmentName = getDepartmentName(data.zip);
+      if (departmentName) departmentName += data.country;
+
       const activity = await ctx.call('activitypub.outbox.post', {
         username: groupSlug,
         '@context': [
@@ -132,7 +135,7 @@ module.exports = {
           // ActivityStreams
           location: {
             type: 'Place',
-            name: data.city,
+            name: `${data.city} (${departmentName})`,
             latitude: lat,
             longitude: lng
           },
