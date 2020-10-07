@@ -5,7 +5,7 @@ const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@sema
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
 const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping } = require('../constants');
-const { convertWikiNames, convertWikiDate, getSlugFromUri } = require('../utils');
+const { convertWikiNames, convertWikiDate, getSlugFromUri, getCountryName, getDepartmentName } = require('../utils');
 
 module.exports = {
   mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
@@ -168,9 +168,14 @@ module.exports = {
           entity.field_proj_adresse.und[0] &&
           entity.field_proj_adresse.und[0].locality
         ) {
+          let departmentName = getDepartmentName(entity.field_proj_adresse.und[0].postal_code);
+          if (!departmentName) {
+            departmentName = getCountryName(entity.field_proj_adresse.und[0].country);
+          }
+
           location = {
             type: 'Place',
-            name: entity.field_proj_adresse.und[0].locality,
+            name: `${entity.field_proj_adresse.und[0].locality} (${departmentName})`,
             latitude: entity.field_geodata.und[0].lat,
             longitude: entity.field_geodata.und[0].lon
           };
