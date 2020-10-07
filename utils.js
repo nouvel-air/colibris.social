@@ -21,11 +21,7 @@ const getCountryName = code => code && countries[code];
 const getDepartmentName = zip => {
   if (zip) {
     const departmentNumber = zip.toString().slice(0, 2);
-    const department = departments.find(d => {
-      console.log(typeof d.num_dep, typeof departmentNumber);
-      return d.num_dep == departmentNumber;
-    });
-    console.log('department', department);
+    const department = departments.find(d => d.num_dep.toString() === departmentNumber);
     if (department) return department.dep_name;
   }
 };
