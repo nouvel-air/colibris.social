@@ -15,7 +15,17 @@ module.exports = {
     cors: {
       origin: '*',
       exposedHeaders: '*'
-    }
+    },
+    assets: {
+      folder: './public',
+      // `server-static` module options
+      options: {
+        setHeaders: (res, path, stat) => {
+          // TODO check that path ends with json
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        }
+      }
+    },
   },
   dependencies: ['ldp', 'activitypub', 'webhooks', 'push', 'sparqlEndpoint'],
   async started() {
