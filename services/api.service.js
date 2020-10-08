@@ -22,7 +22,7 @@ module.exports = {
       options: {
         setHeaders: (res, path, stat) => {
           // TODO check that path ends with json
-          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.setHeader('Content-Type', 'application/ld+json; charset=utf-8');
         }
       }
     },
