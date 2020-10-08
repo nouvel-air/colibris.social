@@ -16,12 +16,17 @@
   },
   {
     "prefix": "pair",
-    "owl": "",
+    "owl": "http://virtual-assembly.org/ontologies/pair/ontology.ttl",
     "url": "http://virtual-assembly.org/ontologies/pair#"
   },
   {
     "prefix": "semapps",
     "owl": "",
     "url": "http://semapps.org/ns/core#"
+  },
+  {
+    "prefix": "oasis",
+    "owl": "",
+    "url": "http://cooperative-oasis.org/ns/core#"
   }
 ]
