@@ -6,6 +6,10 @@ module.exports = {
   mixins: [LdpService],
   settings: {
     baseUrl: CONFIG.HOME_URL,
-    ontologies
+    ontologies,
+    containers: [
+      'hosting-services',
+      'hosting-services-types'
+    ]
   }
 };
