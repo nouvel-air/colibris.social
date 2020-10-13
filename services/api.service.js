@@ -65,12 +65,12 @@ module.exports = {
       ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'status'), 'status')
     ].forEach(route => this.addRoute(route));
   },
-  methods: {
-    authenticate(ctx, route, req, res) {
-      return this.connector.authenticate(ctx, route, req, res);
-    },
-    authorize(ctx, route, req, res) {
-      return this.connector.authorize(ctx, route, req, res);
-    }
-  }
+  // methods: {
+  //   authenticate(ctx, route, req, res) {
+  //     return this.connector.authenticate(ctx, route, req, res);
+  //   },
+  //   authorize(ctx, route, req, res) {
+  //     return this.connector.authorize(ctx, route, req, res);
+  //   }
+  // }
 };
