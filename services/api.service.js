@@ -25,7 +25,7 @@ module.exports = {
           res.setHeader('Content-Type', 'application/ld+json; charset=utf-8');
         }
       }
-    },
+    }
   },
   dependencies: ['ldp', 'activitypub', 'webhooks', 'push', 'sparqlEndpoint'],
   async started() {
@@ -64,7 +64,7 @@ module.exports = {
       ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'themes'), 'themes'),
       ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'status'), 'status')
     ].forEach(route => this.addRoute(route));
-  },
+  }
   // methods: {
   //   authenticate(ctx, route, req, res) {
   //     return this.connector.authenticate(ctx, route, req, res);
