@@ -5,7 +5,7 @@ const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@sema
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
 const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping } = require('../constants');
-const { convertWikiNames, convertWikiDate, getSlugFromUri, getCountryName, getDepartmentName } = require('../utils');
+const { convertWikiNames, convertWikiDate, getSlugFromUri, getDepartmentName } = require('../utils');
 
 module.exports = {
   mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
@@ -168,17 +168,21 @@ module.exports = {
           entity.field_proj_adresse.und[0] &&
           entity.field_proj_adresse.und[0].locality
         ) {
-          let departmentName = getDepartmentName(entity.field_proj_adresse.und[0].postal_code);
-          console.log('departmentName', departmentName, entity.field_proj_adresse.und[0]);
-          if (!departmentName) {
-            departmentName = getCountryName(entity.field_proj_adresse.und[0].country);
-          }
+          const address = entity.field_proj_adresse.und[0];
 
           location = {
             type: 'Place',
-            name: `${entity.field_proj_adresse.und[0].locality} (${departmentName})`,
+            name: address.locality,
             latitude: entity.field_geodata.und[0].lat,
-            longitude: entity.field_geodata.und[0].lon
+            longitude: entity.field_geodata.und[0].lon,
+            'schema:address': {
+              '@type': 'schema:PostalAddress',
+              'schema:addressLocality': address.locality,
+              'schema:addressCountry': address.country,
+              'schema:addressRegion': address.country === 'FR' ? getDepartmentName(address.postal_code) : undefined,
+              'schema:postalCode': address.postal_code,
+              'schema:streetAddress': address.thoroughfare
+            }
           };
         }
 
@@ -220,7 +224,8 @@ module.exports = {
           '@context': [
             'https://www.w3.org/ns/activitystreams',
             {
-              pair: 'http://virtual-assembly.org/ontologies/pair#'
+              pair: 'http://virtual-assembly.org/ontologies/pair#',
+              schema: 'http://schema.org/'
             }
           ],
           type: eventType === 'insert' ? ACTIVITY_TYPES.CREATE : ACTIVITY_TYPES.UPDATE,

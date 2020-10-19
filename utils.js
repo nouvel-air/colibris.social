@@ -1,10 +1,4 @@
 const departments = require('./departments.json');
-const countries = {
-  FR: 'France',
-  BE: 'Belgique',
-  CH: 'Suisse',
-  CA: 'Canada'
-};
 
 const convertWikiNames = str =>
   str
@@ -15,8 +9,6 @@ const convertWikiNames = str =>
 const convertWikiDate = str => str && str.replace(' ', 'T');
 
 const getSlugFromUri = str => str.replace(/\/$/, '').replace(/.*\//, '');
-
-const getCountryName = code => code && countries[code];
 
 const getDepartmentName = zip => {
   if (zip) {
@@ -30,6 +22,5 @@ module.exports = {
   convertWikiNames,
   convertWikiDate,
   getSlugFromUri,
-  getCountryName,
   getDepartmentName
 };

@@ -1,6 +1,7 @@
 const urlJoin = require('url-join');
 const { ImporterService } = require('@semapps/importer');
 const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
+const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
 const slugify = require('slugify');
 const CONFIG = require('../config');
@@ -14,6 +15,7 @@ module.exports = {
       'createOrganization',
       'createProject',
       'createLaFabriqueProject',
+      'updateLaFabriqueProjectAddress',
       'createUser',
       'addDevice',
       'followProject',
@@ -23,7 +25,7 @@ module.exports = {
     baseUri: CONFIG.HOME_URL,
     usersContainer: urlJoin(CONFIG.HOME_URL, 'actors')
   },
-  dependencies: ['ldp', 'activitypub.actor', 'activitypub.outbox', 'activitypub.object'],
+  dependencies: ['ldp', 'triplestore', 'activitypub.actor', 'activitypub.outbox', 'activitypub.object'],
   actions: {
     async createOrganization(ctx) {
       const { data } = ctx.params;
@@ -150,6 +152,59 @@ module.exports = {
       });
 
       console.log(`Project "${data.name}" posted: ${activity.id}`);
+    },
+    async updateLaFabriqueProjectAddress(ctx) {
+      const { data } = ctx.params;
+
+      if( data.city ) {
+        const projectUri = this.settings.baseUri + 'objects/' + data.uuid;
+        data.city = data.city ? data.city[0].toUpperCase() + data.city.slice(1).toLowerCase() : '';
+
+        const projectFound = await ctx.call('ldp.resource.exist', { resourceUri: projectUri });
+
+        if( projectFound ) {
+          const [longitude, latitude] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
+
+          // Delete old location
+          await ctx.call('triplestore.update', { query: `
+            PREFIX schema: <http://schema.org/>
+            PREFIX as: <https://www.w3.org/ns/activitystreams#>
+            DELETE {
+              <${projectUri}> as:location ?location .
+              ?location ?predicate ?name .
+            } WHERE {
+              <${projectUri}> as:location ?location .
+              OPTIONAL { ?location ?predicate ?name . }
+            }
+          `});
+
+          await ctx.call('triplestore.insert', {
+            resource: {
+              '@context': [ 'https://www.w3.org/ns/activitystreams', { schema: 'http://schema.org/' } ],
+              '@id': projectUri,
+              location: {
+                '@type': 'Place',
+                latitude,
+                longitude,
+                name: data.city,
+                'schema:address': {
+                  '@type': 'schema:PostalAddress',
+                  'schema:addressLocality': data.city,
+                  'schema:addressCountry': data.country,
+                  'schema:addressRegion': data.country === 'FR' ? getDepartmentName(data.zip) : undefined,
+                  'schema:postalCode': data.zip,
+                  'schema:streetAddress': data.street1 + (data.street2 ? ', ' + data.street2 : '')
+                }
+              }
+            },
+            contentType: MIME_TYPES.JSON
+          });
+
+          console.log(`Project ${data.nodepath} updated: ${projectUri}`);
+        } else {
+          console.log(`Project "${data.nodepath}" with URI ${projectUri} not found, skipping...`);
+        }
+      }
     },
     async createUser(ctx) {
       const { data } = ctx.params;
