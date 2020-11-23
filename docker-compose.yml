@@ -15,6 +15,18 @@ services:
     environment:
       ADMIN_PASSWORD: "admin"
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
 volumes:
   rdf_data:
   staging:
+  redis_data:
