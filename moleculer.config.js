@@ -12,7 +12,7 @@ module.exports = {
     type: 'Redis',
     options: {
       prefix: 'action',
-      ttl: 86400, // Time-to-live of one hour
+      ttl: 2592000, // Keep in cache for one month
       redis: CONFIG.REDIS_CACHE_URL
     }
   }
