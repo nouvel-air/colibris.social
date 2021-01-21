@@ -12,41 +12,48 @@ module.exports = {
   settings: {
     importsDir: path.resolve(__dirname, '../imports'),
     allowedActions: [
-      'createOrganization',
+      'createActor',
       'createProject',
       'createLaFabriqueProject',
       'updateLaFabriqueProjectAddress',
+      'createTheme',
+      'createStatus',
       'createUser',
       'addDevice',
       'followProject',
       'postNews'
     ],
     // Custom settings
-    baseUri: CONFIG.HOME_URL,
-    usersContainer: urlJoin(CONFIG.HOME_URL, 'actors')
+    baseUri: CONFIG.HOME_URL
   },
   dependencies: ['ldp', 'triplestore', 'activitypub.actor', 'activitypub.outbox', 'activitypub.object'],
   actions: {
-    async createOrganization(ctx) {
+    async createActor(ctx) {
       const { data } = ctx.params;
 
-      await ctx.call('activitypub.actor.create', {
+      const organizationsMapping = {
+        'organizations': 'pair:Organization',
+        'groups': 'pair:Group',
+        'projects': 'pair:Project'
+      };
+
+      const containerPath = Object.keys(organizationsMapping).find(path => data['@type'].includes(organizationsMapping[path]));
+
+      await ctx.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, containerPath),
         slug: data.slug,
-        '@context': [
-          'https://www.w3.org/ns/activitystreams',
-          {
-            pair: 'http://virtual-assembly.org/ontologies/pair#'
-          }
-        ],
-        '@type': [ACTOR_TYPES.ORGANIZATION, 'pair:Organization'],
-        // PAIR
-        'pair:label': data.name,
-        // ActivityStreams
-        name: data.name,
-        preferredUsername: data.slug
+        resource: {
+          '@type': data['@type'],
+          // PAIR
+          'pair:label': data.name,
+          'pair:partOf': data.name === 'Colibris' ? undefined : urlJoin(CONFIG.HOME_URL, 'organizations', 'colibris'),
+          // ActivityStreams
+          name: data.name,
+          preferredUsername: data.slug
+        }
       });
 
-      console.log(`Organization ${data.slug} created`);
+      console.log(`Actor ${data.slug} created`);
     },
     async createProject(ctx) {
       const { data, groupSlug } = ctx.params;
@@ -56,33 +63,26 @@ module.exports = {
       const themes = data.tag.map(tag => urlJoin(this.settings.baseUri, 'themes', slugify(tag.name, { lower: true })));
       const status = urlJoin(this.settings.baseUri, 'status', slugify(data.status, { lower: true }));
 
-      await ctx.call('activitypub.actor.create', {
+      await ctx.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
         slug: convertWikiNames(data.slug),
-        '@context': [
-          'https://www.w3.org/ns/activitystreams',
-          {
-            pair: 'http://virtual-assembly.org/ontologies/pair#'
-          }
-        ],
-        '@type': [ACTOR_TYPES.GROUP, 'pair:Project'],
-        // PAIR
-        'pair:label': data.name,
-        'pair:description': data.content,
-        'pair:aboutPage': {
-          '@id': `https://colibris.cc/groupeslocaux/?${data.slug}/iframe&showActu=1`
-        },
-        'pair:involves': {
-          '@id': urlJoin(this.settings.usersContainer, groupSlug)
-        },
-        // ActivityStreams
-        name: data.name,
-        content: data.content,
-        image: data.image,
-        location: data.location,
-        tag: [...themes, status],
-        url: data.url,
-        published: convertWikiDate(data.published),
-        updated: convertWikiDate(data.updated)
+        resource: {
+          '@type': [ACTOR_TYPES.GROUP, 'pair:Project'],
+          // PAIR
+          'pair:label': data.name,
+          'pair:description': data.content,
+          'pair:aboutPage': `https://colibris.cc/groupeslocaux/?${data.slug}/iframe&showActu=1`,
+          'pair:involves': urlJoin(CONFIG.HOME_URL, 'organizations', groupSlug),
+          // ActivityStreams
+          name: data.name,
+          content: data.content,
+          image: data.image,
+          location: data.location,
+          tag: [...themes, status],
+          url: data.url,
+          published: convertWikiDate(data.published),
+          updated: convertWikiDate(data.updated)
+        }
       });
 
       console.log(`Project ${data.name} created`);
@@ -121,8 +121,8 @@ module.exports = {
           }
         ],
         type: 'Create',
-        actor: urlJoin(this.settings.usersContainer, groupSlug),
-        to: urlJoin(this.settings.usersContainer, groupSlug, 'followers'),
+        actor: urlJoin(CONFIG.HOME_URL, 'organizations', groupSlug),
+        to: urlJoin(CONFIG.HOME_URL, 'organizations', groupSlug, 'followers'),
         object: {
           slug: projectSlug,
           type: 'pair:Project',
@@ -131,9 +131,7 @@ module.exports = {
           'pair:description': data.short_description,
           'pair:interestOf': themes,
           'pair:aboutPage': data.aboutPage,
-          'pair:involves': {
-            '@id': urlJoin(this.settings.usersContainer, groupSlug)
-          },
+          'pair:involves': urlJoin(CONFIG.HOME_URL, 'organizations', groupSlug),
           // ActivityStreams
           location: {
             type: 'Place',
@@ -206,27 +204,49 @@ module.exports = {
         }
       }
     },
+    async createTheme(ctx) {
+      const { data } = ctx.params;
+
+      await ctx.broker.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'themes'),
+        slug: data,
+        resource: {
+          '@type': 'pair:Theme',
+          'pair:label': data
+        }
+      });
+    },
+    async createStatus(ctx) {
+      const { data } = ctx.params;
+
+      await ctx.broker.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'projects-status'),
+        slug: data,
+        resource: {
+          '@type': 'pair:ProjectStatus',
+          'pair:label': data
+        }
+      });
+    },
     async createUser(ctx) {
       const { data } = ctx.params;
 
-      await ctx.call('activitypub.actor.create', {
+      // TODO create webId
+      await ctx.broker.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'users'),
         slug: data.username,
-        '@context': [
-          'https://www.w3.org/ns/activitystreams',
-          {
-            pair: 'http://virtual-assembly.org/ontologies/pair#'
-          }
-        ],
-        '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
-        // PAIR
-        'pair:label': data.name,
-        'pair:e-mail': data.email,
-        // ActivityStreams
-        name: data.name,
-        preferredUsername: data.username
+        resource: {
+          '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
+          // PAIR
+          'pair:label': data.name,
+          'pair:e-mail': data.email,
+          // ActivityStreams
+          name: data.name,
+          preferredUsername: data.username
+        }
       });
 
-      console.log(`Actor ${data.username} created`);
+      console.log(`User ${data.username} created`);
     },
     async addDevice(ctx) {
       const { data } = ctx.params;
@@ -234,7 +254,7 @@ module.exports = {
       await ctx.call('push.device.create', {
         '@context': { semapps: 'http://semapps.org/ns/core#' },
         '@type': 'semapps:Device',
-        'semapps:ownedBy': urlJoin(this.settings.usersContainer, data.username),
+        'semapps:ownedBy': urlJoin(CONFIG.HOME_URL, 'users', data.username),
         'semapps:pushToken': data.token,
         'semapps:addedAt': new Date().toISOString()
       });
@@ -244,8 +264,8 @@ module.exports = {
     async followProject(ctx) {
       const { data } = ctx.params;
 
-      const follower = urlJoin(this.settings.usersContainer, data.username);
-      const following = urlJoin(this.settings.usersContainer, convertWikiNames(data.following));
+      const follower = urlJoin(CONFIG.HOME_URL, 'users', data.username);
+      const following = urlJoin(CONFIG.HOME_URL, 'projects', convertWikiNames(data.following));
 
       await ctx.call('activitypub.outbox.post', {
         username: data.username,
@@ -261,7 +281,7 @@ module.exports = {
     async postNews(ctx) {
       const { data } = ctx.params;
 
-      const posterUri = urlJoin(this.settings.usersContainer, convertWikiNames(data.attributedTo));
+      const posterUri = urlJoin(CONFIG.HOME_URL, 'projects', convertWikiNames(data.attributedTo));
 
       const activity = await ctx.call('activitypub.outbox.post', {
         username: convertWikiNames(data.attributedTo),
@@ -281,8 +301,8 @@ module.exports = {
     },
     async importAll(ctx) {
       await this.actions.import({
-        action: 'createOrganization',
-        fileName: 'organizations.json'
+        action: 'createGroup',
+        fileName: 'groups.json'
       });
 
       await this.actions.import({
@@ -295,6 +315,16 @@ module.exports = {
         action: 'createProject',
         fileName: 'projets-rcc.json',
         groupSlug: '60-compiegnois'
+      });
+
+      await this.actions.import({
+        action: 'createTheme',
+        fileName: 'themes.json'
+      });
+
+      await this.actions.import({
+        action: 'createStatus',
+        fileName: 'project-status.json'
       });
 
       await this.actions.import({

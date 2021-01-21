@@ -1,5 +1,6 @@
 const { LdpService } = require('@semapps/ldp');
 const CONFIG = require('../config');
+const containers = require('../containers');
 const ontologies = require('../ontologies');
 
 module.exports = {
@@ -7,7 +8,9 @@ module.exports = {
   settings: {
     baseUrl: CONFIG.HOME_URL,
     ontologies,
-    containers: ['hosting-services', 'hosting-services-types', 'files'],
-    defaultJsonContext: CONFIG.DEFAULT_JSON_CONTEXT
+    containers,
+    defaultContainerOptions: {
+      jsonContext: CONFIG.DEFAULT_JSON_CONTEXT
+    }
   }
 };
