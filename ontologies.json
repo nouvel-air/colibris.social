@@ -20,6 +20,11 @@
     "url": "http://schema.org/"
   },
   {
+    "prefix": "sec",
+    "owl": "",
+    "url": "https://w3id.org/security#"
+  },
+  {
     "prefix": "pair",
     "owl": "http://virtual-assembly.org/ontologies/pair/ontology.ttl",
     "url": "http://virtual-assembly.org/ontologies/pair#"

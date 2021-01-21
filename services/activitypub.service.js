@@ -27,12 +27,14 @@ module.exports = {
           name: resource['pair:label'],
           preferredUsername: getSlugFromUri(resourceId)
         };
-      } else if (resourceTypes.includes('pair:Project')) {
+      } else if (resourceTypes.includes('pair:Group')) {
         return {
           '@type': ACTOR_TYPES.GROUP,
           name: resource['pair:label'],
           preferredUsername: getSlugFromUri(resourceId)
         };
+      } else {
+        throw new Error(`Unknown resource type: ${resourceTypes}`);
       }
     }
   }

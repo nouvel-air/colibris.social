@@ -1,11 +1,10 @@
 const urlJoin = require('url-join');
-const slugify = require('slugify');
 const QueueService = require('moleculer-bull');
 const { PUBLIC_URI, ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
 const { WebhooksService } = require('@semapps/webhooks');
 const CONFIG = require('../config');
 const { groupsMapping, statusMapping, glThemesMapping, laFabriqueThemesMapping } = require('../constants');
-const { convertWikiNames, convertWikiDate, getSlugFromUri, getDepartmentName } = require('../utils');
+const { convertWikiNames, convertWikiDate, getSlugFromUri, getDepartmentName, slugify } = require('../utils');
 
 module.exports = {
   mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
@@ -32,9 +31,9 @@ module.exports = {
 
       if (action !== 'delete') {
         // Tags
-        tags.push(urlJoin(CONFIG.HOME_URL, 'status', slugify(statusMapping[data.listeListeEtat], { lower: true })));
+        tags.push(urlJoin(CONFIG.HOME_URL, 'status', slugify(statusMapping[data.listeListeEtat])));
         glThemesMapping[data.listeListeListeTheme2].forEach(theme =>
-          tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(theme, { lower: true })))
+          tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(theme)))
         );
 
         // TODO convert HTML to Markdown ?
@@ -150,7 +149,7 @@ module.exports = {
         let tags = [];
         entity.field_proj_theme.und.forEach(theme => {
           laFabriqueThemesMapping[theme.tid].forEach(themeLabel =>
-            tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel, { lower: true })))
+            tags.push(urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel)))
           );
         });
 
@@ -190,7 +189,7 @@ module.exports = {
         // If node path is not present, guess it from the title
         const url =
           'https://colibris-lafabrique.org/' +
-          (nodePath || 'les-projets/' + slugify(entity.title, { lower: true, remove: /[*+~.()'"!:@]/g }));
+          (nodePath || 'les-projets/' + slugify(entity.title));
 
         const project = {
           type: 'pair:Project',
