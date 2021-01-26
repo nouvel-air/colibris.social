@@ -1,10 +1,11 @@
 const urlJoin = require('url-join');
 const { ImporterService } = require('@semapps/importer');
 const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
+const { defaultToArray } = require('@semapps/ldp');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate, getDepartmentName, slugify } = require('../utils');
+const { convertWikiNames, convertWikiDate, getDepartmentName, slugify, delay } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -62,7 +63,7 @@ module.exports = {
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       const themes = data.tag.map(tag => urlJoin(this.settings.baseUri, 'themes', slugify(tag.name)));
-      const status = urlJoin(this.settings.baseUri, 'status', slugify(data.status));
+      const status = urlJoin(this.settings.baseUri, 'projects-status', slugify(data.status));
 
       await ctx.call('ldp.resource.post', {
         containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
@@ -91,36 +92,39 @@ module.exports = {
       console.log(`Project ${data.name} created`);
     },
     async createLaFabriqueProject(ctx) {
-      const { data, groupSlug } = ctx.params;
-
-      if (!groupSlug) throw new Error('Missing groupSlug argument');
+      const { data } = ctx.params;
 
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
-      const projectSlug = data.uuid;
-      const groupUri = urlJoin(CONFIG.HOME_URL, 'organizations', groupSlug);
+      const projectSlug = data.aboutPage.split('/').pop();
+      const lafabriqueUri = urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique');
       const resizedImage = data.image.replace('/files/projets/', '/files/styles/projet_large/public/projets/');
       const themes =
         data.themes &&
         data.themes
-          .split(/[\s,&]+/)
+          .split(/[,&]+/)
           .map(themeLabel => urlJoin(CONFIG.HOME_URL, 'themes', slugify(themeLabel)));
 
-      const projectExist = await ctx.call('ldp.resource.exist', { resourceUri: urlJoin(CONFIG.HOME_URL, 'projects', projectSlug) });
-      if (projectExist) {
-        const projectUri = await ctx.call('ldp.resource.patch', {
-          resource: {
-            '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-            '@id': urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
-            image: {
-              type: 'Image',
-              url: resizedImage
-            }
-          },
-          contentType: MIME_TYPES.JSON
+      try {
+        const project = await ctx.call('ldp.resource.get', {
+          resourceUri: urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
+          accept: MIME_TYPES.JSON
         });
+        if (project) {
+          const existingImages = defaultToArray(project.image);
+          const projectUri = await ctx.call('ldp.resource.patch', {
+            resource: {
+              '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+              '@id': urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
+              image: [resizedImage, ...existingImages]
+            },
+            contentType: MIME_TYPES.JSON
+          });
 
-        console.log(`New image "${resizedImage}" added for project: ${projectUri}`);
-        return;
+          console.log(`New image "${resizedImage}" added for project: ${projectUri}`);
+          return;
+        }
+      } catch(e) {
+        // Continue if project is not found
       }
 
       const projectUri = await ctx.call('ldp.resource.post', {
@@ -134,7 +138,7 @@ module.exports = {
           'pair:description': data.short_description,
           'pair:hasTopic': themes,
           'pair:aboutPage': data.aboutPage,
-          'pair:supportedBy': groupUri,
+          'pair:supportedBy': lafabriqueUri,
           // ActivityStreams
           location: {
             type: 'Place',
@@ -150,10 +154,7 @@ module.exports = {
               'schema:streetAddress': data.street1 + (data.street2 ? ', ' + data.street2 : '')
             }
           },
-          image: {
-            type: 'Image',
-            url: resizedImage
-          },
+          image: resizedImage,
           published: convertWikiDate(data.published),
           updated: convertWikiDate(data.updated)
         },
@@ -162,17 +163,33 @@ module.exports = {
 
       console.log(`Project "${data.name}" posted: ${projectUri}`);
 
+      let project;
+      do {
+        await delay(2000);
+        project = await ctx.call(
+          'ldp.resource.get',
+          {
+            resourceUri: projectUri,
+            accept: MIME_TYPES.JSON
+          },
+          { meta: { $cache: false } }
+        );
+        if( !project.followers ) {
+          console.log(`Waiting for ActivityPub data to be added to ${projectUri}`)
+        }
+      } while( !project.followers );
+
       await ctx.call('activitypub.follow.addFollower', {
-        follower: groupUri,
+        follower: lafabriqueUri,
         following: projectUri
       });
 
       const activity = await ctx.call('activitypub.outbox.post', {
-        collectionUri: urlJoin(groupUri, 'outbox'),
+        collectionUri: urlJoin(lafabriqueUri, 'outbox'),
         type: ACTIVITY_TYPES.ANNOUNCE,
-        actor: groupUri,
+        actor: lafabriqueUri,
         object: projectUri,
-        to: [urlJoin(groupUri, 'followers')]
+        to: [urlJoin(lafabriqueUri, 'followers')]
       });
 
       console.log(`Project "${data.name}" announced: ${activity.id}`);
@@ -387,7 +404,6 @@ module.exports = {
       await this.actions.import({
         action: 'createLaFabriqueProject',
         fileName: 'projets-lafabrique.json',
-        groupSlug: 'lafabrique'
       });
     }
   }
