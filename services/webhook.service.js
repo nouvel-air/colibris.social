@@ -21,10 +21,9 @@ module.exports = {
         data: { event_type: eventType, entity, files, nodePath },
         user
       } = ctx.params;
-      let activity, existingProject;
+      let existingProject;
 
       const projectSlug = nodePath.split('/')[1];
-      console.log('projectSlug', projectSlug);
 
       try {
         existingProject = await ctx.call('ldp.resource.get', {
@@ -124,7 +123,7 @@ module.exports = {
             contentType: MIME_TYPES.JSON
           });
 
-          console.log('Resource posted:', projectUri);
+          await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: projectUri });
 
           // Make La Fabrique follow the new project
           await ctx.call('activitypub.follow.addFollower', {
