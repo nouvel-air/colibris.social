@@ -21,13 +21,10 @@ const getDepartmentName = zip => {
 
 const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.' } });
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
-
 module.exports = {
   convertWikiNames,
   convertWikiDate,
   getSlugFromUri,
   getDepartmentName,
-  slugify,
-  delay
+  slugify
 };

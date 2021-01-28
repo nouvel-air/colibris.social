@@ -5,7 +5,7 @@ const { defaultToArray } = require('@semapps/ldp');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate, getDepartmentName, slugify, delay } = require('../utils');
+const { convertWikiNames, convertWikiDate, getDepartmentName, slugify } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -163,21 +163,7 @@ module.exports = {
 
       console.log(`Project "${data.name}" posted: ${projectUri}`);
 
-      let project;
-      do {
-        await delay(2000);
-        project = await ctx.call(
-          'ldp.resource.get',
-          {
-            resourceUri: projectUri,
-            accept: MIME_TYPES.JSON
-          },
-          { meta: { $cache: false } }
-        );
-        if( !project.followers ) {
-          console.log(`Waiting for ActivityPub data to be added to ${projectUri}`)
-        }
-      } while( !project.followers );
+      await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: projectUri });
 
       await ctx.call('activitypub.follow.addFollower', {
         follower: lafabriqueUri,
