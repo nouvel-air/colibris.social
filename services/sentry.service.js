@@ -6,7 +6,9 @@ module.exports = {
   name: 'sentry',
   settings: {
     dsn: CONFIG.SENTRY_DSN,
-    options: {},
+    options: {
+      environment: CONFIG.SENTRY_ENVIRONMENT,
+    },
     scope: {
       user: null
     }
