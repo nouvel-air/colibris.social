@@ -1,3 +1,4 @@
+const createSlug = require('speakingurl');
 const departments = require('./departments.json');
 
 const convertWikiNames = str =>
@@ -18,9 +19,12 @@ const getDepartmentName = zip => {
   }
 };
 
+const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.' } });
+
 module.exports = {
   convertWikiNames,
   convertWikiDate,
   getSlugFromUri,
-  getDepartmentName
+  getDepartmentName,
+  slugify
 };

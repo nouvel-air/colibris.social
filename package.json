@@ -7,21 +7,22 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "moleculer-runner --repl --hot services",
-    "start": "moleculer-runner --instances=max services"
+    "start": "moleculer-runner --instances=max services",
+    "link-all": "npm link @semapps/activitypub && npm link @semapps/ldp && npm link @semapps/webhooks"
   },
   "dependencies": {
-    "@semapps/activitypub": "0.1.29",
-    "@semapps/connector": "0.1.29",
-    "@semapps/importer": "0.1.29",
-    "@semapps/inference": "0.1.29",
-    "@semapps/ldp": "0.1.29",
-    "@semapps/mime-types": "0.1.29",
-    "@semapps/push": "0.1.29",
-    "@semapps/signature": "0.1.29",
-    "@semapps/sparql-endpoint": "0.1.29",
-    "@semapps/triplestore": "0.1.29",
-    "@semapps/webfinger": "0.1.29",
-    "@semapps/webhooks": "0.1.29",
+    "@semapps/activitypub": "0.1.44-alpha.0",
+    "@semapps/connector": "0.1.44-alpha.0",
+    "@semapps/importer": "0.1.44-alpha.0",
+    "@semapps/inference": "0.1.44-alpha.0",
+    "@semapps/ldp": "0.1.44-alpha.0",
+    "@semapps/mime-types": "0.1.44-alpha.0",
+    "@semapps/push": "0.1.44-alpha.0",
+    "@semapps/signature": "0.1.44-alpha.0",
+    "@semapps/sparql-endpoint": "0.1.44-alpha.0",
+    "@semapps/triplestore": "0.1.44-alpha.0",
+    "@semapps/webfinger": "0.1.44-alpha.0",
+    "@semapps/webhooks": "0.1.44-alpha.0",
     "@sentry/node": "^5.16.1",
     "@sentry/utils": "^5.16.1",
     "dotenv-flow": "^3.1.0",
@@ -30,7 +31,7 @@
     "moleculer-db": "^0.8.7",
     "moleculer-repl": "^0.6.4",
     "moleculer-web": "^0.9.1",
-    "slugify": "^1.4.0",
+    "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
   }
 }
