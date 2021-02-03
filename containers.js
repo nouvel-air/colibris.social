@@ -19,7 +19,7 @@ module.exports = [
   {
     path: '/projects',
     acceptedTypes: ['pair:Project', ACTOR_TYPES.GROUP],
-    dereference: ['sec:publicKey', 'as:location']
+    dereference: ['sec:publicKey', 'as:location/schema:address'],
   },
   {
     path: '/users',
