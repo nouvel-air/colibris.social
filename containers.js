@@ -39,6 +39,10 @@ module.exports = [
     acceptedTypes: [OBJECT_TYPES.NOTE]
   },
   {
+    path: '/documents',
+    acceptedTypes: ['pair:Document']
+  },
+  {
     path: '/hosting-services',
     acceptedTypes: ['oasis:HostingService']
   },
