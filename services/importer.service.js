@@ -149,7 +149,7 @@ module.exports = {
               '@type': 'schema:PostalAddress',
               'schema:addressLocality': data.city,
               'schema:addressCountry': data.country,
-              'schema:addressRegion': data.country === 'FR' ? getDepartmentName(data.zip) : undefined,
+              'schema:addressRegion': data.country === 'France' ? getDepartmentName(data.zip) : undefined,
               'schema:postalCode': data.zip,
               'schema:streetAddress': data.street1 + (data.street2 ? ', ' + data.street2 : '')
             }
@@ -262,7 +262,9 @@ module.exports = {
       });
     },
     async createUser(ctx) {
-      const { data } = ctx.params;
+      const { data, groupSlug } = ctx.params;
+
+      if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       // TODO create webId
       await ctx.broker.call('ldp.resource.post', {
@@ -274,6 +276,7 @@ module.exports = {
           // PAIR
           'pair:label': data.name,
           'pair:e-mail': data.email,
+          'pair:affiliatedBy': urlJoin(CONFIG.HOME_URL, 'groups', groupSlug),
           // ActivityStreams
           name: data.name,
           preferredUsername: data.username
@@ -364,7 +367,8 @@ module.exports = {
 
       await this.actions.import({
         action: 'createUser',
-        fileName: 'users.json'
+        fileName: 'users.json',
+        groupSlug: '60-pays-creillois'
       });
 
       await this.actions.import({

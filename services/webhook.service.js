@@ -144,8 +144,10 @@ module.exports = {
           console.log('Resource announced:', result.id);
         } else {
           await ctx.call('ldp.resource.patch', {
-            resourceUri: existingProject.id,
-            resource: project,
+            resource: {
+              '@id': existingProject.id,
+              ...project
+            },
             contentType: MIME_TYPES.JSON
           });
 
