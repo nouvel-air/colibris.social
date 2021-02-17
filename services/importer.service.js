@@ -5,7 +5,8 @@ const { defaultToArray } = require('@semapps/ldp');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate, getDepartmentName, slugify } = require('../utils');
+const themes = require('../imports/themes.json');
+const { convertWikiNames, convertWikiDate, convertGogoDate, getDepartmentName, slugify } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
@@ -16,6 +17,7 @@ module.exports = {
       'createProject',
       'createLaFabriqueProject',
       'updateLaFabriqueProjectAddress',
+      'createPdcnActor',
       'createTheme',
       'createStatus',
       'createUser',
@@ -233,6 +235,89 @@ module.exports = {
         }
       }
     },
+    // Data have been exported from here
+    // https://presdecheznous.gogocarto.fr/api/elements.json?bounds=2.3291%2C49.14219%2C3.00201%2C49.52521
+    async createPdcnActor(ctx) {
+      const { data } = ctx.params;
+
+      const topics = data.categories
+        .reduce((acc, category) => {
+          if( category.includes(' et ') ) {
+            acc.push( ...category.split(' et ') );
+          } else {
+            acc.push(category);
+          }
+          return acc;
+        }, [])
+        .filter(category => themes.includes(category))
+        .map(category => urlJoin(CONFIG.HOME_URL, 'themes', slugify(category)));
+
+      let address;
+      if( data.address && Object.keys(data.address).length > 0 ) {
+        address = {
+          '@type': 'pair:Place',
+            'pair:latitude': data.geo.latitude,
+            'pair:longitude': data.geo.longitude,
+            'pair:label': data.address.customFormatedAddress,
+            'pair:hasPostalAddress': {
+            '@type': 'pair:PostalAddress',
+              'schema:addressLocality': data.address.addressLocality,
+              'schema:addressCountry': 'France',
+              'schema:addressZipCode': data.address.postalCode,
+              'schema:addressStreet': data.address.streetAddress,
+          },
+        }
+      } else if (data.streetaddress) {
+
+        const dataGouvUrl = new URL('https://api-adresse.data.gouv.fr/search/');
+        dataGouvUrl.searchParams.set('q', data.streetaddress)
+        const response = await fetch(dataGouvUrl.toString());
+
+        if( response.ok ) {
+          const json = await response.json();
+          const feature = json.features[0];
+
+          address = {
+            '@type': 'pair:Place',
+            'pair:latitude': data.geo.latitude,
+            'pair:longitude': data.geo.longitude,
+            'pair:label': feature.label,
+            'pair:hasPostalAddress': {
+              '@type': 'pair:PostalAddress',
+              'schema:addressLocality': feature.city,
+              'schema:addressCountry': 'France',
+              'schema:addressZipCode': feature.postcode,
+              'schema:addressStreet': feature.name,
+            },
+          }
+        }
+      }
+
+      const actorUri = await ctx.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'organizations'),
+        slug: 'gogocarto-' + data.id,
+        resource: {
+          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+          '@type': 'pair:Organization',
+          // PAIR
+          'pair:label': data.name,
+          'pair:description': data.description,
+          'pair:hasLocation': address,
+          'pair:hasTopic': topics,
+          'pair:webPage': data.website || undefined,
+          'pair:aboutPage': 'https://presdecheznous.fr/annuaire#/fiche/-/' + data.id,
+          'pair:e-mail': data.email || undefined,
+          'pair:phone': Array.isArray(data.telephone) ? data.telephone[0] : (data.telephone || undefined),
+          // ActivityStreams
+          image: data.image,
+          published: convertGogoDate(data.createdAt),
+          updated: convertGogoDate(data.updatedAt)
+        },
+        contentType: MIME_TYPES.JSON
+      });
+
+      console.log(`Actor "${data.name}" created with URI: ${actorUri}`);
+    },
     async createTheme(ctx) {
       const { data } = ctx.params;
 
@@ -339,62 +424,67 @@ module.exports = {
     },
     async importAll(ctx) {
       await this.actions.import({
-        action: 'createActor',
-        fileName: 'actors.json'
+        action: 'createPdcnActor',
+        fileName: 'pdcn-actors.json'
       });
 
-      await this.actions.import({
-        action: 'createProject',
-        fileName: 'projets-pc.json',
-        groupSlug: '60-pays-creillois'
-      });
-
-      await this.actions.import({
-        action: 'createProject',
-        fileName: 'projets-rcc.json',
-        groupSlug: '60-compiegnois'
-      });
-
-      await this.actions.import({
-        action: 'createTheme',
-        fileName: 'themes.json'
-      });
-
-      await this.actions.import({
-        action: 'createStatus',
-        fileName: 'project-status.json'
-      });
-
-      await this.actions.import({
-        action: 'createUser',
-        fileName: 'users.json',
-        groupSlug: '60-pays-creillois'
-      });
-
-      await this.actions.import({
-        action: 'addDevice',
-        fileName: 'devices.json'
-      });
-
-      await this.actions.import({
-        action: 'followProject',
-        fileName: 'followers.json'
-      });
-
-      await this.actions.import({
-        action: 'postNews',
-        fileName: 'actualites-pc.json'
-      });
-
-      await this.actions.import({
-        action: 'postNews',
-        fileName: 'actualites-rcc.json'
-      });
-
-      await this.actions.import({
-        action: 'createLaFabriqueProject',
-        fileName: 'projets-lafabrique.json',
-      });
+      // await this.actions.import({
+      //   action: 'createActor',
+      //   fileName: 'actors.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createProject',
+      //   fileName: 'projets-pc.json',
+      //   groupSlug: '60-pays-creillois'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createProject',
+      //   fileName: 'projets-rcc.json',
+      //   groupSlug: '60-compiegnois'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createTheme',
+      //   fileName: 'themes.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createStatus',
+      //   fileName: 'project-status.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createUser',
+      //   fileName: 'users.json',
+      //   groupSlug: '60-pays-creillois'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'addDevice',
+      //   fileName: 'devices.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'followProject',
+      //   fileName: 'followers.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'postNews',
+      //   fileName: 'actualites-pc.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'postNews',
+      //   fileName: 'actualites-rcc.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'createLaFabriqueProject',
+      //   fileName: 'projets-lafabrique.json',
+      // });
     }
   }
 };
