@@ -402,14 +402,17 @@ module.exports = {
       console.log(`Actor ${data.username} follow ${data.following}`);
     },
     async postNews(ctx) {
-      const { data } = ctx.params;
+      const { data, groupSlug } = ctx.params;
+
+      if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       const posterUri = urlJoin(CONFIG.HOME_URL, 'projects', convertWikiNames(data.attributedTo));
+      const groupUri = urlJoin(CONFIG.HOME_URL, 'groups', groupSlug);
 
       const activity = await ctx.call('activitypub.outbox.post', {
         collectionUri: urlJoin(posterUri, 'outbox'),
         slug: data.id,
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        '@context': CONFIG.DEFAULT_JSON_CONTEXT,
         '@type': OBJECT_TYPES.NOTE,
         to: [urlJoin(posterUri, 'followers')],
         name: data.name,
@@ -417,74 +420,77 @@ module.exports = {
         image: data.image,
         attributedTo: posterUri,
         published: convertWikiDate(data.published),
-        updated: convertWikiDate(data.updated)
+        updated: convertWikiDate(data.updated),
+        'pair:concerns': [posterUri, groupUri]
       });
 
       console.log(`Note "${data.name}" posted: ${activity.id}`);
     },
     async importAll(ctx) {
       await this.actions.import({
+        action: 'createActor',
+        fileName: 'actors.json'
+      });
+
+      await this.actions.import({
+        action: 'createProject',
+        fileName: 'projets-pc.json',
+        groupSlug: '60-pays-creillois'
+      });
+
+      await this.actions.import({
+        action: 'createProject',
+        fileName: 'projets-rcc.json',
+        groupSlug: '60-compiegnois'
+      });
+
+      await this.actions.import({
+        action: 'createTheme',
+        fileName: 'themes.json'
+      });
+
+      await this.actions.import({
+        action: 'createStatus',
+        fileName: 'project-status.json'
+      });
+
+      await this.actions.import({
+        action: 'createUser',
+        fileName: 'users.json',
+        groupSlug: '60-pays-creillois'
+      });
+
+      await this.actions.import({
+        action: 'addDevice',
+        fileName: 'devices.json'
+      });
+
+      await this.actions.import({
+        action: 'followProject',
+        fileName: 'followers.json'
+      });
+
+      await this.actions.import({
+        action: 'postNews',
+        fileName: 'actualites-pc.json',
+        groupSlug: '60-pays-creillois'
+      });
+
+      await this.actions.import({
+        action: 'postNews',
+        fileName: 'actualites-rcc.json',
+        groupSlug: '60-compiegnois'
+      });
+
+      await this.actions.import({
+        action: 'createLaFabriqueProject',
+        fileName: 'projets-lafabrique.json',
+      });
+
+      await this.actions.import({
         action: 'createPdcnActor',
         fileName: 'pdcn-actors.json'
       });
-
-      // await this.actions.import({
-      //   action: 'createActor',
-      //   fileName: 'actors.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createProject',
-      //   fileName: 'projets-pc.json',
-      //   groupSlug: '60-pays-creillois'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createProject',
-      //   fileName: 'projets-rcc.json',
-      //   groupSlug: '60-compiegnois'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createTheme',
-      //   fileName: 'themes.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createStatus',
-      //   fileName: 'project-status.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createUser',
-      //   fileName: 'users.json',
-      //   groupSlug: '60-pays-creillois'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'addDevice',
-      //   fileName: 'devices.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'followProject',
-      //   fileName: 'followers.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'postNews',
-      //   fileName: 'actualites-pc.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'postNews',
-      //   fileName: 'actualites-rcc.json'
-      // });
-      //
-      // await this.actions.import({
-      //   action: 'createLaFabriqueProject',
-      //   fileName: 'projets-lafabrique.json',
-      // });
     }
   }
 };
