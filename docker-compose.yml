@@ -3,11 +3,11 @@ version: '3.5'
 services:
   fuseki:
     image: stain/jena-fuseki
-    container_name: fuseki
+    container_name: colibris_fuseki
     restart: always
     volumes:
-      - rdf_data:/fuseki
-      - staging:/staging
+      - ./data/rdf_data:/fuseki
+      - ./data/staging:/staging
     ports:
       - "3030:3030"
     expose:
@@ -17,16 +17,11 @@ services:
 
   redis:
     image: redis
-    container_name: redis
+    container_name: colibris_redis
     ports:
       - "6379:6379"
     expose:
       - "6379"
     volumes:
-      - redis_data:/data
+      - ./data/redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
-
-volumes:
-  rdf_data:
-  staging:
-  redis_data:

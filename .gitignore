@@ -1,5 +1,6 @@
 .env.local
 .env.*.local
+/data
 /jwt/*.key
 /jwt/*.key.pub
 /imports/*.json
