@@ -53,30 +53,36 @@ module.exports = {
         if (!webId) {
           webId = await this.broker.call('webid.create', profileData);
 
-          // Adds PAIR data
+          const resource = {
+            '@context': urlJoin(CONFIG.HOME_URL, 'context.json'),
+            '@id': webId,
+            '@type': ['pair:Person', 'foaf:Person', 'Person'],
+            'pair:label': `${profileData.name} ${profileData.familyName.toUpperCase()}`,
+            'pair:firstName': profileData.name,
+            'pair:lastName': profileData.familyName,
+            'pair:e-mail': profileData.email,
+            'pair:image': profileData.image,
+          };
+
+          if( profileData.address && profileData.latLng ) {
+            resource['pair:hasLocation'] = {
+              '@type': 'pair:Place',
+              'pair:hasPostalAddress': {
+                '@type': 'pair:PostalAddress',
+                'pair:addressCountry': profileData.address.country_code === 'FR' ? 'France' : profileData.address.country_code,
+                'pair:addressLocality': profileData.address.locality,
+                'pair:addressStreet': profileData.address.address_line1,
+                'pair:addressZipCode': profileData.address.postal_code
+              },
+              'pair:label': profileData.address.locality,
+              'pair:latitude': profileData.latLng.lat,
+              'pair:longitude': profileData.latLng.lon
+            };
+          }
+
+          // Appends PAIR data
           await this.broker.call('ldp.resource.patch', {
-            resource: {
-              '@context': urlJoin(CONFIG.HOME_URL, 'context.json'),
-              '@id': webId,
-              '@type': ['pair:Person', 'foaf:Person', 'Person'],
-              'pair:firstName': profileData.name,
-              'pair:lastName': profileData.familyName,
-              'pair:e-mail': profileData.email,
-              'pair:image': profileData.image,
-              'pair:hasLocation': {
-                '@type': 'pair:Place',
-                'pair:hasPostalAddress': {
-                  type: 'pair:PostalAddress',
-                  'pair:addressCountry': profileData.address.country_code === 'FR' ? 'France' : profileData.address.country_code,
-                  'pair:addressLocality': profileData.address.locality,
-                  // 'pair:addressStreet': profileData.address.address_line1,
-                  'pair:addressZipCode': profileData.address.postal_code
-                },
-                'pair:label': profileData.address.locality,
-                'pair:latitude': profileData.latLng.lat,
-                'pair:longitude': profileData.latLng.lon
-              }
-            },
+            resource,
             contentType: MIME_TYPES.JSON
           });
         }
