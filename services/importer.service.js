@@ -336,7 +336,7 @@ module.exports = {
       const { data } = ctx.params;
 
       await ctx.broker.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, 'projects-status'),
+        containerUri: urlJoin(CONFIG.HOME_URL, 'status'),
         slug: data,
         resource: {
           '@context': CONFIG.DEFAULT_JSON_CONTEXT,
