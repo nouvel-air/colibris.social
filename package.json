@@ -21,6 +21,7 @@
     "@semapps/signature": "0.1.44",
     "@semapps/sparql-endpoint": "0.1.44",
     "@semapps/triplestore": "0.1.44",
+    "@semapps/webid": "^0.1.44",
     "@semapps/webfinger": "0.1.44",
     "@semapps/webhooks": "0.1.44",
     "@sentry/node": "^5.16.1",
