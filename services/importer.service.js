@@ -65,7 +65,7 @@ module.exports = {
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       const themes = data.tag.map(tag => urlJoin(this.settings.baseUri, 'themes', slugify(tag.name)));
-      const status = urlJoin(this.settings.baseUri, 'projects-status', slugify(data.status));
+      const status = urlJoin(this.settings.baseUri, 'status', slugify(data.status));
 
       await ctx.call('ldp.resource.post', {
         containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
@@ -483,13 +483,13 @@ module.exports = {
       });
 
       await this.actions.import({
-        action: 'createLaFabriqueProject',
-        fileName: 'projets-lafabrique.json',
+        action: 'createPdcnActor',
+        fileName: 'pdcn-actors.json'
       });
 
       await this.actions.import({
-        action: 'createPdcnActor',
-        fileName: 'pdcn-actors.json'
+        action: 'createLaFabriqueProject',
+        fileName: 'projets-lafabrique.json',
       });
     }
   }
