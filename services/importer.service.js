@@ -460,15 +460,15 @@ module.exports = {
       //   groupSlug: '60-pays-creillois'
       // });
 
-      await this.actions.import({
-        action: 'addDevice',
-        fileName: 'devices.json'
-      });
-
-      await this.actions.import({
-        action: 'followProject',
-        fileName: 'followers.json'
-      });
+      // await this.actions.import({
+      //   action: 'addDevice',
+      //   fileName: 'devices.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'followProject',
+      //   fileName: 'followers.json'
+      // });
 
       await this.actions.import({
         action: 'postNews',
