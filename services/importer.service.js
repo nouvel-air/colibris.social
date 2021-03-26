@@ -454,11 +454,11 @@ module.exports = {
         fileName: 'project-status.json'
       });
 
-      await this.actions.import({
-        action: 'createUser',
-        fileName: 'users.json',
-        groupSlug: '60-pays-creillois'
-      });
+      // await this.actions.import({
+      //   action: 'createUser',
+      //   fileName: 'users.json',
+      //   groupSlug: '60-pays-creillois'
+      // });
 
       await this.actions.import({
         action: 'addDevice',
