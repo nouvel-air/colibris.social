@@ -32,19 +32,16 @@ module.exports = {
       casUrl: CONFIG.CAS_URL,
       privateKeyPath: path.resolve(__dirname, '../jwt/jwtRS256.key'),
       publicKeyPath: path.resolve(__dirname, '../jwt/jwtRS256.key.pub'),
-      selectProfileData: authData => {
-        console.log(authData);
-        return ({
-          nick: authData.displayName,
-          email: authData.mail[0],
-          image: authData.field_avatar[0],
-          address: JSON.parse(authData.field_address[0]),
-          latLng: JSON.parse(authData.field_lat_lon[0]),
-          preferredUsername: authData.displayName,
-          name: authData.field_first_name[0],
-          familyName: authData.field_last_name[0]
-        })
-      },
+      selectProfileData: authData => ({
+        nick: authData.displayName,
+        email: authData.mail[0],
+        image: authData.field_avatar[0],
+        address: JSON.parse(authData.field_address[0]),
+        latLng: JSON.parse(authData.field_lat_lon[0]),
+        preferredUsername: authData.displayName,
+        name: authData.field_first_name[0],
+        familyName: authData.field_last_name[0]
+      }),
       findOrCreateProfile: async profileData => {
         let webId = await this.broker.call('webid.findByEmail', {
           email: profileData.email

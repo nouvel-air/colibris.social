@@ -22,6 +22,11 @@ module.exports = [
     dereference: ['sec:publicKey', 'as:location/schema:address'],
   },
   {
+    path: '/events',
+    acceptedTypes: 'pair:Event',
+    dereference: ['pair:hasLocation/pair:hasPostalAddress'],
+  },
+  {
     path: '/users',
     acceptedTypes: ['pair:Person', ACTOR_TYPES.PERSON],
     dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
