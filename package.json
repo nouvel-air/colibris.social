@@ -17,7 +17,6 @@
     "@semapps/inference": "0.1.44",
     "@semapps/ldp": "0.1.44",
     "@semapps/mime-types": "0.1.44",
-    "@semapps/push": "0.1.44",
     "@semapps/signature": "0.1.44",
     "@semapps/sparql-endpoint": "0.1.44",
     "@semapps/triplestore": "0.1.44",

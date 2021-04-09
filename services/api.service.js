@@ -1,7 +1,6 @@
 const path = require('path');
 const urlJoin = require('url-join');
 const ApiGatewayService = require('moleculer-web');
-const { getContainerRoutes } = require('@semapps/ldp');
 const { CasConnector } = require('@semapps/connector');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const CONFIG = require('../config');
@@ -26,7 +25,7 @@ module.exports = {
       }
     }
   },
-  dependencies: ['ldp', 'activitypub', 'webhooks', 'push', 'sparqlEndpoint'],
+  dependencies: ['ldp', 'activitypub', 'webhooks', 'sparqlEndpoint'],
   async started() {
     this.connector = new CasConnector({
       casUrl: CONFIG.CAS_URL,
@@ -59,6 +58,8 @@ module.exports = {
             'pair:lastName': profileData.familyName,
             'pair:e-mail': profileData.email,
             'pair:image': profileData.image,
+            // TODO find a solution to add this information on the frontend side
+            'pair:affiliatedBy': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', 'payscreillois')
           };
 
           if( profileData.address && profileData.latLng ) {
@@ -95,10 +96,7 @@ module.exports = {
       ...(await this.broker.call('ldp.getApiRoutes')),
       ...(await this.broker.call('activitypub.getApiRoutes')),
       ...(await this.broker.call('webhooks.getApiRoutes')),
-      ...(await this.broker.call('push.getApiRoutes')),
       ...(await this.broker.call('sparqlEndpoint.getApiRoutes')),
-      ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'themes'), 'themes'),
-      ...getContainerRoutes(urlJoin(CONFIG.HOME_URL, 'status'), 'status')
     ].forEach(route => this.addRoute(route));
   }
   // methods: {
