@@ -86,6 +86,7 @@ module.exports = {
               'pair:addressZipCode': data.bf_code_postal
             },
           },
+          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'services', 'groupeslocaux'),
           // ActivityStreams
           name: data.bf_titre,
           preferredUsername: slug,
@@ -348,6 +349,7 @@ module.exports = {
           'pair:aboutPage': 'https://presdecheznous.fr/annuaire#/fiche/-/' + data.id,
           'pair:e-mail': data.email || undefined,
           'pair:phone': Array.isArray(data.telephone) ? data.telephone[0] : (data.telephone || undefined),
+          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'services', 'presdecheznous'),
           'semapps:synchronizedWith': 'https://presdecheznous.gogocarto.fr/api/elements/' + data.id,
           'pair:partOf': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug),
           // ActivityStreams
