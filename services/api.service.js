@@ -53,7 +53,7 @@ module.exports = {
             '@context': urlJoin(CONFIG.HOME_URL, 'context.json'),
             '@id': webId,
             '@type': ['pair:Person', 'foaf:Person', 'Person'],
-            'pair:label': `${profileData.name} ${profileData.familyName.toUpperCase()}`,
+            'pair:label': profileData.name,
             'pair:firstName': profileData.name,
             'pair:lastName': profileData.familyName,
             'pair:e-mail': profileData.email,
