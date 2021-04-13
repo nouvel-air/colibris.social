@@ -1,3 +1,4 @@
+const fsPromises = require('fs').promises;
 const urlJoin = require('url-join');
 const { ImporterService } = require('@semapps/importer');
 const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
@@ -5,22 +6,26 @@ const { defaultToArray } = require('@semapps/ldp');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
 const CONFIG = require('../config');
-const { convertWikiNames, convertWikiDate, getDepartmentName, slugify } = require('../utils');
+const themes = require('../imports/themes.json');
+const { convertWikiNames, convertWikiDate, convertGogoDate, getDepartmentName, slugify } = require('../utils');
 
 module.exports = {
   mixins: [ImporterService],
   settings: {
     importsDir: path.resolve(__dirname, '../imports'),
     allowedActions: [
-      'createActor',
+      'createService',
+      'createLocalGroup',
       'createProject',
       'createLaFabriqueProject',
       'updateLaFabriqueProjectAddress',
+      'createPdcnActor',
       'createTheme',
       'createStatus',
-      'createUser',
-      'addDevice',
-      'followProject',
+      'createType',
+      // 'createUser',
+      // 'addDevice',
+      // 'followProject',
       'postNews'
     ],
     // Custom settings
@@ -28,26 +33,18 @@ module.exports = {
   },
   dependencies: ['ldp', 'triplestore', 'activitypub.actor', 'activitypub.outbox', 'activitypub.object'],
   actions: {
-    async createActor(ctx) {
+    async createService(ctx) {
       const { data } = ctx.params;
 
-      const organizationsMapping = {
-        'organizations': 'Organization',
-        'groups': 'Group',
-        'services': 'Service'
-      };
-
-      const containerPath = Object.keys(organizationsMapping).find(path => data['@type'].includes(organizationsMapping[path]));
-
       const actorUri = await ctx.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, containerPath),
+        containerUri: urlJoin(CONFIG.HOME_URL, 'services'),
         slug: data.slug,
         resource: {
           '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-          '@type': data['@type'],
+          '@type': ['pair:Group', 'Service'],
           // PAIR
           'pair:label': data.name,
-          'pair:partOf': data.name === 'Colibris' ? undefined : urlJoin(CONFIG.HOME_URL, 'organizations', 'colibris'),
+          'pair:webPage': data.website,
           // ActivityStreams
           name: data.name,
           preferredUsername: data.slug
@@ -55,7 +52,51 @@ module.exports = {
         contentType: MIME_TYPES.JSON
       });
 
-      console.log(`Actor ${data.name} created: ${actorUri}`);
+      console.log(`Service ${data.name} created: ${actorUri}`);
+    },
+    async createLocalGroup(ctx) {
+      const { data } = ctx.params;
+
+      if( !['Gl', 'GLE'].includes(data.listeListeTypeDeGl) ) {
+        console.log(`Local group ${data.bf_titre} is not active, skipping...`);
+        return;
+      }
+
+      const slug = data.bf_mail.split('@')[0].toLowerCase();
+
+      const actorUri = await ctx.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups'),
+        slug,
+        resource: {
+          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+          '@type': ['pair:Group', 'Group'],
+          // PAIR
+          'pair:label': data.bf_titre,
+          'pair:webPage': data.bf_site_internet || data.bf_site_facebook,
+          'pair:e-mail': data.bf_mail,
+          'pair:hasLocation': {
+            '@type': 'pair:Place',
+            'pair:latitude': data.bf_latitude,
+            'pair:longitude': data.bf_longitude,
+            'pair:label': data.bf_code_postal + ' ' + data.bf_ville,
+            'pair:hasPostalAddress': {
+              '@type': 'pair:PostalAddress',
+              'pair:addressLocality': data.bf_ville,
+              'pair:addressCountry': 'France',
+              'pair:addressZipCode': data.bf_code_postal
+            },
+          },
+          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'services', 'groupeslocaux'),
+          // ActivityStreams
+          name: data.bf_titre,
+          preferredUsername: slug,
+          // SemApps
+          'semapps:synchronizedWith': 'https://colibris-wiki.org/carte-gl/?' + data.id_fiche
+        },
+        contentType: MIME_TYPES.JSON
+      });
+
+      console.log(`Local group ${data.name} created: ${actorUri}`);
     },
     async createProject(ctx) {
       const { data, groupSlug } = ctx.params;
@@ -63,10 +104,10 @@ module.exports = {
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
       const themes = data.tag.map(tag => urlJoin(this.settings.baseUri, 'themes', slugify(tag.name)));
-      const status = urlJoin(this.settings.baseUri, 'projects-status', slugify(data.status));
+      const status = urlJoin(this.settings.baseUri, 'status', slugify(data.status));
 
       await ctx.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
+        containerUri: urlJoin(CONFIG.HOME_URL, groupSlug, 'projects'),
         slug: convertWikiNames(data.slug),
         resource: {
           '@context': CONFIG.DEFAULT_JSON_CONTEXT,
@@ -75,7 +116,7 @@ module.exports = {
           'pair:label': data.name,
           'pair:description': data.content,
           'pair:aboutPage': data.url,
-          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'groups', groupSlug),
+          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug),
           'pair:hasTopic': themes,
           'pair:hasStatus': status,
           // ActivityStreams
@@ -106,7 +147,7 @@ module.exports = {
 
       try {
         const project = await ctx.call('ldp.resource.get', {
-          resourceUri: urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
+          resourceUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects', projectSlug),
           accept: MIME_TYPES.JSON
         });
         if (project) {
@@ -114,7 +155,7 @@ module.exports = {
           const projectUri = await ctx.call('ldp.resource.patch', {
             resource: {
               '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-              '@id': urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
+              '@id': urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects', projectSlug),
               image: [resizedImage, ...existingImages]
             },
             contentType: MIME_TYPES.JSON
@@ -128,7 +169,7 @@ module.exports = {
       }
 
       const projectUri = await ctx.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
+        containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects'),
         slug: projectSlug,
         resource: {
           '@context': CONFIG.DEFAULT_JSON_CONTEXT,
@@ -140,18 +181,18 @@ module.exports = {
           'pair:aboutPage': data.aboutPage,
           'pair:supportedBy': lafabriqueUri,
           // ActivityStreams
-          location: {
-            type: 'Place',
-            latitude: lat,
-            longitude: lng,
-            name: data.city,
-            'schema:address': {
-              '@type': 'schema:PostalAddress',
-              'schema:addressLocality': data.city,
-              'schema:addressCountry': data.country,
-              'schema:addressRegion': data.country === 'France' ? getDepartmentName(data.zip) : undefined,
-              'schema:postalCode': data.zip,
-              'schema:streetAddress': data.street1 + (data.street2 ? ', ' + data.street2 : '')
+          'pair:hasLocation': {
+            type: 'pair:Place',
+            'pair:latitude': lat,
+            'pair:longitude': lng,
+            'pair:label': data.city,
+            'pair:hasPostalAddress': {
+              type: 'pair:PostalAddress',
+              'pair:addressLocality': data.city,
+              'pair:addressCountry': data.country,
+              'pair:addressRegion': data.country === 'France' ? getDepartmentName(data.zip) : undefined,
+              'pair:addressZipCode': data.zip,
+              'pair:addressStreet': data.street1 + (data.street2 ? ', ' + data.street2 : '')
             }
           },
           image: resizedImage,
@@ -162,13 +203,6 @@ module.exports = {
       });
 
       console.log(`Project "${data.name}" posted: ${projectUri}`);
-
-      await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: projectUri });
-
-      await ctx.call('activitypub.follow.addFollower', {
-        follower: lafabriqueUri,
-        following: projectUri
-      });
 
       const activity = await ctx.call('activitypub.outbox.post', {
         collectionUri: urlJoin(lafabriqueUri, 'outbox'),
@@ -233,6 +267,94 @@ module.exports = {
         }
       }
     },
+    // Data have been exported from here
+    // https://presdecheznous.gogocarto.fr/api/elements.json?bounds=2.3291%2C49.14219%2C3.00201%2C49.52521
+    async createPdcnActor(ctx) {
+      const { data, groupSlug } = ctx.params;
+
+      if (!groupSlug) throw new Error('Missing groupSlug argument');
+
+      const topics = data.categories
+        .reduce((acc, category) => {
+          if( category.includes(' et ') ) {
+            acc.push( ...category.split(' et ') );
+          } else {
+            acc.push(category);
+          }
+          return acc;
+        }, [])
+        .filter(category => themes.includes(category))
+        .map(category => urlJoin(CONFIG.HOME_URL, 'themes', slugify(category)));
+
+      let address;
+      if( data.address && Object.keys(data.address).length > 0 ) {
+        address = {
+          '@type': 'pair:Place',
+            'pair:latitude': data.geo.latitude,
+            'pair:longitude': data.geo.longitude,
+            'pair:label': data.address.customFormatedAddress,
+            'pair:hasPostalAddress': {
+            '@type': 'pair:PostalAddress',
+              'pair:addressLocality': data.address.addressLocality,
+              'pair:addressCountry': 'France',
+              'pair:addressZipCode': data.address.postalCode,
+              'pair:addressStreet': data.address.streetAddress,
+          },
+        }
+      } else if (data.streetaddress) {
+
+        const dataGouvUrl = new URL('https://api-adresse.data.gouv.fr/search/');
+        dataGouvUrl.searchParams.set('q', data.streetaddress)
+        const response = await fetch(dataGouvUrl.toString());
+
+        if( response.ok ) {
+          const json = await response.json();
+          const feature = json.features[0];
+
+          address = {
+            '@type': 'pair:Place',
+            'pair:latitude': data.geo.latitude,
+            'pair:longitude': data.geo.longitude,
+            'pair:label': feature.label,
+            'pair:hasPostalAddress': {
+              '@type': 'pair:PostalAddress',
+              'pair:addressLocality': feature.city,
+              'pair:addressCountry': 'France',
+              'pair:addressZipCode': feature.postcode,
+              'pair:addressStreet': feature.name,
+            },
+          }
+        }
+      }
+
+      const actorUri = await ctx.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'presdecheznous', 'organizations'),
+        slug: data.id,
+        resource: {
+          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+          '@type': 'pair:Organization',
+          // PAIR
+          'pair:label': data.name,
+          'pair:description': data.description,
+          'pair:hasLocation': address,
+          'pair:hasTopic': topics,
+          'pair:webPage': data.website || undefined,
+          'pair:aboutPage': 'https://presdecheznous.fr/annuaire#/fiche/-/' + data.id,
+          'pair:e-mail': data.email || undefined,
+          'pair:phone': Array.isArray(data.telephone) ? data.telephone[0] : (data.telephone || undefined),
+          'pair:supportedBy': urlJoin(CONFIG.HOME_URL, 'services', 'presdecheznous'),
+          'semapps:synchronizedWith': 'https://presdecheznous.gogocarto.fr/api/elements/' + data.id,
+          'pair:partOf': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug),
+          // ActivityStreams
+          image: data.image,
+          published: convertGogoDate(data.createdAt),
+          updated: convertGogoDate(data.updatedAt)
+        },
+        contentType: MIME_TYPES.JSON
+      });
+
+      console.log(`Actor "${data.name}" created with URI: ${actorUri}`);
+    },
     async createTheme(ctx) {
       const { data } = ctx.params;
 
@@ -251,7 +373,7 @@ module.exports = {
       const { data } = ctx.params;
 
       await ctx.broker.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, 'projects-status'),
+        containerUri: urlJoin(CONFIG.HOME_URL, 'status'),
         slug: data,
         resource: {
           '@context': CONFIG.DEFAULT_JSON_CONTEXT,
@@ -261,70 +383,89 @@ module.exports = {
         contentType: MIME_TYPES.JSON
       });
     },
-    async createUser(ctx) {
+    async createType(ctx) {
+      const { data } = ctx.params;
+
+      await ctx.broker.call('ldp.resource.post', {
+        containerUri: urlJoin(CONFIG.HOME_URL, 'types'),
+        slug: data['pair:label'],
+        resource: {
+          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+          '@type': data.type,
+          'pair:label': data['pair:label']
+        },
+        contentType: MIME_TYPES.JSON
+      });
+    },
+    // async createUser(ctx) {
+    //   const { data, groupSlug } = ctx.params;
+    //
+    //   if (!groupSlug) throw new Error('Missing groupSlug argument');
+    //
+    //   // TODO create webId
+    //   await ctx.broker.call('ldp.resource.post', {
+    //     containerUri: urlJoin(CONFIG.HOME_URL, 'users'),
+    //     slug: data.username,
+    //     resource: {
+    //       '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+    //       '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
+    //       // PAIR
+    //       'pair:label': data.name,
+    //       'pair:e-mail': data.email,
+    //       'pair:affiliatedBy': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug),
+    //       // ActivityStreams
+    //       name: data.name,
+    //       preferredUsername: data.username
+    //     },
+    //     contentType: MIME_TYPES.JSON
+    //   });
+    //
+    //   console.log(`User ${data.username} created`);
+    // },
+    // async addDevice(ctx) {
+    //   const { data } = ctx.params;
+    //
+    //   await ctx.call('push.device.create', {
+    //     '@context': { semapps: 'http://semapps.org/ns/core#' },
+    //     '@type': 'semapps:Device',
+    //     'semapps:ownedBy': urlJoin(CONFIG.HOME_URL, 'users', data.username),
+    //     'semapps:pushToken': data.token,
+    //     'semapps:addedAt': new Date().toISOString()
+    //   });
+    //
+    //   console.log(`Device added for user ${data.username}`);
+    // },
+    // async followProject(ctx) {
+    //   const { data, groupSlug } = ctx.params;
+    //
+    //   if (!groupSlug) throw new Error('Missing groupSlug argument');
+    //
+    //   const follower = urlJoin(CONFIG.HOME_URL, 'users', slugify(data.username));
+    //   const following = urlJoin(CONFIG.HOME_URL, groupSlug, 'projects', convertWikiNames(data.following));
+    //
+    //   await ctx.call('activitypub.outbox.post', {
+    //     collectionUri: urlJoin(follower, 'outbox'),
+    //     '@context': 'https://www.w3.org/ns/activitystreams',
+    //     '@type': ACTIVITY_TYPES.FOLLOW,
+    //     actor: follower,
+    //     object: following,
+    //     to: [urlJoin(follower, 'followers'), following]
+    //   });
+    //
+    //   console.log(`Actor ${data.username} follow ${data.following}`);
+    // },
+    async postNews(ctx) {
       const { data, groupSlug } = ctx.params;
 
       if (!groupSlug) throw new Error('Missing groupSlug argument');
 
-      // TODO create webId
-      await ctx.broker.call('ldp.resource.post', {
-        containerUri: urlJoin(CONFIG.HOME_URL, 'users'),
-        slug: data.username,
-        resource: {
-          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-          '@type': [ACTOR_TYPES.PERSON, 'pair:Person'],
-          // PAIR
-          'pair:label': data.name,
-          'pair:e-mail': data.email,
-          'pair:affiliatedBy': urlJoin(CONFIG.HOME_URL, 'groups', groupSlug),
-          // ActivityStreams
-          name: data.name,
-          preferredUsername: data.username
-        },
-        contentType: MIME_TYPES.JSON
-      });
-
-      console.log(`User ${data.username} created`);
-    },
-    async addDevice(ctx) {
-      const { data } = ctx.params;
-
-      await ctx.call('push.device.create', {
-        '@context': { semapps: 'http://semapps.org/ns/core#' },
-        '@type': 'semapps:Device',
-        'semapps:ownedBy': urlJoin(CONFIG.HOME_URL, 'users', data.username),
-        'semapps:pushToken': data.token,
-        'semapps:addedAt': new Date().toISOString()
-      });
-
-      console.log(`Device added for user ${data.username}`);
-    },
-    async followProject(ctx) {
-      const { data } = ctx.params;
-
-      const follower = urlJoin(CONFIG.HOME_URL, 'users', slugify(data.username));
-      const following = urlJoin(CONFIG.HOME_URL, 'projects', convertWikiNames(data.following));
-
-      await ctx.call('activitypub.outbox.post', {
-        collectionUri: urlJoin(follower, 'outbox'),
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        '@type': ACTIVITY_TYPES.FOLLOW,
-        actor: follower,
-        object: following,
-        to: [urlJoin(follower, 'followers'), following]
-      });
-
-      console.log(`Actor ${data.username} follow ${data.following}`);
-    },
-    async postNews(ctx) {
-      const { data } = ctx.params;
-
-      const posterUri = urlJoin(CONFIG.HOME_URL, 'projects', convertWikiNames(data.attributedTo));
+      const posterUri = urlJoin(CONFIG.HOME_URL, groupSlug, 'projects', convertWikiNames(data.attributedTo));
+      const groupUri = urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug);
 
       const activity = await ctx.call('activitypub.outbox.post', {
         collectionUri: urlJoin(posterUri, 'outbox'),
         slug: data.id,
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        '@context': CONFIG.DEFAULT_JSON_CONTEXT,
         '@type': OBJECT_TYPES.NOTE,
         to: [urlJoin(posterUri, 'followers')],
         name: data.name,
@@ -332,28 +473,81 @@ module.exports = {
         image: data.image,
         attributedTo: posterUri,
         published: convertWikiDate(data.published),
-        updated: convertWikiDate(data.updated)
+        updated: convertWikiDate(data.updated),
+        'pair:concerns': [posterUri, groupUri]
       });
 
       console.log(`Note "${data.name}" posted: ${activity.id}`);
     },
+    async importPages(ctx) {
+      const files = await fsPromises.readdir(path.resolve(__dirname, '../imports/pages'));
+
+      for( let fileName of files ) {
+        const content = await fsPromises.readFile(path.resolve(__dirname, '../imports/pages', fileName), { encoding: "utf8" });
+
+        const slug = fileName.split('.')[0];
+
+        const pageUri = await ctx.broker.call('ldp.resource.post', {
+          containerUri: urlJoin(CONFIG.HOME_URL, 'payscreillois', 'pages'),
+          slug,
+          resource: {
+            '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+            '@type': 'semapps:Page',
+            'semapps:title': slug,
+            'semapps:content': content
+          },
+          contentType: MIME_TYPES.JSON
+        });
+
+        console.log(`Imported page ${fileName}: ${pageUri}`);
+      }
+    },
+    async importRoles(ctx) {
+      const files = await fsPromises.readdir(path.resolve(__dirname, '../imports/roles'));
+
+      for( let fileName of files ) {
+        const content = await fsPromises.readFile(path.resolve(__dirname, '../imports/roles', fileName), { encoding: "utf8" });
+
+        const slug = fileName.split('.')[0];
+
+        const pageUri = await ctx.broker.call('ldp.resource.post', {
+          containerUri: urlJoin(CONFIG.HOME_URL, 'payscreillois', 'groups'),
+          slug,
+          resource: {
+            '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+            '@type': 'pair:Group',
+            'pair:label': slug,
+            'pair:description': content,
+            'pair:partOf': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', 'payscreillois'),
+          },
+          contentType: MIME_TYPES.JSON
+        });
+
+        console.log(`Imported role ${fileName}: ${pageUri}`);
+      }
+    },
     async importAll(ctx) {
       await this.actions.import({
-        action: 'createActor',
-        fileName: 'actors.json'
+        action: 'createService',
+        fileName: 'services.json'
+      });
+
+      await this.actions.import({
+        action: 'createLocalGroup',
+        fileName: 'local-groups.json'
       });
 
       await this.actions.import({
         action: 'createProject',
         fileName: 'projets-pc.json',
-        groupSlug: '60-pays-creillois'
+        groupSlug: 'payscreillois'
       });
 
-      await this.actions.import({
-        action: 'createProject',
-        fileName: 'projets-rcc.json',
-        groupSlug: '60-compiegnois'
-      });
+      // await this.actions.import({
+      //   action: 'createProject',
+      //   fileName: 'projets-rcc.json',
+      //   groupSlug: 'compiegnois'
+      // });
 
       await this.actions.import({
         action: 'createTheme',
@@ -366,29 +560,43 @@ module.exports = {
       });
 
       await this.actions.import({
-        action: 'createUser',
-        fileName: 'users.json',
-        groupSlug: '60-pays-creillois'
+        action: 'createType',
+        fileName: 'types.json'
       });
 
-      await this.actions.import({
-        action: 'addDevice',
-        fileName: 'devices.json'
-      });
+      // await this.actions.import({
+      //   action: 'createUser',
+      //   fileName: 'users.json',
+      //   groupSlug: '60-pays-creillois'
+      // });
 
-      await this.actions.import({
-        action: 'followProject',
-        fileName: 'followers.json'
-      });
+      // await this.actions.import({
+      //   action: 'addDevice',
+      //   fileName: 'devices.json'
+      // });
+      //
+      // await this.actions.import({
+      //   action: 'followProject',
+      //   fileName: 'followers.json',
+      //   groupSlug: 'payscreillois'
+      // });
 
       await this.actions.import({
         action: 'postNews',
-        fileName: 'actualites-pc.json'
+        fileName: 'actualites-pc.json',
+        groupSlug: 'payscreillois'
       });
 
+      // await this.actions.import({
+      //   action: 'postNews',
+      //   fileName: 'actualites-rcc.json',
+      //   groupSlug: 'compiegnois'
+      // });
+
       await this.actions.import({
-        action: 'postNews',
-        fileName: 'actualites-rcc.json'
+        action: 'createPdcnActor',
+        fileName: 'pdcn-actors.json',
+        groupSlug: 'payscreillois'
       });
 
       await this.actions.import({

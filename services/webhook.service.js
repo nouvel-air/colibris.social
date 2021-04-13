@@ -11,7 +11,6 @@ module.exports = {
   mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     containerUri: urlJoin(CONFIG.HOME_URL, 'webhooks'),
-    usersContainer: urlJoin(CONFIG.HOME_URL, 'actors'),
     allowedActions: ['postLaFabriqueProject']
   },
   dependencies: ['activitypub.outbox', 'ldp.resource'],
@@ -27,7 +26,7 @@ module.exports = {
 
       try {
         existingProject = await ctx.call('ldp.resource.get', {
-          resourceUri: urlJoin(CONFIG.HOME_URL, 'projects', projectSlug),
+          resourceUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects', projectSlug),
           accept: MIME_TYPES.JSON
         });
         // If the project was already deleted, consider it as non-existing
@@ -78,17 +77,17 @@ module.exports = {
           const address = entity.field_proj_adresse.und[0];
 
           location = {
-            type: 'Place',
-            name: address.locality,
-            latitude: entity.field_geodata.und[0].lat,
-            longitude: entity.field_geodata.und[0].lon,
-            'schema:address': {
-              '@type': 'schema:PostalAddress',
-              'schema:addressLocality': address.locality,
-              'schema:addressCountry': address.country,
-              'schema:addressRegion': address.country === 'FR' ? getDepartmentName(address.postal_code) : undefined,
-              'schema:postalCode': address.postal_code,
-              'schema:streetAddress': address.thoroughfare
+            type: 'pair:Place',
+            'pair:label': address.locality,
+            'pair:latitude': entity.field_geodata.und[0].lat,
+            'pair:longitude': entity.field_geodata.und[0].lon,
+            'pair:hasPostalAddress': {
+              type: 'pair:PostalAddress',
+              'pair:addressLocality': address.locality,
+              'pair:addressCountry': address.country,
+              'pair:addressRegion': address.country === 'FR' ? getDepartmentName(address.postal_code) : undefined,
+              'pair:addressZipCode': address.postal_code,
+              'pair:addressStreet': address.thoroughfare
             }
           };
         }
@@ -108,8 +107,8 @@ module.exports = {
           'pair:hasTopic': themes,
           'pair:aboutPage': url,
           'pair:supportedBy': user,
+          'pair:hasLocation': location,
           // ActivityStreams
-          location,
           image,
           published: new Date(entity.created * 1000).toISOString(),
           updated: new Date(entity.changed * 1000).toISOString()
@@ -117,18 +116,10 @@ module.exports = {
 
         if (eventType === 'insert') {
           const projectUri = await ctx.call('ldp.resource.post', {
-            containerUri: urlJoin(CONFIG.HOME_URL, 'projects'),
+            containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects'),
             slug: projectSlug,
             resource: project,
             contentType: MIME_TYPES.JSON
-          });
-
-          await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: projectUri });
-
-          // Make La Fabrique follow the new project
-          await ctx.call('activitypub.follow.addFollower', {
-            follower: user,
-            following: projectUri
           });
 
           // Announce only new projects (this is used by the mailer)
