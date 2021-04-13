@@ -39,8 +39,8 @@ const cods = {
   '/lafabrique': [
     {
       path: '/projects',
-      acceptedTypes: ['pair:Project', ACTOR_TYPES.GROUP],
-      dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress'],
+      acceptedTypes: ['pair:Project'],
+      dereference: ['pair:hasLocation/pair:hasPostalAddress'],
     },
     {
       path: '/hosting-services',
@@ -50,8 +50,8 @@ const cods = {
   '/presdecheznous': [
     {
       path: '/organizations',
-      acceptedTypes: ['pair:Organization', ACTOR_TYPES.ORGANIZATION],
-      dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
+      acceptedTypes: ['pair:Organization'],
+      dereference: ['pair:hasLocation/pair:hasPostalAddress']
     }
   ],
   '/groupeslocaux': [

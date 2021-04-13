@@ -204,13 +204,6 @@ module.exports = {
 
       console.log(`Project "${data.name}" posted: ${projectUri}`);
 
-      await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: projectUri });
-
-      await ctx.call('activitypub.follow.addFollower', {
-        follower: lafabriqueUri,
-        following: projectUri
-      });
-
       const activity = await ctx.call('activitypub.outbox.post', {
         collectionUri: urlJoin(lafabriqueUri, 'outbox'),
         type: ACTIVITY_TYPES.ANNOUNCE,
