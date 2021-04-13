@@ -187,7 +187,7 @@ module.exports = {
             'pair:longitude': lng,
             'pair:label': data.city,
             'pair:hasPostalAddress': {
-              '@type': 'pair:PostalAddress',
+              type: 'pair:PostalAddress',
               'pair:addressLocality': data.city,
               'pair:addressCountry': data.country,
               'pair:addressRegion': data.country === 'France' ? getDepartmentName(data.zip) : undefined,

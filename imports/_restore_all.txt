@@ -1,0 +1,10 @@
+Régénérer colibris.social sans toucher aux données du mailer
+------------------------------------------------------------
+
+- merger develop dans master
+- désactiver le mailer pendant l'import
+- ajouter match-bot à la liste des followers de la fabrique
+  call activitypub.follow.addFollower --follower https://alertes.colibris-lafabrique.org/actors/match-bot --following https://colibris.social/services/lafabrique
+
+- régénérer les webhooks de colibris.social
+  call webhooks.generate --userUri https://colibris.social/services/lafabrique --action postLaFabriqueProject
