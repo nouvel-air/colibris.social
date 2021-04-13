@@ -10,6 +10,7 @@ const { getDepartmentName, slugify } = require('../utils');
 module.exports = {
   mixins: [WebhooksService, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
+    containerUri: urlJoin(CONFIG.HOME_URL, 'webhooks'),
     allowedActions: ['postLaFabriqueProject']
   },
   dependencies: ['activitypub.outbox', 'ldp.resource'],
