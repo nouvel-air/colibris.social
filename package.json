@@ -1,7 +1,7 @@
 {
   "name": "colibris.social",
   "private": true,
-  "version": "0.1.25",
+  "version": "0.3.0",
   "description": "Colibris ActivityPub server",
   "author": "Reconnexion",
   "license": "Apache-2.0",
