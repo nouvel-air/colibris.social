@@ -18,7 +18,7 @@ const localGroupsContainers = [
   {
     path: '/projects',
     acceptedTypes: ['pair:Project', ACTOR_TYPES.GROUP],
-    dereference: ['sec:publicKey', 'as:hasLocation/pair:hasPostalAddress'],
+    dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress'],
   },
   {
     path: '/events',
