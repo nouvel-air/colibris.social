@@ -25,7 +25,7 @@ module.exports = {
       }
     }
   },
-  dependencies: ['ldp', 'activitypub', 'webhooks', 'sparqlEndpoint'],
+  dependencies: ['ldp', 'activitypub', 'webhooks', 'sparqlEndpoint', 'mailer'],
   async started() {
     this.connector = new CasConnector({
       casUrl: CONFIG.CAS_URL,
@@ -97,6 +97,7 @@ module.exports = {
       ...(await this.broker.call('activitypub.getApiRoutes')),
       ...(await this.broker.call('webhooks.getApiRoutes')),
       ...(await this.broker.call('sparqlEndpoint.getApiRoutes')),
+      ...(await this.broker.call('mailer.getApiRoutes')),
     ].forEach(route => this.addRoute(route));
   }
   // methods: {
