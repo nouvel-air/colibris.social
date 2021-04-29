@@ -99,7 +99,24 @@ module.exports = [
   },
   {
     path: '/types',
-    acceptedTypes: ['oasis:HostingServiceType']
+    acceptedTypes: [
+      'pair:ActivityType',
+      'pair:AgentType',
+      'pair:ConceptType',
+      'pair:DocumentType',
+      'pair:EventType',
+      'pair:FolderType',
+      'pair:GroupType',
+      'pair:IdeaType',
+      'pair:ObjectType',
+      'pair:OrganizationType',
+      'pair:PlaceType',
+      'pair:ProjectType',
+      'pair:ResourceType',
+      'pair:SubjectType',
+      'pair:TaskType',
+      'oasis:HostingServiceType'
+    ]
   },
   {
     path: '/files'

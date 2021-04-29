@@ -26,6 +26,7 @@
     "@sentry/node": "^5.16.1",
     "@sentry/utils": "^5.16.1",
     "dotenv-flow": "^3.1.0",
+    "handlebars": "^4.7.7",
     "moleculer": "^0.14.7",
     "moleculer-bull": "^0.2.5",
     "moleculer-db": "^0.8.7",
