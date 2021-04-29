@@ -29,6 +29,7 @@
     "moleculer": "^0.14.7",
     "moleculer-bull": "^0.2.5",
     "moleculer-db": "^0.8.7",
+    "moleculer-mail": "^1.2.5",
     "moleculer-repl": "^0.6.4",
     "moleculer-web": "^0.9.1",
     "speakingurl": "^14.0.1",
