@@ -33,7 +33,7 @@
     "moleculer-db": "^0.8.7",
     "moleculer-mail": "^1.2.5",
     "moleculer-repl": "^0.6.4",
-    "moleculer-web": "^0.9.1",
+    "moleculer-web": "^0.10.0-beta1",
     "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
   }
