@@ -123,14 +123,18 @@ module.exports = {
           });
 
           // Announce only new projects (this is used by the mailer)
-          const result = await ctx.call('activitypub.outbox.post', {
-            collectionUri: urlJoin(user, 'outbox'),
-            '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-            type: ACTIVITY_TYPES.ANNOUNCE,
-            actor: user,
-            to: [urlJoin(user, 'followers'), PUBLIC_URI],
-            object: projectUri
-          });
+          const result = await ctx.call(
+            'activitypub.outbox.post',
+            {
+              collectionUri: urlJoin(user, 'outbox'),
+              '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+              type: ACTIVITY_TYPES.ANNOUNCE,
+              actor: user,
+              to: [urlJoin(user, 'followers'), PUBLIC_URI],
+              object: projectUri
+            },
+            { meta: { webId: user } }
+          );
 
           console.log('Resource announced:', result.id);
         } else {

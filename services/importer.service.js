@@ -204,13 +204,17 @@ module.exports = {
 
       console.log(`Project "${data.name}" posted: ${projectUri}`);
 
-      const activity = await ctx.call('activitypub.outbox.post', {
-        collectionUri: urlJoin(lafabriqueUri, 'outbox'),
-        type: ACTIVITY_TYPES.ANNOUNCE,
-        actor: lafabriqueUri,
-        object: projectUri,
-        to: [urlJoin(lafabriqueUri, 'followers')]
-      });
+      const activity = await ctx.call(
+        'activitypub.outbox.post',
+        {
+          collectionUri: urlJoin(lafabriqueUri, 'outbox'),
+          type: ACTIVITY_TYPES.ANNOUNCE,
+          actor: lafabriqueUri,
+          object: projectUri,
+          to: [urlJoin(lafabriqueUri, 'followers')]
+        },
+        { meta: { webId: lafabriqueUri } }
+      );
 
       console.log(`Project "${data.name}" announced: ${activity.id}`);
     },
@@ -450,7 +454,7 @@ module.exports = {
     //     actor: follower,
     //     object: following,
     //     to: [urlJoin(follower, 'followers'), following]
-    //   });
+    //   }, { meta: { webId: follower } });
     //
     //   console.log(`Actor ${data.username} follow ${data.following}`);
     // },
@@ -462,20 +466,24 @@ module.exports = {
       const posterUri = urlJoin(CONFIG.HOME_URL, groupSlug, 'projects', convertWikiNames(data.attributedTo));
       const groupUri = urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', groupSlug);
 
-      const activity = await ctx.call('activitypub.outbox.post', {
-        collectionUri: urlJoin(posterUri, 'outbox'),
-        slug: data.id,
-        '@context': CONFIG.DEFAULT_JSON_CONTEXT,
-        '@type': OBJECT_TYPES.NOTE,
-        to: [urlJoin(posterUri, 'followers')],
-        name: data.name,
-        content: data.content,
-        image: data.image,
-        attributedTo: posterUri,
-        published: convertWikiDate(data.published),
-        updated: convertWikiDate(data.updated),
-        'pair:concerns': [posterUri, groupUri]
-      });
+      const activity = await ctx.call(
+        'activitypub.outbox.post',
+        {
+          collectionUri: urlJoin(posterUri, 'outbox'),
+          slug: data.id,
+          '@context': CONFIG.DEFAULT_JSON_CONTEXT,
+          '@type': OBJECT_TYPES.NOTE,
+          to: [urlJoin(posterUri, 'followers')],
+          name: data.name,
+          content: data.content,
+          image: data.image,
+          attributedTo: posterUri,
+          published: convertWikiDate(data.published),
+          updated: convertWikiDate(data.updated),
+          'pair:concerns': [posterUri, groupUri]
+        },
+        { meta: { webId: posterUri } }
+      );
 
       console.log(`Note "${data.name}" posted: ${activity.id}`);
     },
