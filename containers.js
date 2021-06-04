@@ -102,6 +102,10 @@ module.exports = [
     acceptedTypes: ['pair:ProjectStatus'],
   },
   {
+    path: '/skills',
+    acceptedTypes: ['pair:Skill']
+  },
+  {
     path: '/types',
     acceptedTypes: [
       'pair:ActivityType',
