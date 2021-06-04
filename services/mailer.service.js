@@ -19,7 +19,17 @@ module.exports = {
     },
     templateFolder: path.join(__dirname, "../templates"),
   },
-  dependencies: ['ldp'],
+  dependencies: ['api', 'ldp'],
+  async started() {
+    await this.broker.call('api.addRoute', {
+      route: {
+        bodyParsers: { json: true },
+        aliases: {
+          'POST _mailer/contact-user': 'mailer.contactUser',
+        }
+      }
+    });
+  },
   actions: {
     async contactUser(ctx) {
       const { userUri, name, email, title, content, emailPredicate, homeUrl, logoUrl } = ctx.params;
@@ -48,16 +58,6 @@ module.exports = {
           logoUrl
         }
       });
-    },
-    getApiRoutes() {
-      return [
-        {
-          bodyParsers: { json: true },
-          aliases: {
-            [`POST _mailer/contact-user`]: 'mailer.contactUser',
-          }
-        }
-      ];
     }
   }
 };

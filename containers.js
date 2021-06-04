@@ -67,8 +67,9 @@ const cods = {
 const mapCodsToContainers = () => {
   let containers = [];
   Object.keys(cods).forEach(key => {
-    // TODO activate root container for cods when root container will be available
-    // containers.push({ path: key });
+    // Parent container
+    containers.push({ path: key });
+    // Child containers
     containers.push(...cods[key].map(container => {
       container.path = key + container.path;
       return container;
@@ -78,6 +79,9 @@ const mapCodsToContainers = () => {
 };
 
 module.exports = [
+  {
+    path: '/'
+  },
   ...mapCodsToContainers(),
   {
     path: '/services',
@@ -96,6 +100,10 @@ module.exports = [
   {
     path: '/status',
     acceptedTypes: ['pair:ProjectStatus'],
+  },
+  {
+    path: '/skills',
+    acceptedTypes: ['pair:Skill']
   },
   {
     path: '/types',
