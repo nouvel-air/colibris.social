@@ -10,7 +10,7 @@ module.exports = {
     source: {
       baseUrl: 'https://dev.colibris-lemouvement.org',
       getAllCompact: 'https://dev.colibris-lemouvement.org/api/articles_compact',
-      getOneFull: data => 'https://dev.colibris-lemouvement.org/api/articles' + data.uuid,
+      getOneFull: data => 'https://dev.colibris-lemouvement.org/api/articles/' + data.uuid,
       basicAuth: {
         user: 'mouvement',
         password: 'usfpdkFEY!UR8'

@@ -27,9 +27,8 @@ module.exports = {
       return data.nodes.map(n => n.node)
     },
     async getOne(url) {
-      const data = await this.fetch(url);
-      const nodes = data.nodes;
-      if( nodes.length > 0 ) {
+      const { nodes } = await this.fetch(url);
+      if( nodes && nodes.length > 0 ) {
         if( nodes[0].node.image ) {
           const images = [... new Set(nodes.map(n => n.node.image))];
           return {
