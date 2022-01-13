@@ -9,7 +9,6 @@ module.exports = {
   settings: {
     baseUri: CONFIG.HOME_URL,
     additionalContext: getPrefixJSON(ontologies),
-    queueServiceUrl: CONFIG.QUEUE_SERVICE_URL,
     containers,
     selectActorData: resource => {
       let resourceId = resource.id || resource['@id'],
@@ -27,21 +26,12 @@ module.exports = {
           name: resource['pair:label'],
           preferredUsername: getSlugFromUri(resourceId)
         };
-      } else if (resourceTypes.includes('pair:Group')) {
-        return {
-          '@type': ACTOR_TYPES.GROUP,
-          name: resource['pair:label'],
-          preferredUsername: getSlugFromUri(resourceId)
-        };
-      } else if (resourceTypes.includes('pair:Project')) {
-        return {
-          '@type': ACTOR_TYPES.GROUP,
-          name: resource['pair:label'],
-          preferredUsername: getSlugFromUri(resourceId)
-        };
       } else {
-        throw new Error(`Unknown resource type: ${resourceTypes}`);
+        return false;
       }
+    },
+    dispatch: {
+      queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
     }
   }
 };

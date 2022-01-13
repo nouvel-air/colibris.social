@@ -1,18 +1,16 @@
 const urlJoin = require('url-join');
 const path = require('path');
-const { AuthService } = require('@semapps/auth');
+const { AuthCASService } = require('@semapps/auth');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const CONFIG = require('../config');
 
 module.exports = {
-  mixins: [AuthService],
+  mixins: [AuthCASService],
   settings: {
     baseUrl: CONFIG.HOME_URL,
     jwtPath: path.resolve(__dirname, '../jwt'),
-    cas: {
-      url: CONFIG.CAS_URL
-    },
-    selectProfileData: authData => ({
+    casUrl: CONFIG.CAS_URL,
+    selectSsoData: authData => ({
       nick: authData.displayName,
       email: authData.mail[0],
       name: authData.field_first_name[0],

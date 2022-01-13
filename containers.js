@@ -43,8 +43,24 @@ const cods = {
       dereference: ['pair:hasLocation/pair:hasPostalAddress'],
     },
     {
+      path: '/needs',
+      acceptedTypes: ['pair:HumanBasedResource', 'pair:AtomBasedResource', 'pair:MoneyBasedResource'],
+    },
+    {
       path: '/hosting-services',
       acceptedTypes: ['oasis:HostingService']
+    }
+  ],
+  '/laboutique': [
+    {
+      path: '/products',
+      acceptedTypes: ['pair:Resource']
+    }
+  ],
+  '/lemag': [
+    {
+      path: '/articles',
+      acceptedTypes: ['pair:Document']
     }
   ],
   '/presdecheznous': [

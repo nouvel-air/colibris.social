@@ -2,11 +2,10 @@ version: '3.5'
 
 services:
   fuseki:
-    image: stain/jena-fuseki
+    image: semapps/jena-fuseki-webacl
     container_name: colibris_fuseki
     volumes:
-      - ./data/rdf_data:/fuseki
-      - ./data/staging:/staging
+      - ./data/fuseki:/fuseki
     ports:
       - "3030:3030"
     expose:
@@ -22,5 +21,5 @@ services:
     expose:
       - "6379"
     volumes:
-      - ./data/redis_data:/data
+      - ./data/redis:/data
     command: ["redis-server", "--appendonly", "yes"]
