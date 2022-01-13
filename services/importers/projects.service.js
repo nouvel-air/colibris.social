@@ -10,11 +10,9 @@ module.exports = {
   mixins: [DrupalImporterMixin, ThemeCreatorMixin],
   settings: {
     source: {
-      url: {
-        base: 'https://dev.colibris-lafabrique.org',
-        listCompact: 'https://dev.colibris-lafabrique.org/api/projects_compact',
-        getOneFull: data => 'https://dev.colibris-lafabrique.org/api/projects/' + data.uuid,
-      },
+      baseUrl: 'https://dev.colibris-lafabrique.org',
+      getAllCompact: 'https://dev.colibris-lafabrique.org/api/projects_compact',
+      getOneFull: data => 'https://dev.colibris-lafabrique.org/api/projects/' + data.uuid,
       basicAuth: {
         user: 'fabrique',
         password: 'xFbek2oSL#6T'

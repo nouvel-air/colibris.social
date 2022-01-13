@@ -9,11 +9,9 @@ module.exports = {
   mixins: [PrestashopImporter, ThemeCreatorImporter],
   settings: {
     source: {
-      url: {
-        base: 'https://www.colibris-laboutique.org',
-        listCompact: 'https://www.colibris-laboutique.org/api/products',
-        getOneFull: data => 'https://www.colibris-laboutique.org/api/products/' + data.id
-      },
+      baseUrl: 'https://www.colibris-laboutique.org',
+      getAllCompact: 'https://www.colibris-laboutique.org/api/products',
+      getOneFull: data => 'https://www.colibris-laboutique.org/api/products/' + data.id,
       basicAuth: {
         user: 'MRFA2MWXHQYXRYZ9QLNNV8CIV4DSRAVF'
       }

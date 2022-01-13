@@ -13,11 +13,9 @@ module.exports = {
   mixins: [DrupalImporterMixin],
   settings: {
     source: {
-      url: {
-        base: 'https://dev.colibris-lafabrique.org',
-        listCompact: 'https://dev.colibris-lafabrique.org/api/needs_compact',
-        getOneFull: data => 'https://dev.colibris-lafabrique.org/api/needs/' + data.uuid,
-      },
+      baseUrl: 'https://dev.colibris-lafabrique.org',
+      getAllCompact: 'https://dev.colibris-lafabrique.org/api/needs_compact',
+      getOneFull: data => 'https://dev.colibris-lafabrique.org/api/needs/' + data.uuid,
       basicAuth: {
         user: 'fabrique',
         password: 'xFbek2oSL#6T'

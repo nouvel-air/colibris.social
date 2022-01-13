@@ -81,7 +81,7 @@ module.exports = {
           await this.actions.importOne({ sourceUri, data }, { parentCtx: ctx });
         }
       } else {
-        throw new Error('You must define the setting source.getAllCompact or source.url.getAllFull');
+        throw new Error('You must define the setting source.getAllCompact or source.getAllFull');
       }
 
       this.logger.info(`Import finished !`);
