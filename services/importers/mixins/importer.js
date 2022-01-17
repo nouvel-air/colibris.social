@@ -153,7 +153,7 @@ module.exports = {
               ? Object.fromEntries(Object.entries(oldData).filter(([key]) => this.settings.dest.predicatesToKeep.includes(key)))
               : {};
 
-            await ctx.call('ldp.container.put', {
+            await ctx.call('ldp.resource.put', {
               resource: {
                 '@id': destUri,
                 ...resource,
