@@ -18,6 +18,7 @@ module.exports = {
       },
       fieldsMapping: {
         slug: 'link_rewrite',
+        created: data => convertToIsoString(data.date_add),
         updated: data => convertToIsoString(data.date_upd),
       },
     },

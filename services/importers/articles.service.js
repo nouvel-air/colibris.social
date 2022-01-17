@@ -18,7 +18,7 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lemag', 'articles'),
-      // actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lemag')
+      actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lemag')
     }
   },
   methods: {
@@ -33,9 +33,7 @@ module.exports = {
         'pair:hasTopic': themes,
         'pair:webPage': urlJoin(this.settings.source.baseUrl, data.path),
         'pair:supportedBy': this.settings.dest.actorUri,
-        image: data.image && data.image.src,
-        published: data.created,
-        updated: data.updated
+        'pair:depictedBy': data.image && data.image.src,
       });
     }
   }

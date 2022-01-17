@@ -17,6 +17,7 @@ module.exports = {
       },
       fieldsMapping: {
         slug: data => data.aboutPage ? data.aboutPage.split('/').pop() : data.uuid,
+        created: data => convertToIsoString(data.published),
         updated: data => convertToIsoString(data.updated),
       },
     },

@@ -2,7 +2,7 @@ const urlJoin = require("url-join");
 const PrestashopImporter = require('./mixins/prestashop');
 const ThemeCreatorImporter = require('./mixins/theme-creator');
 const CONFIG = require('../../config');
-const { removeHtmlTags, convertToIsoString} = require('../../utils');
+const { removeHtmlTags } = require('../../utils');
 
 module.exports = {
   name: 'importer.products',
@@ -51,9 +51,7 @@ module.exports = {
         'pair:description': removeHtmlTags(data.description),
         'pair:hasTopic': themes,
         'pair:depictedBy': image,
-        'pair:webPage': url,
-        published: convertToIsoString(data.date_add),
-        updated: convertToIsoString(data.date_upd),
+        'pair:webPage': url
       });
     }
   }

@@ -22,6 +22,7 @@ module.exports = {
       fetchOptions: {},
       fieldsMapping: {
         slug: null,
+        created: null,
         updated: null,
       },
     },
@@ -175,16 +176,32 @@ module.exports = {
         if (destUri) {
           this.logger.info('Reimporting ' + sourceUri + '...');
 
-          // TODO merge with old resource data, to avoid losing data ? (pair:needs) ... or use PATCH
-
-          return await ctx.call('ldp.resource.put', {
-            resource: {
-              '@id': destUri,
-              ...resource,
-              'dc:source': sourceUri
-            },
-            contentType: MIME_TYPES.JSON
+          const oldData = await ctx.call('ldp.resource.get', {
+            resourceUri: destUri,
+            accept: MIME_TYPES.JSON,
+            webId: 'system'
           });
+
+          if( (new Date(this.getField('updated', data))) > (new Date(oldData['dc:modified'])) ) {
+            await ctx.call('ldp.resource.delete', {
+              resourceUri: destUri,
+              webId: 'system'
+            });
+
+            destUri = await ctx.call('ldp.container.post', {
+              containerUri: this.settings.dest.containerUri,
+              slug: this.getField('slug', data),
+              resource: {
+                ...resource,
+                'dc:source': sourceUri,
+                'dc:created': this.getField('created', data),
+                'dc:modified': this.getField('updated', data),
+                'dc:creator': this.settings.dest.actorUri
+              },
+              contentType: MIME_TYPES.JSON,
+              webId: 'system'
+            });
+          }
         } else {
           this.logger.info('Importing ' + sourceUri + '...');
 
@@ -193,9 +210,13 @@ module.exports = {
             slug: this.getField('slug', data),
             resource: {
               ...resource,
-              'dc:source': sourceUri
+              'dc:source': sourceUri,
+              'dc:created': this.getField('created', data),
+              'dc:modified': this.getField('updated', data),
+              'dc:creator': this.settings.dest.actorUri
             },
-            contentType: MIME_TYPES.JSON
+            contentType: MIME_TYPES.JSON,
+            webId: 'system'
           });
         }
 
@@ -252,7 +273,9 @@ module.exports = {
     },
     getField(fieldKey, data) {
       const fieldMapping = this.settings.source.fieldsMapping[fieldKey];
-      return typeof fieldMapping === 'function' ? fieldMapping.bind(this)(data) : data[fieldMapping]
+      if( fieldMapping ) {
+        return typeof fieldMapping === 'function' ? fieldMapping.bind(this)(data) : data[fieldMapping]
+      }
     }
   }
 };

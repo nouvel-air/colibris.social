@@ -23,7 +23,7 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'needs'),
-      // actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
+      actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
     }
   },
   methods: {
@@ -62,9 +62,7 @@ module.exports = {
         'pair:label': 'Je recherche ' + title,
         'pair:description': data.description && data.description.trim(),
         'pair:neededBy': projectUri,
-        'pair:webPage': contactUrl,
-        published: data.created,
-        updated: data.updated
+        'pair:webPage': contactUrl
       });
     }
   }

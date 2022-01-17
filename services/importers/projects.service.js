@@ -3,7 +3,6 @@ const { getDepartmentName } = require("../../utils");
 const CONFIG = require('../../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
-const { convertToIsoString } = require('../../utils');
 
 module.exports = {
   name: 'importer.projects',
@@ -20,7 +19,7 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects'),
-      // actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
+      actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
     }
   },
   methods: {
@@ -52,9 +51,7 @@ module.exports = {
             'pair:addressStreet': data.street1 + (data.street2 ? ', ' + data.street2 : '')
           }
         },
-        image: resizedImages,
-        published: convertToIsoString(data.created),
-        updated: convertToIsoString(data.updated),
+        image: resizedImages
       });
     }
   }
