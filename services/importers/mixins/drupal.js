@@ -20,7 +20,7 @@ module.exports = {
         created: data => convertToIsoString(data.published),
         updated: data => convertToIsoString(data.updated),
       },
-    },
+    }
   },
   methods: {
     async list(url) {

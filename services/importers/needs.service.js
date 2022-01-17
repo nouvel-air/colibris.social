@@ -1,4 +1,5 @@
 const urlJoin = require("url-join");
+const QueueService = require("moleculer-bull");
 const CONFIG = require('../../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 
@@ -10,10 +11,11 @@ const typesMapping = {
 
 module.exports = {
   name: 'importer.needs',
-  mixins: [DrupalImporterMixin],
+  mixins: [DrupalImporterMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
       baseUrl: 'https://dev.colibris-lafabrique.org',
+      apiUrl: 'https://dev.colibris-lafabrique.org/api/needs',
       getAllCompact: 'https://dev.colibris-lafabrique.org/api/needs_compact',
       getOneFull: data => 'https://dev.colibris-lafabrique.org/api/needs/' + data.uuid,
       basicAuth: {
@@ -24,6 +26,10 @@ module.exports = {
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'needs'),
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
+    },
+    cronJob: {
+      time: '0 0 4 * * *', // Every night at 4am
+      timeZone: 'Europe/Paris'
     }
   },
   methods: {

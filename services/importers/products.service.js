@@ -1,4 +1,5 @@
 const urlJoin = require("url-join");
+const QueueService = require("moleculer-bull");
 const PrestashopImporter = require('./mixins/prestashop');
 const ThemeCreatorImporter = require('./mixins/theme-creator');
 const CONFIG = require('../../config');
@@ -6,19 +7,22 @@ const { removeHtmlTags } = require('../../utils');
 
 module.exports = {
   name: 'importer.products',
-  mixins: [PrestashopImporter, ThemeCreatorImporter],
+  mixins: [PrestashopImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
       baseUrl: 'https://www.colibris-laboutique.org',
-      getAllCompact: 'https://www.colibris-laboutique.org/api/products',
-      getOneFull: data => 'https://www.colibris-laboutique.org/api/products/' + data.id,
-      basicAuth: {
-        user: 'MRFA2MWXHQYXRYZ9QLNNV8CIV4DSRAVF'
-      }
+      prestashop: {
+        type: 'products',
+        wsKey: 'MRFA2MWXHQYXRYZ9QLNNV8CIV4DSRAVF'
+      },
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'laboutique', 'products'),
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'laboutique')
+    },
+    cronJob: {
+      time: '0 0 4 * * *', // Every night at 4am
+      timeZone: 'Europe/Paris'
     }
   },
   methods: {

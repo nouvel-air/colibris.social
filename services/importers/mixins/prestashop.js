@@ -1,3 +1,4 @@
+const urlJoin = require('url-join');
 const ImporterMixin = require('./importer');
 const { convertToIsoString } = require('../../../utils');
 
@@ -6,22 +7,26 @@ module.exports = {
   settings: {
     source: {
       baseUrl: null,
-      getAllFull: null,
-      getAllCompact: null,
-      getOneFull: null,
+      prestashop: {
+        type: null,
+        wsKey: null,
+      },
       headers: {
         'Output-Format': 'JSON'
-      },
-      basicAuth: {
-        user: '', // Put your WebService key here
-        password: ''
       },
       fieldsMapping: {
         slug: 'link_rewrite',
         created: data => convertToIsoString(data.date_add),
         updated: data => convertToIsoString(data.date_upd),
       },
-    },
+    }
+  },
+  created() {
+    this.settings.source.apiUrl = urlJoin(this.settings.source.baseUrl, 'api', this.settings.source.prestashop.type);
+    this.settings.source.getAllFull = urlJoin(this.settings.source.baseUrl, 'api', this.settings.source.prestashop.type) + '?display=full';
+    this.settings.source.getAllCompact = urlJoin(this.settings.source.baseUrl, 'api', this.settings.source.prestashop.type) + '?display=[id,date_upd]';
+    this.settings.source.getOneFull = data => urlJoin(this.settings.source.baseUrl, 'api', this.settings.source.prestashop.type, `${data.id}`);
+    this.settings.source.headers.Authorization = 'Basic ' + Buffer.from(this.settings.source.prestashop.wsKey + ':').toString('base64')
   },
   methods: {
     async list(url) {

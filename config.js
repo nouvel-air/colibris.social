@@ -13,8 +13,8 @@ module.exports = {
   // Connector
   CAS_URL: process.env.SEMAPPS_CAS_URL,
   // Cache
-  QUEUE_SERVICE_URL: process.env.SEMAPPS_QUEUE_SERVICE_URL,
   REDIS_CACHE_URL: process.env.SEMAPPS_REDIS_CACHE_URL,
+  QUEUE_SERVICE_URL: process.env.SEMAPPS_QUEUE_SERVICE_URL,
   // Email
   FROM_EMAIL: process.env.SEMAPPS_FROM_EMAIL,
   FROM_NAME: process.env.SEMAPPS_FROM_NAME,

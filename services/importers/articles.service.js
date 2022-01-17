@@ -1,14 +1,16 @@
 const urlJoin = require("url-join");
+const QueueService = require('moleculer-bull');
 const CONFIG = require('../../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
 
 module.exports = {
   name: 'importer.articles',
-  mixins: [DrupalImporterMixin, ThemeCreatorMixin],
+  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
       baseUrl: 'https://dev.colibris-lemouvement.org',
+      apiUrl: 'https://dev.colibris-lemouvement.org/api/articles',
       getAllCompact: 'https://dev.colibris-lemouvement.org/api/articles_compact',
       getOneFull: data => 'https://dev.colibris-lemouvement.org/api/articles/' + data.uuid,
       basicAuth: {
@@ -19,6 +21,10 @@ module.exports = {
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lemag', 'articles'),
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lemag')
+    },
+    cronJob: {
+      time: '0 0 4 * * *', // Every night at 4am
+      timeZone: 'Europe/Paris'
     }
   },
   methods: {
