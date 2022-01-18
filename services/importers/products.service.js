@@ -55,7 +55,8 @@ module.exports = {
         'pair:description': removeHtmlTags(data.description),
         'pair:hasTopic': themes,
         'pair:depictedBy': image,
-        'pair:webPage': url
+        'pair:webPage': url,
+        'pair:offeredBy': this.settings.dest.actorUri
       });
     }
   }

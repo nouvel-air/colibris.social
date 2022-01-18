@@ -38,7 +38,7 @@ module.exports = {
         'pair:description': data.body,
         'pair:hasTopic': themes,
         'pair:webPage': urlJoin(this.settings.source.baseUrl, data.path),
-        'pair:supportedBy': this.settings.dest.actorUri,
+        'pair:producedBy': this.settings.dest.actorUri,
         'pair:depictedBy': data.image && data.image.src,
       });
     }
