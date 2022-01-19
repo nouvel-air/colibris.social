@@ -319,7 +319,7 @@ module.exports = {
           return updated ? (new Date(updated)) > previousUpdate : true
         })
         .map(data => this.settings.source.getOneFull(data))
-        .filter(uri => !createdUris.includes(uri));
+        .filter(uri => !urisToCreate.includes(uri));
 
       for( let sourceUri of urisToUpdate ) {
         const result = await this.actions.importOne({ sourceUri, destUri: this.imported[sourceUri] });
