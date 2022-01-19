@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "moleculer-runner --repl --hot services importers/*.js",
-    "start": "moleculer-runner --instances=max services",
+    "start": "moleculer-runner --instances=max services importers/*.js",
     "link-semapps-packages": "yarn link @semapps/activitypub @semapps/auth @semapps/backup @semapps/fuseki-admin @semapps/importer @semapps/inference @semapps/jsonld @semapps/ldp @semapps/middlewares @semapps/mime-types @semapps/pod @semapps/push @semapps/signature @semapps/sparql-endpoint @semapps/triplestore @semapps/webacl @semapps/webfinger @semapps/webhooks @semapps/webid"
   },
   "dependencies": {
