@@ -1,23 +1,26 @@
 const urlJoin = require("url-join");
 const QueueService = require('moleculer-bull');
-const CONFIG = require('../../config');
+const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
-const { convertToIsoString } = require('../../utils');
+const { convertToIsoString } = require('../utils');
 
 module.exports = {
   name: 'importer.courses',
   mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://dev.colibris-universe.org',
-      apiUrl: 'https://dev.colibris-universe.org/api/courses',
-      getAllCompact: 'https://dev.colibris-universe.org/api/courses_compact',
-      getOneFull: data => 'https://dev.colibris-universe.org/api/courses/' + data.uuid,
+      baseUrl: 'https://dev.colibris-universite.org',
+      apiUrl: 'https://dev.colibris-universite.org/api/courses',
+      getAllCompact: 'https://dev.colibris-universite.org/api/courses_compact',
+      getOneFull: data => 'https://dev.colibris-universite.org/api/courses/' + data.uuid,
       basicAuth: {
         user: 'universite',
         password: 'qeabGLSu!96G'
-      }
+      },
+      fieldsMapping: {
+        slug: data => data.path ? data.path.split('/').pop() : data.uuid,
+      },
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'universite', 'courses'),

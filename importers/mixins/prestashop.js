@@ -1,6 +1,6 @@
 const urlJoin = require('url-join');
 const ImporterMixin = require('./importer');
-const { convertToIsoString } = require('../../../utils');
+const { convertToIsoString } = require('../../utils');
 
 module.exports = {
   mixins: [ImporterMixin],

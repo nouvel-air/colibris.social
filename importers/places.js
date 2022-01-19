@@ -2,15 +2,15 @@ const urlJoin = require("url-join");
 const QueueService = require("moleculer-bull");
 const GogocartoImporter = require('./mixins/gogocarto');
 const ThemeCreatorImporter = require('./mixins/theme-creator');
-const CONFIG = require('../../config');
+const { frenchAddressSearch, formatPhoneNumber } = require('./mixins/utils');
+const CONFIG = require('../config');
 
 module.exports = {
   name: 'importer.places',
   mixins: [GogocartoImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://presdecheznous.fr/',
-
+      baseUrl: 'https://presdecheznous.fr/'
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'presdecheznous', 'organizations'),
@@ -22,20 +22,8 @@ module.exports = {
     }
   },
   methods: {
-    async dataGouvSearch(query) {
-      const dataGouvUrl = new URL('https://api-adresse.data.gouv.fr/search/');
-      dataGouvUrl.searchParams.set('q', query)
-      const response = await fetch(dataGouvUrl.toString());
-
-      if( response.ok ) {
-        const json = await response.json();
-        return json.features[0];
-      } else {
-        return false;
-      }
-    },
     async transform(data) {
-      const themes = await this.createOrGetThemes(data.categories);
+      const themes = await this.createOrGetThemes(...data.categories);
       let address;
 
       if( data.address && Object.keys(data.address).length > 0 ) {
@@ -53,7 +41,7 @@ module.exports = {
           },
         }
       } else if (data.streetaddress) {
-        const feature = await this.dataGouvSearch(data.streetaddress);
+        const feature = await frenchAddressSearch(data.streetaddress);
         if( feature ) {
           address = {
             '@type': 'pair:Place',
@@ -71,6 +59,9 @@ module.exports = {
         }
       }
 
+      const phone = formatPhoneNumber(Array.isArray(data.telephone) ? data.telephone[0] : (data.telephone || undefined), data.address && data.address.addressCountry );
+      const email =  (!data.email || data.email === 'private') ? undefined : data.email;
+
       return ({
         '@type': 'pair:Organization',
         'pair:label': data.name,
@@ -80,9 +71,8 @@ module.exports = {
         'pair:webPage': data.website || undefined,
         'pair:aboutPage': 'https://presdecheznous.fr/annuaire#/fiche/-/' + data.id,
         'pair:depictedBy': data.image,
-        'pair:e-mail': data.email || undefined,
-        'pair:phone': Array.isArray(data.telephone) ? data.telephone[0] : (data.telephone || undefined),
-        'pair:supportedBy': this.settings.dest.actorUri
+        'pair:e-mail': email,
+        'pair:phone': phone
       });
     }
   }

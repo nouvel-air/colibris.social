@@ -1,6 +1,6 @@
 const urlJoin = require("url-join");
 const QueueService = require('moleculer-bull');
-const CONFIG = require('../../config');
+const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
 
@@ -16,7 +16,10 @@ module.exports = {
       basicAuth: {
         user: 'mouvement',
         password: 'usfpdkFEY!UR8'
-      }
+      },
+      fieldsMapping: {
+        slug: data => data.path ? data.path.split('/').pop() : data.uuid,
+      },
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lemag', 'articles'),

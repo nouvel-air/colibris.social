@@ -6,4 +6,5 @@
 /imports/*.json
 /imports/*.csv
 /imports/**/*.md
+/importers/files
 /uploads

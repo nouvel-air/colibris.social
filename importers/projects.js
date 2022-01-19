@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const QueueService = require("moleculer-bull");
-const { getDepartmentName } = require("../../utils");
-const CONFIG = require('../../config');
+const { getDepartmentName } = require("../utils");
+const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
 

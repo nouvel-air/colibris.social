@@ -82,6 +82,9 @@ module.exports = {
         webId: 'system'
       });
 
+      // Reset cache
+      this.imported = {};
+
       if( this.settings.source.getAllCompact ) {
         const compactResults = await this.list(this.settings.source.getAllCompact);
 
@@ -89,7 +92,8 @@ module.exports = {
 
         for( let data of compactResults ) {
           const sourceUri = this.settings.source.getOneFull(data);
-          await this.actions.importOne({ sourceUri }, { parentCtx: ctx });
+          const destUri = await this.actions.importOne({ sourceUri }, { parentCtx: ctx });
+          if( destUri ) this.imported[sourceUri] = destUri;
         }
       } else if( this.settings.source.getAllFull ) {
         const fullResults = await this.list(this.settings.source.getAllFull);
@@ -98,13 +102,17 @@ module.exports = {
 
         for( let data of fullResults ) {
           const sourceUri = this.settings.source.getOneFull && this.settings.source.getOneFull(data);
-          await this.actions.importOne({ sourceUri, data }, { parentCtx: ctx });
+          const destUri = await this.actions.importOne({ sourceUri, data }, { parentCtx: ctx });
+          if( destUri ) this.imported[sourceUri] = destUri;
         }
       } else {
         throw new Error('You must define the setting source.getAllCompact or source.getAllFull');
       }
 
       this.logger.info(`Import finished !`);
+    },
+    getImported() {
+      return this.imported;
     },
     synchronize() {
       this.createJob(this.name, 'synchronize', {});
@@ -246,6 +254,7 @@ module.exports = {
       }
     },
     async processSynchronize(job) {
+      let deletedUris = {}, createdUris = {}, updatedUris = {};
       const compactResults = await this.list(this.settings.source.getAllCompact);
 
       job.progress(5);
@@ -259,14 +268,16 @@ module.exports = {
       // DELETED RESOURCES
       ///////////////////////////////////////////
 
-      const deletedUris = oldSourceUris.filter(uri => !newSourceUris.includes(uri));
-      for( let sourceUri of deletedUris ) {
+      const urisToDelete = oldSourceUris.filter(uri => !newSourceUris.includes(uri));
+      for( let sourceUri of urisToDelete ) {
         this.logger.info('Resource ' + sourceUri + ' does not exist anymore, deleting it...');
 
         await this.broker.call('ldp.resource.delete', {
           resourceUri: this.imported[sourceUri],
           webId: 'system'
         });
+
+        deletedUris[sourceUri] = this.imported[sourceUri];
 
         // Remove resource from local cache
         delete this.imported[sourceUri];
@@ -278,9 +289,8 @@ module.exports = {
       // CREATED RESOURCES
       ///////////////////////////////////////////
 
-      const possiblyCreatedUris = newSourceUris.filter(uri => !oldSourceUris.includes(uri));
-      let createdUris = [];
-      for( let sourceUri of possiblyCreatedUris ) {
+      const urisToCreate = newSourceUris.filter(uri => !oldSourceUris.includes(uri));
+      for( let sourceUri of urisToCreate ) {
         this.logger.info('Resource ' + sourceUri + ' did not exist, importing it...');
 
         const destUri = await this.actions.importOne({ sourceUri });
@@ -288,10 +298,10 @@ module.exports = {
         if( destUri ) {
           await this.announceNewResource(destUri);
 
+          createdUris[sourceUri] = destUri;
+
           // Add resource to local cache
           this.imported[sourceUri] = destUri;
-
-          createdUris.push(sourceUri);
         }
       }
 
@@ -302,7 +312,7 @@ module.exports = {
       ///////////////////////////////////////////
 
       const previousUpdate = Date.now() - (this.settings.cronJob.updateInterval * 60 * 1000);
-      const possiblyUpdatedUris = compactResults
+      const urisToUpdate = compactResults
         .filter(data => {
           // If an updated field is available in compact results, filter out older items
           const updated = this.getField('updated', data);
@@ -310,12 +320,11 @@ module.exports = {
         })
         .map(data => this.settings.source.getOneFull(data))
         .filter(uri => !createdUris.includes(uri));
-      let updatedUris = []
 
-      for( let sourceUri of possiblyUpdatedUris ) {
+      for( let sourceUri of urisToUpdate ) {
         const result = await this.actions.importOne({ sourceUri, destUri: this.imported[sourceUri] });
         if( result ) {
-          updatedUris.push(sourceUri);
+          updatedUris[sourceUri] = this.imported[sourceUri];
         }
       }
 

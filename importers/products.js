@@ -2,8 +2,8 @@ const urlJoin = require("url-join");
 const QueueService = require("moleculer-bull");
 const PrestashopImporter = require('./mixins/prestashop');
 const ThemeCreatorImporter = require('./mixins/theme-creator');
-const CONFIG = require('../../config');
-const { removeHtmlTags } = require('../../utils');
+const CONFIG = require('../config');
+const { removeHtmlTags } = require('../utils');
 
 module.exports = {
   name: 'importer.products',
@@ -32,7 +32,7 @@ module.exports = {
     async transform(data) {
       if( data.available_for_order === '0' ) return false;
 
-      // TODO try other image extensions if jpg is not working
+      // TODO try other image extensions if jpg is not working (make an utils)
       const image = urlJoin(this.settings.source.baseUrl, data.id_default_image, data.link_rewrite + '.jpg');
 
       const mainCategory = await this.getCategory(data.id_category_default);

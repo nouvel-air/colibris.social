@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const path = require("path");
 const { ACTOR_TYPES } = require("@semapps/activitypub");
-const CONFIG = require('../../config');
+const CONFIG = require('../config');
 const ImporterMixin = require('./mixins/importer');
 
 module.exports = {

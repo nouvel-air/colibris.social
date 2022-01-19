@@ -1,6 +1,6 @@
 const urlJoin = require("url-join");
 const QueueService = require("moleculer-bull");
-const CONFIG = require('../../config');
+const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 
 const typesMapping = {

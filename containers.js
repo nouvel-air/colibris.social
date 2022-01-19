@@ -65,7 +65,7 @@ const cods = {
   ],
   '/universite': [
     {
-      path: '/course',
+      path: '/courses',
       acceptedTypes: ['pair:Event']
     }
   ],
