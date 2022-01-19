@@ -6,6 +6,7 @@ module.exports = {
   settings: {
     source: {
       baseUrl: null,
+      apiUrl: null,
       getAllCompact: null,
       getOneFull: null,
       basicAuth: {

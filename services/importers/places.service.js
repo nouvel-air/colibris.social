@@ -5,7 +5,7 @@ const ThemeCreatorImporter = require('./mixins/theme-creator');
 const CONFIG = require('../../config');
 
 module.exports = {
-  name: 'importer.products',
+  name: 'importer.places',
   mixins: [GogocartoImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {

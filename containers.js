@@ -63,6 +63,12 @@ const cods = {
       acceptedTypes: ['pair:Document']
     }
   ],
+  '/universite': [
+    {
+      path: '/course',
+      acceptedTypes: ['pair:Event']
+    }
+  ],
   '/presdecheznous': [
     {
       path: '/organizations',
