@@ -32,7 +32,7 @@ module.exports = {
   methods: {
     async transform(data) {
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
-      const resizedImages = data.image.map(url => url.replace('/files/projets/', '/files/styles/projet_large/public/projets/'));
+      const resizedImages = data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'));
       const themes = await this.createOrGetThemes(data.themes);
 
       return({
