@@ -26,6 +26,12 @@ module.exports = {
           name: resource['pair:label'],
           preferredUsername: getSlugFromUri(resourceId)
         };
+      } else if (resourceTypes.includes('pair:Group')) {
+        return {
+          type: ACTOR_TYPES.GROUP,
+          name: resource['pair:label'],
+          preferredUsername: getSlugFromUri(resourceId)
+        };
       } else {
         return false;
       }
