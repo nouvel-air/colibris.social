@@ -212,20 +212,33 @@ module.exports = {
     async getOne(url) {
       return await this.fetch(url);
     },
-    async fetch(urlOrPath) {
-      if( urlOrPath.startsWith('http') ) {
-        const response = await fetch(urlOrPath, { headers: this.settings.source.headers, ...this.settings.source.fetchOptions });
+    async fetch(param) {
+      if( typeof param === 'object' ) {
+        const { url, ...fetchOptions } = param;
+        const headers = { ...this.settings.source.headers, ...this.settings.source.fetchOptions.headers, ...fetchOptions.headers };
+        console.log('fetch', url, { ...this.settings.source.fetchOptions, ...fetchOptions, headers })
+        const response = await fetch(url, { ...this.settings.source.fetchOptions, ...fetchOptions, headers })
+        if( response.ok ) {
+          return await response.json();
+        } else {
+          return false;
+        }
+      } else if( param.startsWith('http') ) {
+        // Parameter is an URL
+        const headers = { ...this.settings.source.headers, ...this.settings.source.fetchOptions.headers };
+        const response = await fetch(param, { ...this.settings.source.fetchOptions, headers });
         if( response.ok ) {
           return await response.json();
         } else {
           return false;
         }
       } else {
+        // Parameter is a file
         try {
-          const file = await fsPromises.readFile(urlOrPath);
+          const file = await fsPromises.readFile(param);
           return JSON.parse(file.toString());
         } catch(e) {
-          this.logger.warn('Could not read file ' + urlOrPath);
+          this.logger.warn('Could not read file ' + param);
           return false;
         }
       }

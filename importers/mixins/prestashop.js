@@ -33,8 +33,8 @@ module.exports = {
       const result = await this.fetch(url);
       return Object.values(result)[0];
     },
-    async getOne(uri) {
-      const result = await this.fetch(uri);
+    async getOne(url) {
+      const result = await this.fetch(url);
       if( result ) {
         return {
           ...Object.values(result)[0],

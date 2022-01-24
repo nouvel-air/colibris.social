@@ -36,6 +36,13 @@ const localGroupsContainers = [
 ];
 
 const cods = {
+  '/lemouvement': [
+    {
+      path: '/events',
+      acceptedTypes: ['pair:Event'],
+      dereference: ['pair:hasLocation/pair:hasPostalAddress'],
+    },
+  ],
   '/lafabrique': [
     {
       path: '/projects',

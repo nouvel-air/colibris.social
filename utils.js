@@ -32,7 +32,7 @@ const getDepartmentName = zip => {
   }
 };
 
-const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.' } });
+const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.', 'Ǧ': 'g' } });
 
 const removeHtmlTags = text => sanitizeHtml(text, { allowedTags: [] }).trim();
 

@@ -13,7 +13,7 @@ module.exports = {
         formId: 1,
       },
       fieldsMapping: {
-        slug: data => data.bf_mail ? data.bf_mail.split('@')[0] : data.id_fiche,
+        slug: data => data.bf_mail && data.bf_mail.endsWith('@colibris-lemouvement.org') ? data.bf_mail.split('@')[0] : data.id_fiche,
       }
     },
     dest: {
