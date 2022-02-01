@@ -36,20 +36,21 @@ module.exports = {
   methods: {
     async transform(data) {
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
-      const resizedImages = Array.isArray(data.images)
-        ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'))
-        : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/')];
+      const resizedImages = data.images
+        ? Array.isArray(data.images)
+          ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'))
+          : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/')]
+        : undefined;
       const themes = await this.createOrGetThemes(data.themes);
 
       return({
         type: 'pair:Project',
-        // PAIR
         'pair:label': data.name,
         'pair:description': data.short_description,
         'pair:hasTopic': themes,
         'pair:aboutPage': data.aboutPage,
         'pair:supportedBy': this.settings.dest.actorUri,
-        // ActivityStreams
+        'pair:depictedBy': resizedImages,
         'pair:hasLocation': {
           type: 'pair:Place',
           'pair:latitude': lat,
@@ -63,8 +64,7 @@ module.exports = {
             'pair:addressZipCode': data.zip,
             'pair:addressStreet': data.street1 + (data.street2 ? ', ' + data.street2 : '')
           }
-        },
-        image: resizedImages
+        }
       });
     }
   }
