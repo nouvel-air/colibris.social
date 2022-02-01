@@ -55,7 +55,7 @@ module.exports = {
           } : undefined,
         } : undefined,
         'pair:hasTopic': themes,
-        'pair:webPage': websites,
+        'pair:webPage': [...websites, this.settings.source.getOneFull(data)],
         'pair:depictedBy': images,
       });
     }
