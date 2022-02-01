@@ -1,19 +1,23 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
-const GogocartoImporter = require('./mixins/gogocarto');
-const ThemeCreatorImporter = require('./mixins/theme-creator');
+const QueueMixin = require("moleculer-bull");
+const GogocartoImporterMixin = require('./mixins/gogocarto');
+const ThemeCreatorMixin = require('./mixins/theme-creator');
 const { frenchAddressSearch, formatPhoneNumber } = require('./mixins/utils');
 const CONFIG = require('../config');
 
 module.exports = {
   name: 'importer.places',
-  mixins: [GogocartoImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [GogocartoImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://presdecheznous.fr/'
+      gogocarto: {
+        baseUrl: 'https://presdecheznous.fr/'
+      }
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'presdecheznous', 'organizations'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'presdecheznous')
     },
     cronJob: {

@@ -1,5 +1,5 @@
 const urlJoin = require("url-join");
-const QueueService = require('moleculer-bull');
+const QueueMixin = require('moleculer-bull');
 const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 const ThemeCreatorMixin = require('./mixins/theme-creator');
@@ -7,10 +7,9 @@ const { convertToIsoString } = require('../utils');
 
 module.exports = {
   name: 'importer.courses',
-  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://dev.colibris-universite.org',
       apiUrl: 'https://dev.colibris-universite.org/api/courses',
       getAllCompact: 'https://dev.colibris-universite.org/api/courses_compact',
       getOneFull: data => 'https://dev.colibris-universite.org/api/courses/' + data.uuid,
@@ -24,6 +23,8 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'universite', 'courses'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'universite')
     },
     cronJob: {
@@ -43,8 +44,8 @@ module.exports = {
         'pair:startDate': convertToIsoString(data.start_date),
         'pair:endDate': convertToIsoString(data.end_date),
         'pair:hasTopic': themes,
-        'pair:aboutPage': urlJoin(this.settings.source.baseUrl, data.path),
-        'pair:webPage': urlJoin(this.settings.source.baseUrl, data.path),
+        'pair:aboutPage': urlJoin('https://dev.colibris-universite.org', data.path),
+        'pair:webPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:offeredBy': this.settings.dest.actorUri,
         'pair:depictedBy': data.image && data.image.src,
       });

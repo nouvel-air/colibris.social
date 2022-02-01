@@ -1,19 +1,23 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
-const MobilizonImporter = require('./mixins/mobilizon');
-const ThemeCreatorImporter = require("./mixins/theme-creator");
+const QueueMixin = require("moleculer-bull");
+const MobilizonImporterMixin = require('./mixins/mobilizon');
+const ThemeCreatorMixin = require("./mixins/theme-creator");
 const CONFIG = require('../config');
 const {removeHtmlTags} = require("../utils");
 
 module.exports = {
   name: 'importer.events',
-  mixins: [MobilizonImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [MobilizonImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://mobilizon.colibris-outilslibres.org/'
+      mobilizon: {
+        baseUrl: 'https://mobilizon.colibris-outilslibres.org/'
+      }
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lemouvement', 'events'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lemouvement')
     },
     cronJob: {

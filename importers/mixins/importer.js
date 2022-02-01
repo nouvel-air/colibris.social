@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const cronParser = require('cron-parser');
 const { promises: fsPromises } = require("fs");
 const { ACTIVITY_TYPES } = require("@semapps/activitypub");
 const { MIME_TYPES } = require("@semapps/mime-types");
@@ -8,7 +9,7 @@ module.exports = {
   mixins: [ImporterMixin],
   settings: {
     source: {
-      baseUrl: null,
+      apiUrl: null,
       getAllFull: null,
       getAllCompact: null,
       getOneFull: null,
@@ -29,12 +30,14 @@ module.exports = {
     dest: {
       containerUri: null,
       predicatesToKeep: [], // Don't remove these predicates when updating data
+    },
+    activitypub: {
       actorUri: null,
+      activities: [ACTIVITY_TYPES.CREATE, ACTIVITY_TYPES.UPDATE, ACTIVITY_TYPES.DELETE]
     },
     cronJob: {
       time: null,
-      timeZone: 'Europe/Paris',
-      updateInterval: 24 * 60 // Filter out resources older than (in minutes)
+      timeZone: 'Europe/Paris'
     }
   },
   dependencies: ['triplestore'],
@@ -76,14 +79,7 @@ module.exports = {
     async freshImport(ctx) {
       this.logger.info('Clearing all existing data...');
 
-      // TODO also delete blank nodes attached to the resources
-      await ctx.call('ldp.container.clear', {
-        containerUri: this.settings.dest.containerUri,
-        webId: 'system'
-      });
-
-      // Reset cache
-      this.imported = {};
+      await this.actions.deleteImported();
 
       if( this.settings.source.getAllCompact ) {
         const compactResults = await this.list(this.settings.source.getAllCompact);
@@ -111,11 +107,12 @@ module.exports = {
 
       this.logger.info(`Import finished !`);
     },
-    getImported() {
-      return this.imported;
-    },
     synchronize() {
-      this.createJob(this.name, 'synchronize', {});
+      if( this.createJob ) {
+        this.createJob(this.name, 'synchronize', {});
+      } else {
+        return this.processSynchronize({ progress: number => this.broker.info(`Progress: ${number}%`) });
+      }
     },
     async importOne(ctx) {
       let { sourceUri, destUri, data } = ctx.params;
@@ -133,15 +130,6 @@ module.exports = {
 
       // If resource is false, it means it is not published
       if (!resource) {
-        if (destUri) {
-          this.logger.info('Deleting ' + destUri + '...');
-          await ctx.call('ldp.resource.delete', {
-            resourceUri: destUri,
-            webId: 'system'
-          });
-        } else {
-          this.logger.info('Skipping ' + sourceUri + '...');
-        }
         return false;
       } else {
         if (destUri) {
@@ -176,7 +164,6 @@ module.exports = {
             });
           } else {
             this.logger.info('Skipping ' + sourceUri + ' (it has not changed)...');
-            return false;
           }
         } else {
           this.logger.info('Importing ' + sourceUri + '...');
@@ -194,17 +181,33 @@ module.exports = {
             contentType: MIME_TYPES.JSON,
             webId: 'system'
           });
-        }
 
-        this.logger.info('Done! Resource URL: ' + destUri);
+          this.logger.info('Done! Resource URL: ' + destUri);
+        }
 
         return destUri;
       }
+    },
+    async deleteImported(ctx) {
+      for (const resourceUri of Object.values(this.imported)) {
+        this.logger.info(`Deleting ${resourceUri}...`);
+
+        // TODO also delete blank nodes attached to the resources
+        await ctx.call('ldp.resource.delete', {
+          resourceUri,
+          webId: 'system'
+        });
+      }
+
+      this.imported = {};
+    },
+    getImported() {
+      return this.imported;
     }
   },
   methods: {
     async transform(data) {
-      throw new Error('The transform method must be implemented');
+      throw new Error('The transform method must be implemented by the service');
     },
     async list(url) {
       return await this.fetch(url);
@@ -216,7 +219,6 @@ module.exports = {
       if( typeof param === 'object' ) {
         const { url, ...fetchOptions } = param;
         const headers = { ...this.settings.source.headers, ...this.settings.source.fetchOptions.headers, ...fetchOptions.headers };
-        console.log('fetch', url, { ...this.settings.source.fetchOptions, ...fetchOptions, headers })
         const response = await fetch(url, { ...this.settings.source.fetchOptions, ...fetchOptions, headers })
         if( response.ok ) {
           return await response.json();
@@ -243,16 +245,16 @@ module.exports = {
         }
       }
     },
-    async announceNewResource(resourceUri) {
-      if( this.settings.dest.actorUri ) {
-        const outbox = await this.broker.call('activitypub.actor.getCollectionUri', { actorUri: this.settings.dest.actorUri, predicate: 'outbox' });
-        const followers = await this.broker.call('activitypub.actor.getCollectionUri', { actorUri: this.settings.dest.actorUri, predicate: 'followers' });
+    async postActivity(type, resourceUri) {
+      if( this.settings.activitypub.actorUri && this.settings.activitypub.activities.includes(type) ) {
+        const outbox = await this.broker.call('activitypub.actor.getCollectionUri', { actorUri: this.settings.activitypub.actorUri, predicate: 'outbox' });
+        const followers = await this.broker.call('activitypub.actor.getCollectionUri', { actorUri: this.settings.activitypub.actorUri, predicate: 'followers' });
 
         await this.broker.call(
           'activitypub.outbox.post',
           {
             collectionUri: outbox,
-            type: ACTIVITY_TYPES.ANNOUNCE,
+            type,
             object: resourceUri,
             to: followers
           },
@@ -290,6 +292,8 @@ module.exports = {
           webId: 'system'
         });
 
+        await this.postActivity(ACTIVITY_TYPES.DELETE, this.imported[sourceUri]);
+
         deletedUris[sourceUri] = this.imported[sourceUri];
 
         // Remove resource from local cache
@@ -309,7 +313,7 @@ module.exports = {
         const destUri = await this.actions.importOne({ sourceUri });
 
         if( destUri ) {
-          await this.announceNewResource(destUri);
+          await this.postActivity(ACTIVITY_TYPES.CREATE, destUri);
 
           createdUris[sourceUri] = destUri;
 
@@ -324,7 +328,9 @@ module.exports = {
       // UPDATED RESOURCES
       ///////////////////////////////////////////
 
-      const previousUpdate = Date.now() - (this.settings.cronJob.updateInterval * 60 * 1000);
+      const interval = cronParser.parseExpression(this.settings.cronJob.time, { tz: this.settings.cronJob.timeZone });
+      const previousUpdate = new Date(interval.prev().toISOString());
+      console.log('previousUpdate', previousUpdate);
       const urisToUpdate = compactResults
         .filter(data => {
           // If an updated field is available in compact results, filter out older items
@@ -336,8 +342,23 @@ module.exports = {
 
       for( let sourceUri of urisToUpdate ) {
         const result = await this.actions.importOne({ sourceUri, destUri: this.imported[sourceUri] });
+
         if( result ) {
+          await this.postActivity(ACTIVITY_TYPES.UPDATE, this.imported[sourceUri]);
+
           updatedUris[sourceUri] = this.imported[sourceUri];
+        } else {
+          await this.broker.call('ldp.resource.delete', {
+            resourceUri: this.imported[sourceUri],
+            webId: 'system'
+          });
+
+          await this.postActivity(ACTIVITY_TYPES.DELETE, this.imported[sourceUri]);
+
+          deletedUris[sourceUri] = this.imported[sourceUri];
+
+          // Remove resource from local cache
+          delete this.imported[sourceUri];
         }
       }
 

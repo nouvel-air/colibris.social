@@ -1,23 +1,25 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
-const PrestashopImporter = require('./mixins/prestashop');
-const ThemeCreatorImporter = require('./mixins/theme-creator');
+const QueueMixin = require("moleculer-bull");
+const PrestaShopImporterMixin = require('./mixins/prestashop');
+const ThemeCreatorMixin = require('./mixins/theme-creator');
 const CONFIG = require('../config');
 const { removeHtmlTags } = require('../utils');
 
 module.exports = {
   name: 'importer.products',
-  mixins: [PrestashopImporter, ThemeCreatorImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [PrestaShopImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://www.colibris-laboutique.org',
       prestashop: {
+        baseUrl: 'https://www.colibris-laboutique.org',
         type: 'products',
         wsKey: 'MRFA2MWXHQYXRYZ9QLNNV8CIV4DSRAVF'
       },
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'laboutique', 'products'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'laboutique')
     },
     cronJob: {
@@ -27,16 +29,16 @@ module.exports = {
   },
   methods: {
     async getCategory(id) {
-      return await this.getOne(urlJoin(this.settings.source.baseUrl, 'api', 'categories', `${id}`));
+      return await this.getOne(urlJoin(this.settings.source.prestashop.baseUrl, 'api', 'categories', `${id}`));
     },
     async transform(data) {
       if( data.available_for_order === '0' ) return false;
 
       // TODO try other image extensions if jpg is not working (make an utils)
-      const image = urlJoin(this.settings.source.baseUrl, data.id_default_image, data.link_rewrite + '.jpg');
+      const image = urlJoin(this.settings.source.prestashop.baseUrl, data.id_default_image, data.link_rewrite + '.jpg');
 
       const mainCategory = await this.getCategory(data.id_category_default);
-      const url = urlJoin(this.settings.source.baseUrl, mainCategory.link_rewrite, [data.id, data.link_rewrite, data.ean13].join('-') + '.html');
+      const url = urlJoin(this.settings.source.prestashop.baseUrl, mainCategory.link_rewrite, [data.id, data.link_rewrite, data.ean13].join('-') + '.html');
 
       let themes = [];
       if( data.associations && data.associations.categories ) {

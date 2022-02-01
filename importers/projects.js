@@ -1,5 +1,5 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
+const QueueMixin = require("moleculer-bull");
 const { getDepartmentName } = require("../utils");
 const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
@@ -7,22 +7,26 @@ const ThemeCreatorMixin = require('./mixins/theme-creator');
 
 module.exports = {
   name: 'importer.projects',
-  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://dev.colibris-lafabrique.org',
       apiUrl: 'https://dev.colibris-lafabrique.org/api/projects',
       getAllCompact: 'https://dev.colibris-lafabrique.org/api/projects_compact',
       getOneFull: data => 'https://dev.colibris-lafabrique.org/api/projects/' + data.uuid,
       basicAuth: {
         user: 'fabrique',
         password: 'xFbek2oSL#6T'
+      },
+      fieldsMapping: {
+        slug: data => data.aboutPage ? data.aboutPage.split('/').pop() : data.uuid,
       }
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects'),
-      actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
       predicatesToKeep: ['pair:needs']
+    },
+    activitypub: {
+      actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
     },
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am

@@ -5,7 +5,10 @@ module.exports = {
   mixins: [ImporterMixin],
   settings: {
     source: {
-      baseUrl: null,
+      gogocarto: {
+        baseUrl: null,
+        type: 'elements'
+      },
       fieldsMapping: {
         slug: 'name',
         created: 'createdAt',
@@ -14,10 +17,14 @@ module.exports = {
     }
   },
   created() {
-    this.settings.source.apiUrl = urlJoin(this.settings.source.baseUrl, 'api', 'elements');
-    this.settings.source.getAllFull = urlJoin(this.settings.source.baseUrl, 'api', 'elements');
-    this.settings.source.getAllCompact = urlJoin(this.settings.source.baseUrl, 'api', 'elements') + '?ontology=gogosync';
-    this.settings.source.getOneFull = data => urlJoin(this.settings.source.baseUrl, 'api', 'elements', `${data.id}`);
+    if( this.settings.source.gogocarto.type === 'elements' ) {
+      this.settings.source.apiUrl = urlJoin(this.settings.source.gogocarto.baseUrl, 'api', 'elements');
+      this.settings.source.getAllFull = urlJoin(this.settings.source.gogocarto.baseUrl, 'api', 'elements');
+      this.settings.source.getAllCompact = urlJoin(this.settings.source.gogocarto.baseUrl, 'api', 'elements') + '?ontology=gogosync';
+      this.settings.source.getOneFull = data => urlJoin(this.settings.source.gogocarto.baseUrl, 'api', 'elements', `${data.id}`);
+    } else {
+      throw new Error('The GoGoCartoMixin can only import elements for now');
+    }
   },
   methods: {
     async list(url) {

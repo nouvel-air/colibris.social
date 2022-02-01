@@ -1,5 +1,5 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
+const QueueMixin = require("moleculer-bull");
 const CONFIG = require('../config');
 const DrupalImporterMixin = require('./mixins/drupal');
 
@@ -11,10 +11,9 @@ const typesMapping = {
 
 module.exports = {
   name: 'importer.needs',
-  mixins: [DrupalImporterMixin, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://dev.colibris-lafabrique.org',
       apiUrl: 'https://dev.colibris-lafabrique.org/api/needs',
       getAllCompact: 'https://dev.colibris-lafabrique.org/api/needs_compact',
       getOneFull: data => 'https://dev.colibris-lafabrique.org/api/needs/' + data.uuid,
@@ -25,6 +24,8 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'needs'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
     },
     cronJob: {
@@ -60,7 +61,7 @@ module.exports = {
       if( type === 'pair:MoneyBasedResource' ) {
         contactUrl = data.campaign_url;
       } else {
-        contactUrl = urlJoin(this.settings.source.baseUrl, 'ctc', `${data.project_id}`, `${data.id}`);
+        contactUrl = urlJoin('https://dev.colibris-lafabrique.org', 'ctc', `${data.project_id}`, `${data.id}`);
       }
 
       return({

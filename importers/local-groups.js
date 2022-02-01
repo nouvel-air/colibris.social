@@ -1,15 +1,15 @@
 const urlJoin = require("url-join");
-const QueueService = require("moleculer-bull");
-const YesWikiImporter = require('./mixins/yeswiki');
+const QueueMixin = require("moleculer-bull");
+const YesWikiImporterMixin = require('./mixins/yeswiki');
 const CONFIG = require('../config');
 
 module.exports = {
   name: 'importer.local-groups',
-  mixins: [YesWikiImporter, QueueService(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [YesWikiImporterMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
   settings: {
     source: {
-      baseUrl: 'https://colibris-wiki.org/carte-gl',
       yeswiki: {
+        baseUrl: 'https://colibris-wiki.org/carte-gl',
         formId: 1,
       },
       fieldsMapping: {
@@ -18,6 +18,8 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups'),
+    },
+    activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'groupeslocaux')
     },
     cronJob: {

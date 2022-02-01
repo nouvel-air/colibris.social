@@ -5,7 +5,6 @@ module.exports = {
   mixins: [ImporterMixin],
   settings: {
     source: {
-      baseUrl: null,
       apiUrl: null,
       getAllCompact: null,
       getOneFull: null,
@@ -17,7 +16,7 @@ module.exports = {
         compress: false // Solve bug in Drupal
       },
       fieldsMapping: {
-        slug: data => data.aboutPage ? data.aboutPage.split('/').pop() : data.uuid,
+        slug: 'uuid',
         created: data => convertToIsoString(data.published),
         updated: data => convertToIsoString(data.updated),
       },
