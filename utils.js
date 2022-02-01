@@ -1,6 +1,5 @@
 const createSlug = require('speakingurl');
 const departments = require('./departments.json');
-const sanitizeHtml = require("sanitize-html");
 
 const convertWikiNames = str =>
   str
@@ -9,8 +8,6 @@ const convertWikiNames = str =>
     .toLowerCase();
 
 const convertWikiDate = str => str && str.replace(' ', 'T');
-
-const convertToIsoString = str => str && (new Date(str)).toISOString();
 
 const convertGogoDate = str => {
   if( !str ) return undefined;
@@ -34,15 +31,11 @@ const getDepartmentName = zip => {
 
 const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.', 'Ǧ': 'g' } });
 
-const removeHtmlTags = text => sanitizeHtml(text, { allowedTags: [] }).trim();
-
 module.exports = {
   convertWikiNames,
   convertWikiDate,
   convertGogoDate,
-  convertToIsoString,
   getSlugFromUri,
   getDepartmentName,
-  slugify,
-  removeHtmlTags
+  slugify
 };

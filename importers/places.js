@@ -1,13 +1,12 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
-const GogocartoImporterMixin = require('./mixins/gogocarto');
-const ThemeCreatorMixin = require('./mixins/theme-creator');
-const { frenchAddressSearch, formatPhoneNumber } = require('./mixins/utils');
+const { GoGoCartoImporterMixin, frenchAddressSearch, formatPhoneNumber } = require('@semapps/importer');
+const ThemeCreatorMixin = require('../mixins/theme-creator');
 const CONFIG = require('../config');
 
 module.exports = {
   name: 'importer.places',
-  mixins: [GogocartoImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [GoGoCartoImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       gogocarto: {

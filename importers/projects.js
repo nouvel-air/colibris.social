@@ -1,13 +1,13 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
+const { DrupalImporterMixin } = require('@semapps/importer');
+const ThemeCreatorMixin = require('../mixins/theme-creator');
 const { getDepartmentName } = require("../utils");
 const CONFIG = require('../config');
-const DrupalImporterMixin = require('./mixins/drupal');
-const ThemeCreatorMixin = require('./mixins/theme-creator');
 
 module.exports = {
   name: 'importer.projects',
-  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       apiUrl: 'https://dev.colibris-lafabrique.org/api/projects',
@@ -36,7 +36,9 @@ module.exports = {
   methods: {
     async transform(data) {
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
-      const resizedImages = data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'));
+      const resizedImages = Array.isArray(data.images)
+        ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'))
+        : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/')];
       const themes = await this.createOrGetThemes(data.themes);
 
       return({

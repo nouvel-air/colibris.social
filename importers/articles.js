@@ -1,12 +1,12 @@
 const urlJoin = require("url-join");
 const QueueMixin = require('moleculer-bull');
+const { DrupalImporterMixin } = require('@semapps/importer');
+const ThemeCreatorMixin = require('../mixins/theme-creator');
 const CONFIG = require('../config');
-const DrupalImporterMixin = require('./mixins/drupal');
-const ThemeCreatorMixin = require('./mixins/theme-creator');
 
 module.exports = {
   name: 'importer.articles',
-  mixins: [DrupalImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       apiUrl: 'https://dev.colibris-lemouvement.org/api/articles',

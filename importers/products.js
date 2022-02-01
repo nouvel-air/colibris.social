@@ -1,13 +1,12 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
-const PrestaShopImporterMixin = require('./mixins/prestashop');
-const ThemeCreatorMixin = require('./mixins/theme-creator');
+const { PrestaShopImporterMixin, removeHtmlTags } = require('@semapps/importer');
+const ThemeCreatorMixin = require('../mixins/theme-creator');
 const CONFIG = require('../config');
-const { removeHtmlTags } = require('../utils');
 
 module.exports = {
   name: 'importer.products',
-  mixins: [PrestaShopImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [PrestaShopImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       prestashop: {

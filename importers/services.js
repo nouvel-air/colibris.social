@@ -1,15 +1,15 @@
 const urlJoin = require("url-join");
 const path = require("path");
 const { ACTOR_TYPES } = require("@semapps/activitypub");
+const { ImporterMixin } = require('@semapps/importer');
 const CONFIG = require('../config');
-const ImporterMixin = require('./mixins/importer');
 
 module.exports = {
   name: 'importer.services',
   mixins: [ImporterMixin],
   settings: {
     source: {
-      getAllFull: path.resolve(__dirname, '../../imports/services.json'),
+      getAllFull: path.resolve(__dirname, './files/services.json'),
       fieldsMapping: {
         slug: 'slug'
       },

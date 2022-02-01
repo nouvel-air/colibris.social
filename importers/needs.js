@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
+const { DrupalImporterMixin } = require('@semapps/importer');
 const CONFIG = require('../config');
-const DrupalImporterMixin = require('./mixins/drupal');
 
 const typesMapping = {
   'pair:AtomBasedResource': 'Besoin matériel',
@@ -11,7 +11,7 @@ const typesMapping = {
 
 module.exports = {
   name: 'importer.needs',
-  mixins: [DrupalImporterMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [DrupalImporterMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       apiUrl: 'https://dev.colibris-lafabrique.org/api/needs',

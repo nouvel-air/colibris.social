@@ -1,13 +1,12 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
-const MobilizonImporterMixin = require('./mixins/mobilizon');
-const ThemeCreatorMixin = require("./mixins/theme-creator");
+const { MobilizonImporterMixin, removeHtmlTags } = require('@semapps/importer');
+const ThemeCreatorMixin = require("../mixins/theme-creator");
 const CONFIG = require('../config');
-const {removeHtmlTags} = require("../utils");
 
 module.exports = {
   name: 'importer.events',
-  mixins: [MobilizonImporterMixin, ThemeCreatorMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [MobilizonImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       mobilizon: {

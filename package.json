@@ -2,8 +2,6 @@
   "name": "colibris.social",
   "private": true,
   "version": "0.4.0",
-  "description": "Colibris ActivityPub server",
-  "author": "Reconnexion",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "moleculer-runner --repl --hot services importers/*.js",
@@ -27,7 +25,6 @@
     "@sentry/node": "^5.16.1",
     "@sentry/utils": "^5.16.1",
     "dotenv-flow": "^3.1.0",
-    "google-libphonenumber": "^3.2.26",
     "handlebars": "^4.7.7",
     "moleculer": "^0.14.18",
     "moleculer-bull": "0.2.8",
@@ -36,8 +33,6 @@
     "moleculer-mail": "^1.2.5",
     "moleculer-repl": "^0.6.6",
     "moleculer-web": "^0.10.0-beta1",
-    "node-fetch": "2.6.1",
-    "sanitize-html": "^2.6.1",
     "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
   }
