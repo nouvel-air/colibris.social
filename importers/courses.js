@@ -45,7 +45,7 @@ module.exports = {
         'pair:hasTopic': themes,
         'pair:aboutPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:webPage': urlJoin('https://dev.colibris-universite.org', data.path),
-        'pair:offeredBy': this.settings.dest.actorUri,
+        'pair:offeredBy': this.settings.activitypub.actorUri,
         'pair:depictedBy': data.image && data.image.src,
       });
     }

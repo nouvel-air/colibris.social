@@ -9,9 +9,9 @@ module.exports = {
   mixins: [DrupalImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
-      apiUrl: 'https://dev.colibris-lemouvement.org/api/articles',
-      getAllCompact: 'https://dev.colibris-lemouvement.org/api/articles_compact',
-      getOneFull: data => 'https://dev.colibris-lemouvement.org/api/articles/' + data.uuid,
+      apiUrl: 'https://colibris-lemouvement.org/api/articles',
+      getAllCompact: 'https://colibris-lemouvement.org/api/articles_compact',
+      getOneFull: data => 'https://colibris-lemouvement.org/api/articles/' + data.uuid,
       basicAuth: {
         user: 'mouvement',
         password: 'usfpdkFEY!UR8'
@@ -37,12 +37,12 @@ module.exports = {
 
       return({
         type: 'pair:Document',
-        'pair:label': data.title,
-        'pair:comment': data.summary,
-        'pair:description': data.body,
+        'pair:label': data.title && data.title.trim(),
+        'pair:comment': data.summary && data.summary.trim(),
+        'pair:description': data.body && data.body.trim(),
         'pair:hasTopic': themes,
         'pair:webPage': urlJoin('https://dev.colibris-lemouvement.org', data.path),
-        'pair:producedBy': this.settings.dest.actorUri,
+        'pair:producedBy': this.settings.activitypub.actorUri,
         'pair:depictedBy': data.image && data.image.src,
       });
     }

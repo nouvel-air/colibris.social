@@ -1,6 +1,6 @@
 const urlJoin = require("url-join");
 const { MIME_TYPES } = require("@semapps/mime-types");
-const { slugify } = require("../utils");
+const { slugify, capitalize } = require("../utils");
 const CONFIG = require('../config');
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
         .filter(l => l)
         .map(l => l.trim())
         .reduce((acc, value) => { acc.push(...value.split(/[,\n\r]+/)); return acc; }, [])
-        .map(l => l.trim());
+        .map(l => capitalize(l.trim()));
 
       let themeUris = [];
 

@@ -49,20 +49,20 @@ module.exports = {
         'pair:description': data.short_description,
         'pair:hasTopic': themes,
         'pair:aboutPage': data.aboutPage,
-        'pair:supportedBy': this.settings.dest.actorUri,
+        'pair:supportedBy': this.settings.activitypub.actorUri,
         'pair:depictedBy': resizedImages,
         'pair:hasLocation': {
           type: 'pair:Place',
           'pair:latitude': lat,
           'pair:longitude': lng,
-          'pair:label': data.city,
+          'pair:label': data.city || data.country || undefined,
           'pair:hasPostalAddress': {
             type: 'pair:PostalAddress',
-            'pair:addressLocality': data.city,
-            'pair:addressCountry': data.country,
+            'pair:addressLocality': data.city || undefined,
+            'pair:addressCountry': data.country || undefined,
             'pair:addressRegion': data.country === 'France' ? getDepartmentName(data.zip) : undefined,
-            'pair:addressZipCode': data.zip,
-            'pair:addressStreet': data.street1 + (data.street2 ? ', ' + data.street2 : '')
+            'pair:addressZipCode': data.zip  || undefined,
+            'pair:addressStreet': (data.street1 + (data.street2 ? ', ' + data.street2 : '')) || undefined
           }
         }
       });

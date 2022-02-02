@@ -1,4 +1,5 @@
 const urlJoin = require("url-join");
+const fetch = require("node-fetch");
 const QueueMixin = require("moleculer-bull");
 const { PrestaShopImporterMixin, removeHtmlTags } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
@@ -30,11 +31,23 @@ module.exports = {
     async getCategory(id) {
       return await this.getOne(urlJoin(this.settings.source.prestashop.baseUrl, 'api', 'categories', `${id}`));
     },
+    async findImageExtension(imageWithoutExtension) {
+      for( let extension of ['jpg', 'jpeg', 'png', 'gif', 'svg']) {
+        const imageUrl = imageWithoutExtension + '.' + extension;
+        try {
+          const result = await fetch(imageUrl);
+          if( result.ok ) {
+            return imageUrl;
+          }
+        } catch(e) {
+          // Continue searching
+        }
+      }
+    },
     async transform(data) {
       if( data.available_for_order === '0' ) return false;
 
-      // TODO try other image extensions if jpg is not working (make an utils)
-      const image = urlJoin(this.settings.source.prestashop.baseUrl, data.id_default_image, data.link_rewrite + '.jpg');
+      const image = await this.findImageExtension(urlJoin(this.settings.source.prestashop.baseUrl, data.id_default_image, data.link_rewrite));
 
       const mainCategory = await this.getCategory(data.id_category_default);
       const url = urlJoin(this.settings.source.prestashop.baseUrl, mainCategory.link_rewrite, [data.id, data.link_rewrite, data.ean13].join('-') + '.html');
@@ -57,7 +70,7 @@ module.exports = {
         'pair:hasTopic': themes,
         'pair:depictedBy': image,
         'pair:webPage': url,
-        'pair:offeredBy': this.settings.dest.actorUri
+        'pair:offeredBy': this.settings.activitypub.actorUri
       });
     }
   }

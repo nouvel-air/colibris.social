@@ -1,6 +1,8 @@
 const createSlug = require('speakingurl');
 const departments = require('./departments.json');
 
+const capitalize = s => (s && s[0].toUpperCase() + s.slice(1)) || "";
+
 const convertWikiNames = str =>
   str
     .substring(0, 36)
@@ -32,6 +34,7 @@ const getDepartmentName = zip => {
 const slugify = label => createSlug(label.trim(), { lang: 'fr', custom: { '.': '.', 'Ǧ': 'g' } });
 
 module.exports = {
+  capitalize,
   convertWikiNames,
   convertWikiDate,
   convertGogoDate,

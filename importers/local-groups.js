@@ -55,7 +55,7 @@ module.exports = {
             'pair:addressZipCode': data.bf_code_postal ? parseInt(data.bf_code_postal, 10) : undefined,
           },
         },
-        'pair:supportedBy': this.settings.dest.actorUri,
+        'pair:supportedBy': this.settings.activitypub.actorUri,
       });
     }
   }
