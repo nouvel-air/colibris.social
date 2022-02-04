@@ -23,7 +23,7 @@ module.exports = {
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects'),
-      predicatesToKeep: ['pair:needs']
+      predicatesToKeep: ['pair:needs', 'pair:offers']
     },
     activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
