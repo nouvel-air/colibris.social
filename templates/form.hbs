@@ -23,7 +23,6 @@
                 <div class="block block-system block-main" id="block-system-main">
                     <div class="content">
                         <form accept-charset="UTF-8" action="/mailer" id="user-profile-form" method="post">
-                            <input name="token" type="hidden" value="{{ token }}" />
                             <div class="messages error" id="error-message" style="display: none"></div>
                             {{#ifCond message '===' 'updated' }}
                                 <div class="messages success" id="success-message">Vos informations ont bien été mises à jour.</div>

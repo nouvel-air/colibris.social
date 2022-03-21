@@ -66,9 +66,9 @@ const FormService = {
       });
     },
     async process(ctx) {
-      const { token, unsubscribe, address, radius, themes, email, frequency } = ctx.params;
+      const { unsubscribe, address, radius, themes, email, frequency } = ctx.params;
 
-      const payload = await ctx.call('auth.jwt.verifyToken', { token });
+      const payload = await ctx.call('auth.jwt.verifyToken', { token: ctx.meta.$session.token });
       if( !payload ) throw new Error('Invalid token');
       const { webId } = payload;
 
@@ -96,10 +96,10 @@ const FormService = {
 
         await ctx.call('subscription.remove', { id: subscription['@id'] });
 
-        return this.redirectToForm(ctx, 'deleted', token);
+        return this.redirectToForm(ctx, 'deleted');
       } else {
         if (!themes) {
-          return this.redirectToForm(ctx, 'missing-themes', token);
+          return this.redirectToForm(ctx, 'missing-themes');
         }
 
         for( const themeLabel of this.settings.themes ) {
@@ -145,7 +145,7 @@ const FormService = {
         // // Do not wait for mail to be sent
         // ctx.call('mailer.sendConfirmationMail', { actor });
 
-        return this.redirectToForm(ctx, 'updated', token);
+        return this.redirectToForm(ctx, 'updated');
       }
     }
   },
@@ -215,13 +215,9 @@ const FormService = {
     this.formTemplate = Handlebars.compile(templateFile.toString());
   },
   methods: {
-    redirectToForm(ctx, message, token) {
+    redirectToForm(ctx, message) {
       ctx.meta.$statusCode = 302;
-      if (token) {
-        ctx.meta.$location = `/mailer/?token=${encodeURI(token)}&message=${encodeURI(message)}`;
-      } else {
-        ctx.meta.$location = `/mailer/?message=${encodeURI(message)}`;
-      }
+      ctx.meta.$location = `/mailer/?message=${encodeURI(message)}`;
     },
     async findActorByEmail(email) {
       try {
