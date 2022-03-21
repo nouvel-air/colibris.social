@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "moleculer-runner --repl --hot services importers/*.js",
     "start": "moleculer-runner --instances=max services importers/*.js",
-    "link-semapps-packages": "yarn link @semapps/activitypub @semapps/auth @semapps/backup @semapps/fuseki-admin @semapps/importer @semapps/inference @semapps/jsonld @semapps/ldp @semapps/middlewares @semapps/mime-types @semapps/pod @semapps/push @semapps/signature @semapps/sparql-endpoint @semapps/triplestore @semapps/webacl @semapps/webfinger @semapps/webhooks @semapps/webid"
+    "link-semapps-packages": "yarn link @semapps/activitypub @semapps/auth @semapps/backup @semapps/fuseki-admin @semapps/importer @semapps/inference @semapps/jsonld @semapps/ldp @semapps/middlewares @semapps/mime-types @semapps/push @semapps/signature @semapps/sparql-endpoint @semapps/triplestore @semapps/webacl @semapps/webfinger @semapps/webhooks @semapps/webid"
   },
   "dependencies": {
     "@semapps/activitypub": "0.4.0-alpha.11",
@@ -25,7 +25,9 @@
     "@sentry/node": "^5.16.1",
     "@sentry/utils": "^5.16.1",
     "dotenv-flow": "^3.1.0",
+    "express-session": "^1.17.2",
     "handlebars": "^4.7.7",
+    "jwt-decode": "^3.1.2",
     "moleculer": "^0.14.18",
     "moleculer-bull": "0.2.8",
     "moleculer-cron": "^0.0.2",

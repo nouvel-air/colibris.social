@@ -123,6 +123,11 @@ module.exports = [
     dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
   },
   {
+    path: '/bots',
+    acceptedTypes: [ACTOR_TYPES.APPLICATION],
+    dereference: ['sec:publicKey']
+  },
+  {
     path: '/themes',
     acceptedTypes: ['pair:Theme']
   },
