@@ -5,7 +5,7 @@ const { ACTOR_TYPES, ACTIVITY_TYPES, OBJECT_TYPES } = require('@semapps/activity
 const { defaultToArray } = require('@semapps/ldp');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const path = require('path');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 const themes = require('../imports/themes.json');
 const { convertWikiNames, convertWikiDate, convertGogoDate, getDepartmentName, slugify } = require('../utils');
 

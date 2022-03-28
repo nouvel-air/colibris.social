@@ -1,6 +1,6 @@
 const path = require('path');
 const { JsonLdService } = require('@semapps/jsonld');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   mixins: [JsonLdService],

@@ -2,7 +2,7 @@ const urlJoin = require('url-join');
 const path = require('path');
 const { AuthCASService } = require('@semapps/auth');
 const { MIME_TYPES } = require('@semapps/mime-types');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   mixins: [AuthCASService],

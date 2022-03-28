@@ -1,4 +1,4 @@
-const CONFIG = require('./config');
+const CONFIG = require('./config/config');
 
 // Use the cacher only if Redis is configured
 const cacher = CONFIG.REDIS_CACHE_URL

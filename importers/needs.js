@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
 const { DrupalImporterMixin } = require('@semapps/importer');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 const typesMapping = {
   'pair:AtomBasedResource': 'Besoin matériel',

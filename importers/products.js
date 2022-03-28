@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const QueueMixin = require("moleculer-bull");
 const { PrestaShopImporterMixin, removeHtmlTags } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.products',

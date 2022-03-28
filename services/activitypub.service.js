@@ -1,8 +1,8 @@
 const { ActivityPubService, ACTOR_TYPES } = require('@semapps/activitypub');
 const { getPrefixJSON, getSlugFromUri } = require('@semapps/ldp');
-const CONFIG = require('../config');
-const containers = require('../containers');
-const ontologies = require('../ontologies');
+const CONFIG = require('../config/config');
+const containers = require('../config/containers');
+const ontologies = require('../config/ontologies.json');
 
 module.exports = {
   mixins: [ActivityPubService],

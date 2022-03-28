@@ -3,8 +3,8 @@ const QueueService = require('moleculer-bull');
 const { ACTIVITY_TYPES, ACTOR_TYPES, OBJECT_TYPES, PUBLIC_URI } = require('@semapps/activitypub');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const { WebhooksService } = require('@semapps/webhooks');
-const CONFIG = require('../config');
-const { laFabriqueThemesMapping } = require('../constants');
+const CONFIG = require('../config/config');
+const { laFabriqueThemesMapping } = require('../config/constants');
 const { getDepartmentName, slugify } = require('../utils');
 
 module.exports = {

@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const { MIME_TYPES } = require("@semapps/mime-types");
 const { slugify, capitalize } = require("../utils");
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   methods: {

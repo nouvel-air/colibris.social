@@ -3,8 +3,8 @@ const urlJoin = require('url-join');
 const fs = require('fs').promises;
 const session = require('express-session');
 const { MIME_TYPES } = require('@semapps/mime-types');
-const CONFIG = require('../../config');
-const { themes } = require('../../constants')
+const CONFIG = require('../../config/config');
+const { themes } = require('../../config/constants')
 const { slugify } = require('../../utils');
 
 const FormService = {
@@ -12,6 +12,7 @@ const FormService = {
   dependencies: ['api'],
   settings: {
     botsContainerUri: urlJoin(CONFIG.HOME_URL, 'bots'),
+    themesContainerUri: urlJoin(CONFIG.HOME_URL, 'themes'),
     themes,
   },
   actions: {
@@ -45,7 +46,7 @@ const FormService = {
           location: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:label'],
           latitude: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:latitude'],
           longitude: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:longitude'],
-          radius: '25000',
+          radius: '25',
           email: account.email,
           frequency: 'weekly'
         };
@@ -122,7 +123,9 @@ const FormService = {
           webId,
           frequency,
           email,
-          radius
+          radius,
+          themes: themes.join(', '),
+          locale: 'fr'
         };
 
         if (address) {
@@ -141,6 +144,15 @@ const FormService = {
         } else {
           await ctx.call('subscription.create', subscription);
         }
+
+        await ctx.call('ldp.resource.put', {
+          resource: {
+            ...actor,
+            'pair:hasInterest': themes.map(themeLabel => this.getThemeUri(themeLabel))
+          },
+          contentType: MIME_TYPES.JSON,
+          webId
+        });
 
         // // Do not wait for mail to be sent
         // ctx.call('mailer.sendConfirmationMail', { actor });
@@ -235,6 +247,10 @@ const FormService = {
     getBotUri(themeLabel) {
       const themeSlug = slugify(themeLabel);
       return urlJoin(this.settings.botsContainerUri, themeSlug);
+    },
+    getThemeUri(themeLabel) {
+      const themeSlug = slugify(themeLabel);
+      return urlJoin(this.settings.themesContainerUri, themeSlug);
     }
   }
 };

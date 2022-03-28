@@ -1,7 +1,7 @@
 const path = require('path');
 const MailerService = require('moleculer-mail');
 const { MIME_TYPES } = require('@semapps/mime-types');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'mailer',

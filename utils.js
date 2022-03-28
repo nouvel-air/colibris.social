@@ -1,5 +1,5 @@
 const createSlug = require('speakingurl');
-const departments = require('./departments.json');
+const departments = require('./config/departments.json');
 
 const capitalize = s => (s && s[0].toUpperCase() + s.slice(1)) || "";
 

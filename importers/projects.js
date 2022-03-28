@@ -3,7 +3,7 @@ const QueueMixin = require("moleculer-bull");
 const { DrupalImporterMixin } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
 const { getDepartmentName } = require("../utils");
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.projects',

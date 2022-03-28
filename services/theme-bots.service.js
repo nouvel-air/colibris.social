@@ -2,10 +2,10 @@ const urlJoin = require('url-join');
 const { ACTOR_TYPES, ACTIVITY_TYPES, PUBLIC_URI } = require("@semapps/activitypub");
 const { defaultToArray, getSlugFromUri } = require("@semapps/ldp");
 const { MIME_TYPES } = require("@semapps/mime-types");
-const { themes } = require('../../constants');
-const { slugify } = require('../../utils');
-const CONFIG = require('../../config');
-const services = require('../../importers/files/services.json');
+const { themes } = require('../config/constants');
+const { slugify } = require('../utils');
+const CONFIG = require('../config/config');
+const services = require('../importers/files/services.json');
 
 const ThemeBotsService = {
   name: 'theme-bot',
@@ -78,13 +78,20 @@ const ThemeBotsService = {
     getBotUri(themeLabel) {
       const themeSlug = slugify(themeLabel);
       return urlJoin(this.settings.botsContainerUri, themeSlug);
+    },
+    getBots() {
+      return this.bots;
     }
   },
   events: {
     async 'activitypub.inbox.received'(ctx) {
       const { recipients, activity } = ctx.params;
 
+      console.log('inbox received', activity, recipients);
+
       const matchingBots = recipients.filter(recipientUri => Object.keys(this.bots).includes(recipientUri));
+
+      console.log('matching bots', matchingBots);
 
       // If one or more bots are recipient of the activity
       if( matchingBots.length > 0 ) {
@@ -92,9 +99,21 @@ const ThemeBotsService = {
         if( activity.type === ACTIVITY_TYPES.CREATE ) {
           const object = await ctx.call('activitypub.object.get', { objectUri: activity.object });
 
+          console.log('object', object);
+
           for( const botUri of matchingBots ) {
             if( object['pair:hasTopic'] && defaultToArray(object['pair:hasTopic']).includes(this.bots[botUri]) ) {
               const { '@context': context, ...announcedActivity } = activity;
+
+              console.log({
+                collectionUri: urlJoin(botUri, 'outbox'),
+                '@context': 'https://www.w3.org/ns/activitystreams',
+                actor: botUri,
+                type: ACTIVITY_TYPES.ANNOUNCE,
+                object: announcedActivity,
+                to: [urlJoin(botUri, 'followers'), PUBLIC_URI]
+              });
+
               await ctx.call('activitypub.outbox.post', {
                 collectionUri: urlJoin(botUri, 'outbox'),
                 '@context': 'https://www.w3.org/ns/activitystreams',
