@@ -12,23 +12,31 @@ module.exports = [
       }
     },
     mapping: {
+      category: "NOUVEAUX PROJETS DE LA FABRIQUE",
       title: '{{activity.object.object.pair:label}}',
       description: '{{activity.object.object.pair:description}}',
       image: '{{activity.object.object.pair:depictedBy}}',
-      actionName: {
-        fr: 'Voir',
-        en: 'View'
-      },
+      actionName: 'En savoir plus',
       actionLink: '{{activity.object.object.pair:aboutPage}}',
-      category: {
-        fr: 'Nouveaux Projets',
-        en: 'New Projects'
-      },
-      summary: {
-        fr: 'Nouveau projet sur la Fabrique: {{activity.object.object.pair:label}}',
-        en: 'New project on la Fabrique: {{activity.object.object.pair:label}}'
-      },
+    }
+  },
+  {
+    match: {
+      type: ACTIVITY_TYPES.ANNOUNCE,
+      object: {
+        type: ACTIVITY_TYPES.CREATE,
+        object: {
+          type: 'pair:Event'
+        }
+      }
     },
-    priority: 1
+    mapping: {
+      category: "NOUVELLES FORMATIONS DE L'UNIVERSITE",
+      title: '{{activity.object.object.pair:label}}',
+      description: '{{activity.object.object.pair:comment}}',
+      image: '{{activity.object.object.pair:depictedBy}}',
+      actionName: 'En savoir plus',
+      actionLink: '{{activity.object.object.pair:webPage}}',
+    }
   }
 ]

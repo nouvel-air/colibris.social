@@ -40,7 +40,7 @@ const FormService = {
 
       const account = await ctx.call('auth.account.findByWebId', { webId });
 
-      let subscription = await ctx.call('subscription.findByWebId', { webId });
+      let subscription = await ctx.call('digest.subscription.findByWebId', { webId });
       if (!subscription) {
         subscription = {
           location: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:label'],
@@ -73,7 +73,7 @@ const FormService = {
       if( !payload ) throw new Error('Invalid token');
       const { webId } = payload;
 
-      let subscription = await ctx.call('subscription.findByWebId', { webId });
+      let subscription = await ctx.call('digest.subscription.findByWebId', { webId });
 
       const actor = await ctx.call('ldp.resource.get', {
         resourceUri: webId,
@@ -95,7 +95,7 @@ const FormService = {
           });
         }
 
-        await ctx.call('subscription.remove', { id: subscription['@id'] });
+        await ctx.call('digest.subscription.remove', { id: subscription['@id'] });
 
         return this.redirectToForm(ctx, 'deleted');
       } else {
@@ -140,9 +140,9 @@ const FormService = {
         }
 
         if( subscription['@id'] ) {
-          await ctx.call('subscription.update', subscription);
+          await ctx.call('digest.subscription.update', subscription);
         } else {
-          await ctx.call('subscription.create', subscription);
+          await ctx.call('digest.subscription.create', subscription);
         }
 
         await ctx.call('ldp.resource.put', {

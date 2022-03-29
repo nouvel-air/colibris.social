@@ -2,10 +2,10 @@ const urlJoin = require('url-join');
 const { ACTOR_TYPES, ACTIVITY_TYPES, PUBLIC_URI } = require("@semapps/activitypub");
 const { defaultToArray, getSlugFromUri } = require("@semapps/ldp");
 const { MIME_TYPES } = require("@semapps/mime-types");
-const { themes } = require('../config/constants');
-const { slugify } = require('../utils');
-const CONFIG = require('../config/config');
-const services = require('../importers/files/services.json');
+const { themes } = require('../../config/constants');
+const { slugify } = require('../../utils');
+const CONFIG = require('../../config/config');
+const services = require('../../importers/files/services.json');
 
 const ThemeBotsService = {
   name: 'theme-bot',
