@@ -39,6 +39,7 @@ module.exports = {
       if( !type ) throw new Error('Unknown type: ' + data.type);
 
       const projectUri = urlJoin(CONFIG.HOME_URL, 'lafabrique', 'projects', data.project_path.split('/').pop());
+      const project = await this.broker.call('activitypub.object.get', { objectUri: projectUri });
 
       let title;
       if( type === 'pair:MoneyBasedResource' ) {
@@ -65,9 +66,10 @@ module.exports = {
       }
 
       return({
-        type,
+        type: ['pair:Resource', type],
         'pair:label': 'Je recherche ' + title,
         'pair:description': data.description && data.description.trim(),
+        'pair:hasTopic': project['pair:hasTopic'],
         'pair:neededBy': projectUri,
         'pair:webPage': contactUrl
       });

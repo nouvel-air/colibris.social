@@ -22,6 +22,16 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Habitat et Jardin': 'Habitat',
+      'Collectifs citoyens': 'Engagement et militantisme',
+      'Sorties et Culture': 'Culture',
+      'Artisanat / Seconde main': 'Modes de vie',
+      "Hygiène / Beauté": 'Modes de vie',
+      'Lieux collaboratifs': 'Coopération',
+      "Systèmes d'échanges": 'Economie et décroissance',
+      'Voyage / Mobilité': 'Mobilité'
     }
   },
   methods: {

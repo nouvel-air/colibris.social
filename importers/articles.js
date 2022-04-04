@@ -29,6 +29,19 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agriculture': 'Alimentation et agriculture',
+      'Alimentation': 'Alimentation et agriculture',
+      'Climat': 'Energie',
+      'Économie': 'Economie et décroissance',
+      'Éducation': 'Éducation et formation',
+      'Low Tech': 'Economie et décroissance',
+      'Nature': 'Défense du vivant',
+      'Numérique': 'Numérique éthique',
+      'Santé': 'Numérique éthique',
+      'Sobriété': 'Economie et décroissance',
+      'Transformation intérieure': 'Transition intérieure'
     }
   },
   methods: {

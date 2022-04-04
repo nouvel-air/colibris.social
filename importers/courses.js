@@ -27,8 +27,18 @@ module.exports = {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'universite')
     },
     cronJob: {
-      time: '0 0 4 * * *', // Every night at 4am
+      time: '0 * * * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agriculture & Alimentation': 'Alimentation et agriculture',
+      'Arts & Culture': 'Culture',
+      'Economie': 'Economie et décroissance',
+      'Education': 'Education et formation',
+      'Gouvernance': 'Coopération',
+      'Habitat & Énergie': 'Habitat',
+      'Santé & Bien-être': 'Santé',
+      'Transformation intérieure': 'Transition intérieure'
     }
   },
   methods: {
@@ -46,7 +56,7 @@ module.exports = {
         'pair:aboutPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:webPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:offeredBy': this.settings.activitypub.actorUri,
-        'pair:depictedBy': data.image && data.image.src,
+        'pair:depictedBy': data.image && data.image.src.replace('https://', 'https://universite:qeabGLSu%2196G@'),
       });
     }
   }
