@@ -87,19 +87,13 @@ const ThemeBotsService = {
     async 'activitypub.inbox.received'(ctx) {
       const { recipients, activity } = ctx.params;
 
-      console.log('inbox received', activity, recipients);
-
       const matchingBots = recipients.filter(recipientUri => Object.keys(this.bots).includes(recipientUri));
-
-      console.log('matching bots', matchingBots);
 
       // If one or more bots are recipient of the activity
       if( matchingBots.length > 0 ) {
         // If the activity is of type create
         if( activity.type === ACTIVITY_TYPES.CREATE ) {
           const object = await ctx.call('activitypub.object.get', { objectUri: activity.object });
-
-          console.log('object', object);
 
           for( const botUri of matchingBots ) {
             if( object['pair:hasTopic'] && defaultToArray(object['pair:hasTopic']).includes(this.bots[botUri]) ) {
