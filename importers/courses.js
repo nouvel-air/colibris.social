@@ -27,7 +27,7 @@ module.exports = {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'universite')
     },
     cronJob: {
-      time: '0 * * * * *', // Every night at 4am
+      time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
     },
     themesAugmenter: {
