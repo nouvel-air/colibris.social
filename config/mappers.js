@@ -18,6 +18,8 @@ module.exports = [
       image: '{{activity.object.object.pair:depictedBy}}',
       actionName: 'En savoir plus',
       actionLink: '{{activity.object.object.pair:aboutPage}}',
+      latitude: '{{activity.object.object.pair:hasLocation.pair:latitude}}',
+      longitude: '{{activity.object.object.pair:hasLocation.pair:latitude}}'
     }
   },
   {
