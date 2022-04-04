@@ -40,7 +40,15 @@
                             <div class="messages error">Veuillez sélectionner au moins un thème.</div>
                             {{/ifCond}}
                             <div>
-                                <label>Oui, je souhaite être informé des actualités près de chez moi&nbsp;:</label>
+                                <label>Oui, je souhaite être informé des actualités de Colibris&nbsp;:</label>
+                                <div class="form-item form-type-radio">
+                                    <input id="whole-world" type="radio" name="location" value="whole-world" {{#unless subscription.location }}checked{{/unless}}>
+                                    <label class="option" for="whole-world">Dans le monde entier</label>
+                                </div>
+                                <div class="form-item form-type-radio">
+                                    <input id="close-to-me" name="location" type="radio" value="close-to-me" {{#if subscription.location }}checked{{/if}}>
+                                    <label class="option" for="close-to-me">Près de chez moi :</label>
+                                </div>
                                 <div class="side">
                                     <div id="geocoder"></div>
                                     <input id="address" name="address" type="hidden">
@@ -57,7 +65,7 @@
                             </div>
                             <br/>
                             <div class="form-item form-type-checkboxes">
-                                <label>... ou touchant les thématiques suivantes&nbsp;:</label>
+                                <label>Touchant les thématiques suivantes&nbsp;:</label>
                                 <div class="row">
                                 {{#each themes}}
                                     <div class="col-xs-12 col-sm-6">
@@ -134,6 +142,7 @@
 
     {{#if subscription.location }}
         geocoder.setInput('{{ subscription.location }}');
+        document.getElementById("close-to-me").checked = true;
 
         setTimeout(function() {
           var clearButton = document.querySelector('.mapboxgl-ctrl-geocoder--button');
@@ -144,16 +153,21 @@
     // Add geocoder result to container.
     geocoder.on('result', (e) => {
         document.getElementById("address").value = JSON.stringify(e.result);
+        document.getElementById("close-to-me").checked = true;
     });
 
     // Clear results container when search is cleared.
     geocoder.on('clear', (e) => {
         document.getElementById("address").value = '';
+        document.getElementById("whole-world").checked = true;
+    });
+
+    document.getElementById("whole-world").addEventListener('change', () => {
+        geocoder.setInput('');
+        document.getElementById("address").value = '';
     });
 
     document.getElementById("user-profile-form").addEventListener('submit', e => {
-        console.log('e', e);
-
         var numChecked = 0;
         var checkboxes = document.querySelectorAll('[id^=theme]');
         checkboxes.forEach(function(checkbox) {

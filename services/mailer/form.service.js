@@ -52,6 +52,10 @@ const FormService = {
         };
       }
 
+      if( !subscription.radius ) {
+        subscription.radius = '25';
+      }
+
       const { items: following } = await ctx.call('activitypub.collection.get', {
         collectionUri: actor.following,
         webId: actor.id
@@ -67,7 +71,7 @@ const FormService = {
       });
     },
     async process(ctx) {
-      const { unsubscribe, address, radius, themes, email, frequency } = ctx.params;
+      const { unsubscribe, location, address, radius, themes, email, frequency } = ctx.params;
 
       const payload = await ctx.call('auth.jwt.verifyToken', { token: ctx.meta.$session.token });
       if( !payload ) throw new Error('Invalid token');
@@ -128,15 +132,25 @@ const FormService = {
           locale: 'fr'
         };
 
-        if (address) {
-          const parsedAddress = JSON.parse(address);
-          subscription.location =  parsedAddress.place_name;
-          subscription.longitude =  parsedAddress.geometry.coordinates[0];
-          subscription.latitude =  parsedAddress.geometry.coordinates[1];
-        } else if (actor['pair:hasLocation'] && !subscription.location) {
-          subscription.location = actor['pair:hasLocation']['pair:label'];
-          subscription.latitude = actor['pair:hasLocation']['pair:latitude'];
-          subscription.longitude = actor['pair:hasLocation']['pair:longitude'];
+        if( location === 'close-to-me' ) {
+          if (address) {
+            const parsedAddress = JSON.parse(address);
+            subscription.location =  parsedAddress.place_name;
+            subscription.longitude =  parsedAddress.geometry.coordinates[0];
+            subscription.latitude =  parsedAddress.geometry.coordinates[1];
+          } else if (actor['pair:hasLocation'] && !subscription.location) {
+            subscription.location = actor['pair:hasLocation']['pair:label'];
+            subscription.latitude = `${actor['pair:hasLocation']['pair:latitude']}`;
+            subscription.longitude = `${actor['pair:hasLocation']['pair:longitude']}`;
+          }
+        } else {
+          // If a location was set, remove it
+          if( subscription.location ) {
+            subscription.location = null;
+            subscription.latitude = null;
+            subscription.longitude = null;
+            subscription.radius = null;
+          }
         }
 
         if( subscription['@id'] ) {
