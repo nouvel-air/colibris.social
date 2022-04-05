@@ -38,7 +38,7 @@ const ThemeBotsService = {
 
           const themeSlug = getSlugFromUri(botUri);
 
-          await this.broker.call('ldp.container.post', {
+          await ctx.call('ldp.container.post', {
             containerUri: botsContainerUri,
             slug: themeSlug,
             resource: {
@@ -48,15 +48,17 @@ const ThemeBotsService = {
             },
             contentType: MIME_TYPES.JSON
           });
+
+          await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: botUri });
         } else {
           this.logger.info(`Bot ${botUri} already exist, skipping...`);
         }
 
         for (let actorUri of watchedActors) {
-          const actorExist = await this.broker.call('ldp.resource.exist', {resourceUri: actorUri});
+          const actorExist = await ctx.call('ldp.resource.exist', {resourceUri: actorUri});
 
           if (actorExist) {
-            const isFollowing = await this.broker.call('activitypub.follow.isFollowing', {
+            const isFollowing = await ctx.call('activitypub.follow.isFollowing', {
               follower: botUri,
               following: actorUri
             });
@@ -64,7 +66,7 @@ const ThemeBotsService = {
             if (!isFollowing) {
               this.logger.info(`Following actor ${actorUri}...`);
 
-              await this.broker.call('activitypub.follow.addFollower', {
+              await ctx.call('activitypub.follow.addFollower', {
                 follower: botUri,
                 following: actorUri
               });
