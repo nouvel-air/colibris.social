@@ -17,7 +17,7 @@
     "@semapps/jsonld": "0.4.0-alpha.15",
     "@semapps/ldp": "0.4.0-alpha.15",
     "@semapps/mime-types": "0.4.0-alpha.15",
-    "@semapps/notifications": "link:/home/sebastien/SemApps/semapps/src/middleware/packages/notifications",
+    "@semapps/notifications": "0.4.0-alpha.15",
     "@semapps/signature": "0.4.0-alpha.15",
     "@semapps/sparql-endpoint": "0.4.0-alpha.15",
     "@semapps/triplestore": "0.4.0-alpha.15",
