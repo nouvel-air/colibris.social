@@ -29,7 +29,7 @@ module.exports = {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
     },
     cronJob: {
-      time: '0 0 4 * * *', // Every night at 4am
+      time: '0 0 5 * * *', // Every night at 4am (after projects)
       timeZone: 'Europe/Paris'
     }
   },

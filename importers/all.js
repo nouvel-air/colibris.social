@@ -17,6 +17,8 @@ module.exports = {
 
       await ctx.call('importer.places.freshImport');
       await ctx.call('importer.events.freshImport');
+
+      await ctx.call('theme-bot.generateBots');
     }
   }
 };
