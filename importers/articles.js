@@ -2,7 +2,7 @@ const urlJoin = require("url-join");
 const QueueMixin = require('moleculer-bull');
 const { DrupalImporterMixin } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.articles',
@@ -29,6 +29,19 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agriculture': 'Alimentation et agriculture',
+      'Alimentation': 'Alimentation et agriculture',
+      'Climat': 'Energie',
+      'Économie': 'Economie et décroissance',
+      'Éducation': 'Éducation et formation',
+      'Low Tech': 'Economie et décroissance',
+      'Nature': 'Défense du vivant',
+      'Numérique': 'Numérique éthique',
+      'Santé': 'Numérique éthique',
+      'Sobriété': 'Economie et décroissance',
+      'Transformation intérieure': 'Transition intérieure'
     }
   },
   methods: {

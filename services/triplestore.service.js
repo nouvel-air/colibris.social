@@ -1,5 +1,5 @@
 const { TripleStoreService } = require('@semapps/triplestore');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   mixins: [TripleStoreService],

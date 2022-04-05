@@ -1,7 +1,7 @@
 const urlJoin = require("url-join");
 const path = require("path");
 const { ImporterMixin } = require('@semapps/importer');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.types',

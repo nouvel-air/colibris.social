@@ -3,7 +3,7 @@ const QueueMixin = require("moleculer-bull");
 const { DrupalImporterMixin } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
 const { getDepartmentName } = require("../utils");
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.projects',
@@ -31,6 +31,15 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agriculture & Alimentation': 'Alimentation & Agriculture',
+      'Économie locale': 'Economie et décroissance',
+      'Arts & Culture': 'Culture',
+      'Éducation': 'Education et formation',
+      'Habitat & Oasis': 'Habitat',
+      'Transport': 'Mobilité',
+      'Bien-être': 'Modes de vie'
     }
   },
   methods: {
@@ -38,8 +47,8 @@ module.exports = {
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
       const resizedImages = data.images
         ? Array.isArray(data.images)
-          ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'))
-          : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/')]
+          ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/').replace('https://', 'https://fabrique:xFbek2oSL%236T@'))
+          : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/').replace('https://', 'https://fabrique:xFbek2oSL%236T@')]
         : undefined;
       const themes = await this.createOrGetThemes(data.themes);
 

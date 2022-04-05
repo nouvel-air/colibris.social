@@ -1,12 +1,12 @@
 const urlJoin = require("url-join");
 const { MIME_TYPES } = require("@semapps/mime-types");
 const { slugify, capitalize } = require("../utils");
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   methods: {
     async createOrGetThemes(...labels) {
-      const labelsArray = labels
+      const labelsArray = this.augment(labels)
         .filter(l => l)
         .map(l => l.trim())
         .reduce((acc, value) => { acc.push(...value.split(/[,\n\r]+/)); return acc; }, [])
@@ -41,6 +41,19 @@ module.exports = {
       }
 
       return themeUris;
+    },
+    augment(labels) {
+      if( this.settings.themesAugmenter ) {
+        let augmentedLabels = [...labels];
+        for( let label of labels ) {
+          for( let [key, value] of Object.entries(this.settings.themesAugmenter) ) {
+            if( key === label ) augmentedLabels.push(value);
+          }
+        }
+        return augmentedLabels
+      } else {
+        return labels;
+      }
     }
   }
 };

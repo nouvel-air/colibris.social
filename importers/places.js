@@ -2,7 +2,7 @@ const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
 const { GoGoCartoImporterMixin, frenchAddressSearch, formatPhoneNumber } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.places',
@@ -22,6 +22,16 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Habitat et Jardin': 'Habitat',
+      'Collectifs citoyens': 'Engagement et militantisme',
+      'Sorties et Culture': 'Culture',
+      'Artisanat / Seconde main': 'Modes de vie',
+      "Hygiène / Beauté": 'Modes de vie',
+      'Lieux collaboratifs': 'Coopération',
+      "Systèmes d'échanges": 'Economie et décroissance',
+      'Voyage / Mobilité': 'Mobilité'
     }
   },
   methods: {

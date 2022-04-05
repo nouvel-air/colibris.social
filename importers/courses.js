@@ -2,7 +2,7 @@ const urlJoin = require("url-join");
 const QueueMixin = require('moleculer-bull');
 const { DrupalImporterMixin, convertToIsoString } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.courses',
@@ -29,6 +29,16 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agriculture & Alimentation': 'Alimentation et agriculture',
+      'Arts & Culture': 'Culture',
+      'Economie': 'Economie et décroissance',
+      'Education': 'Education et formation',
+      'Gouvernance': 'Coopération',
+      'Habitat & Énergie': 'Habitat',
+      'Santé & Bien-être': 'Santé',
+      'Transformation intérieure': 'Transition intérieure'
     }
   },
   methods: {
@@ -46,7 +56,7 @@ module.exports = {
         'pair:aboutPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:webPage': urlJoin('https://dev.colibris-universite.org', data.path),
         'pair:offeredBy': this.settings.activitypub.actorUri,
-        'pair:depictedBy': data.image && data.image.src,
+        'pair:depictedBy': data.image && data.image.src.replace('https://', 'https://universite:qeabGLSu%2196G@'),
       });
     }
   }

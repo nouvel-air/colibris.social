@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const QueueMixin = require("moleculer-bull");
 const { PrestaShopImporterMixin, removeHtmlTags } = require('@semapps/importer');
 const ThemeCreatorMixin = require('../mixins/theme-creator');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'importer.products',
@@ -25,6 +25,20 @@ module.exports = {
     cronJob: {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
+    },
+    themesAugmenter: {
+      'Agroécologie': 'Alimentation & Agriculture',
+      'Alimentation': 'Alimentation & Agriculture',
+      'Changement intérieur': 'Transition intérieure',
+      'Démocratie citoyenne': 'Démocratie',
+      'Ecolieux & Oasis': 'Habitat',
+      'Effondrement(s)': 'Territoires résilients',
+      'Écologie & Nature': 'Défense du vivant',
+      'Économie et sobriété': 'Economie et décroissance',
+      "Education à l'autonomie": 'Territoires résilients',
+      'Energie et Climat': 'Energie',
+      'Low tech': 'Energie',
+      'Zero déchet': 'Economie et décroissance'
     }
   },
   methods: {
