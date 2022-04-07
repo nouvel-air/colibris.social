@@ -41,6 +41,7 @@ const cods = {
       path: '/events',
       acceptedTypes: ['pair:Event'],
       dereference: ['pair:hasLocation/pair:hasPostalAddress'],
+      readOnly: true
     },
   ],
   '/lafabrique': [
@@ -48,10 +49,12 @@ const cods = {
       path: '/projects',
       acceptedTypes: ['pair:Project'],
       dereference: ['pair:hasLocation/pair:hasPostalAddress'],
+      readOnly: true
     },
     {
       path: '/needs',
       acceptedTypes: ['pair:HumanBasedResource', 'pair:AtomBasedResource', 'pair:MoneyBasedResource'],
+      readOnly: true
     },
     {
       path: '/hosting-services',
@@ -61,33 +64,38 @@ const cods = {
   '/laboutique': [
     {
       path: '/products',
-      acceptedTypes: ['pair:Resource']
+      acceptedTypes: ['pair:Resource'],
+      readOnly: true
     }
   ],
   '/lemag': [
     {
       path: '/articles',
-      acceptedTypes: ['pair:Document']
+      acceptedTypes: ['pair:Document'],
+      readOnly: true
     }
   ],
   '/universite': [
     {
       path: '/courses',
-      acceptedTypes: ['pair:Event']
+      acceptedTypes: ['pair:Event'],
+      readOnly: true
     }
   ],
   '/presdecheznous': [
     {
       path: '/organizations',
       acceptedTypes: ['pair:Organization'],
-      dereference: ['pair:hasLocation/pair:hasPostalAddress']
+      dereference: ['pair:hasLocation/pair:hasPostalAddress'],
+      readOnly: true
     }
   ],
   '/groupeslocaux': [
     {
       path: '/groups',
       acceptedTypes: ['pair:Group', ACTOR_TYPES.GROUP],
-      dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
+      dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress'],
+      readOnly: true
     }
   ],
   '/payscreillois': localGroupsContainers
@@ -97,7 +105,7 @@ const mapCodsToContainers = () => {
   let containers = [];
   Object.keys(cods).forEach(key => {
     // Parent container
-    containers.push({ path: key });
+    containers.push({ path: key, readOnly: true });
     // Child containers
     containers.push(...cods[key].map(container => {
       container.path = key + container.path;
@@ -109,35 +117,42 @@ const mapCodsToContainers = () => {
 
 module.exports = [
   {
-    path: '/'
+    path: '/',
+    readOnly: true
   },
   ...mapCodsToContainers(),
   {
     path: '/services',
     acceptedTypes: ['pair:Group', ACTOR_TYPES.SERVICE],
-    dereference: ['sec:publicKey']
+    dereference: ['sec:publicKey'],
+    readOnly: true
   },
   {
     path: '/users',
     acceptedTypes: ['pair:Person', ACTOR_TYPES.PERSON],
-    dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
+    dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress'],
+    readOnly: true
   },
   {
     path: '/bots',
     acceptedTypes: [ACTOR_TYPES.APPLICATION],
-    dereference: ['sec:publicKey']
+    dereference: ['sec:publicKey'],
+    readOnly: true
   },
   {
     path: '/themes',
-    acceptedTypes: ['pair:Theme']
+    acceptedTypes: ['pair:Theme'],
+    readOnly: true
   },
   {
     path: '/status',
     acceptedTypes: ['pair:ProjectStatus'],
+    readOnly: true
   },
   {
     path: '/skills',
-    acceptedTypes: ['pair:Skill']
+    acceptedTypes: ['pair:Skill'],
+    readOnly: true
   },
   {
     path: '/types',
@@ -158,7 +173,8 @@ module.exports = [
       'pair:SubjectType',
       'pair:TaskType',
       'oasis:HostingServiceType'
-    ]
+    ],
+    readOnly: true
   },
   {
     path: '/files'
