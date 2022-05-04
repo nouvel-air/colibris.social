@@ -83,7 +83,7 @@ module.exports = {
         'pair:hasTopic': themes,
         'pair:webPage': data.website || undefined,
         'pair:aboutPage': 'https://presdecheznous.fr/annuaire#/fiche/-/' + data.id,
-        'pair:depictedBy': data.image,
+        'pair:depictedBy': data.images && data.images.length > 0 ? data.images[0] : undefined,
         'pair:e-mail': email,
         'pair:phone': phone
       });
