@@ -132,7 +132,7 @@ module.exports = [
       description: '{{{activity.object.object.pair:description}}}',
       image: '{{activity.object.object.pair:depictedBy}}',
       actionName: 'Voir le produit',
-      actionLink: '{{activity.object.object.pair:aboutPage}}',
+      actionLink: '{{activity.object.object.pair:webPage}}',
     },
     priority: 2 // Match before needs
   },
