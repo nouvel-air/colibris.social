@@ -17,7 +17,7 @@ module.exports = [
     match: announceCreate('pair:Document'),
     mapping: {
       key: 'article',
-      category: "NOUVEL ARTICLE DU MAG",
+      category: "NOUVEAUX ARTICLES DU MAG",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:comment}}}',
       image: '{{activity.object.object.pair:depictedBy}}',
@@ -65,7 +65,7 @@ module.exports = [
     match: announceCreate('pair:Group'),
     mapping: {
       key: 'local-group',
-      category: "NOUVEAU GROUPE LOCAL",
+      category: "NOUVEAUX GROUPES LOCAUX",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:comment}}}',
       image: '{{activity.object.object.pair:depictedBy}}',
@@ -90,7 +90,7 @@ module.exports = [
     },
     mapping: {
       key: 'need',
-      category: "NOUVEAU BESOIN",
+      category: "NOUVEAUX BESOINS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:description}}}',
       image: '{{activity.object.object.pair:neededBy.pair:depictedBy}}',
@@ -104,7 +104,7 @@ module.exports = [
     match: announceCreate('pair:Organization'),
     mapping: {
       key: 'place',
-      category: "NOUVEL ACTEUR PRES DE CHEZ NOUS",
+      category: "NOUVEAUX ACTEURS PRES DE CHEZ NOUS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:description}}}',
       image: '{{#if activity.object.object.pair:depictedBy}}{{activity.object.object.pair:depictedBy}}{{else}}https://dev.colibris.social/images/places.png{{/if}}',
@@ -127,7 +127,7 @@ module.exports = [
     },
     mapping: {
       key: 'product',
-      category: "NOUVEAU PRODUIT LA BOUTIQUE",
+      category: "NOUVEAUX PRODUITS LA BOUTIQUE",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:description}}}',
       image: '{{activity.object.object.pair:depictedBy}}',
@@ -140,7 +140,7 @@ module.exports = [
     match: announceCreate('pair:Project'),
     mapping: {
       key: 'project',
-      category: "NOUVEAU PROJET LA FABRIQUE",
+      category: "NOUVEAUX PROJETS LA FABRIQUE",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{activity.object.object.pair:comment}}}',
       image: '{{activity.object.object.pair:depictedBy}}',
