@@ -54,7 +54,7 @@ module.exports = {
         'pair:comment': data.summary && data.summary.trim(),
         'pair:description': data.body && data.body.trim(),
         'pair:hasTopic': themes,
-        'pair:webPage': urlJoin('https://dev.colibris-lemouvement.org', data.path),
+        'pair:webPage': urlJoin('https://colibris-lemouvement.org', data.path),
         'pair:producedBy': this.settings.activitypub.actorUri,
         'pair:depictedBy': data.image && data.image.src,
       });
