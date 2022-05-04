@@ -45,6 +45,9 @@ module.exports = {
     async getCategory(id) {
       return await this.getOne(urlJoin(this.settings.source.prestashop.baseUrl, 'api', 'categories', `${id}`));
     },
+    async getTag(id) {
+      return await this.getOne(urlJoin(this.settings.source.prestashop.baseUrl, 'api', 'tags', `${id}`));
+    },
     async findImageExtension(imageWithoutExtension) {
       for( let extension of ['jpg', 'jpeg', 'png', 'gif', 'svg']) {
         const imageUrl = imageWithoutExtension + '.' + extension;
@@ -72,6 +75,10 @@ module.exports = {
         for( let { id } of data.associations.categories ) {
           const category = await this.getCategory(id);
           labels.push(category.name);
+        }
+        for( let { id } of data.associations.tags ) {
+          const tag = await this.getTag(id);
+          labels.push(tag.name);
         }
         themes = await this.createOrGetThemes(...labels);
       }
