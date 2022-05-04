@@ -59,7 +59,7 @@ module.exports = {
       }
     },
     async transform(data) {
-      if( data.available_for_order === '0' ) return false;
+      if( data.active === '0' ) return false;
 
       const image = await this.findImageExtension(urlJoin(this.settings.source.prestashop.baseUrl, data.id_default_image, data.link_rewrite));
 
