@@ -37,7 +37,7 @@ module.exports = {
       }
 
       // Local groups have all Colibris themes as topics
-      const themesUris = await this.createOrGetThemes(themes)
+      const themesUris = await this.createOrGetThemes(...themes)
 
       let websites = [];
       if( data.bf_site_internet ) websites.push(data.bf_site_internet);
