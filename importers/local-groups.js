@@ -1,12 +1,13 @@
 const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
 const { YesWikiImporterMixin } = require('@semapps/importer');
+const ThemeCreatorMixin = require('../mixins/theme-creator');
 const CONFIG = require('../config/config');
 const { themes } = require('../config/constants');
 
 module.exports = {
   name: 'importer.local-groups',
-  mixins: [YesWikiImporterMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
+  mixins: [YesWikiImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
       yeswiki: {
