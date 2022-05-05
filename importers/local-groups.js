@@ -2,6 +2,7 @@ const urlJoin = require("url-join");
 const QueueMixin = require("moleculer-bull");
 const { YesWikiImporterMixin } = require('@semapps/importer');
 const CONFIG = require('../config/config');
+const { themes } = require('../config/constants');
 
 module.exports = {
   name: 'importer.local-groups',
@@ -34,6 +35,9 @@ module.exports = {
         return false;
       }
 
+      // Local groups have all Colibris themes as topics
+      const themesUris = await this.createOrGetThemes(themes)
+
       let websites = [];
       if( data.bf_site_internet ) websites.push(data.bf_site_internet);
       if( data.bf_site_facebook ) websites.push(data.bf_site_facebook);
@@ -55,6 +59,7 @@ module.exports = {
             'pair:addressZipCode': data.bf_code_postal ? parseInt(data.bf_code_postal, 10) : undefined,
           },
         },
+        'pair:hasTopic': themesUris,
         'pair:supportedBy': this.settings.activitypub.actorUri,
       });
     }
