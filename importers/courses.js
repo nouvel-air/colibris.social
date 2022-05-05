@@ -9,13 +9,9 @@ module.exports = {
   mixins: [DrupalImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
-      apiUrl: 'https://dev.colibris-universite.org/api/courses',
-      getAllCompact: 'https://dev.colibris-universite.org/api/courses_compact',
-      getOneFull: data => 'https://dev.colibris-universite.org/api/courses/' + data.uuid,
-      basicAuth: {
-        user: 'universite',
-        password: 'qeabGLSu!96G'
-      },
+      apiUrl: 'https://colibris-universite.org/api/courses',
+      getAllCompact: 'https://colibris-universite.org/api/courses_compact',
+      getOneFull: data => 'https://colibris-universite.org/api/courses/' + data.uuid,
       fieldsMapping: {
         slug: data => data.path ? data.path.split('/').pop() : data.uuid,
       },
@@ -53,10 +49,10 @@ module.exports = {
         'pair:startDate': convertToIsoString(data.start_date),
         'pair:endDate': convertToIsoString(data.end_date),
         'pair:hasTopic': themes,
-        'pair:aboutPage': urlJoin('https://dev.colibris-universite.org', data.path),
-        'pair:webPage': urlJoin('https://dev.colibris-universite.org', data.path),
+        'pair:aboutPage': urlJoin('https://colibris-universite.org', data.path),
+        'pair:webPage': urlJoin('https://colibris-universite.org', data.path),
         'pair:offeredBy': this.settings.activitypub.actorUri,
-        'pair:depictedBy': data.image && data.image.src.replace('https://', 'https://universite:qeabGLSu%2196G@'),
+        'pair:depictedBy': data.image ? data.image.src : undefined,
       });
     }
   }

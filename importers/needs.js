@@ -14,13 +14,9 @@ module.exports = {
   mixins: [DrupalImporterMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
-      apiUrl: 'https://dev.colibris-lafabrique.org/api/needs',
-      getAllCompact: 'https://dev.colibris-lafabrique.org/api/needs_compact',
-      getOneFull: data => 'https://dev.colibris-lafabrique.org/api/needs/' + data.uuid,
-      basicAuth: {
-        user: 'fabrique',
-        password: 'xFbek2oSL#6T'
-      }
+      apiUrl: 'https://colibris-lafabrique.org/api/needs',
+      getAllCompact: 'https://colibris-lafabrique.org/api/needs_compact',
+      getOneFull: data => 'https://colibris-lafabrique.org/api/needs/' + data.uuid
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'lafabrique', 'needs'),
@@ -62,7 +58,7 @@ module.exports = {
       if( type === 'pair:MoneyBasedResource' ) {
         contactUrl = data.campaign_url;
       } else {
-        contactUrl = urlJoin('https://dev.colibris-lafabrique.org', 'ctc', `${data.project_id}`, `${data.id}`);
+        contactUrl = urlJoin('https://colibris-lafabrique.org', 'ctc', `${data.project_id}`, `${data.id}`);
       }
 
       return({

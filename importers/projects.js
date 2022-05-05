@@ -10,13 +10,9 @@ module.exports = {
   mixins: [DrupalImporterMixin, ThemeCreatorMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     source: {
-      apiUrl: 'https://dev.colibris-lafabrique.org/api/projects',
-      getAllCompact: 'https://dev.colibris-lafabrique.org/api/projects_compact',
-      getOneFull: data => 'https://dev.colibris-lafabrique.org/api/projects/' + data.uuid,
-      basicAuth: {
-        user: 'fabrique',
-        password: 'xFbek2oSL#6T'
-      },
+      apiUrl: 'https://colibris-lafabrique.org/api/projects',
+      getAllCompact: 'https://colibris-lafabrique.org/api/projects_compact',
+      getOneFull: data => 'https://colibris-lafabrique.org/api/projects/' + data.uuid,
       fieldsMapping: {
         slug: data => data.aboutPage ? data.aboutPage.split('/').pop() : data.uuid,
       }
@@ -47,8 +43,8 @@ module.exports = {
       const [lng, lat] = data.geolocation ? JSON.parse(data.geolocation).coordinates : [undefined, undefined];
       const resizedImages = data.images
         ? Array.isArray(data.images)
-          ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/').replace('https://', 'https://fabrique:xFbek2oSL%236T@'))
-          : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/').replace('https://', 'https://fabrique:xFbek2oSL%236T@')]
+          ? data.images.map(image => image.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/'))
+          : [data.images.src.replace('/files/projets/', '/files/styles/projet_large/public/projets/')]
         : undefined;
       const themes = await this.createOrGetThemes(data.themes);
 

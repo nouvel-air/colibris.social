@@ -101,15 +101,6 @@ const ThemeBotsService = {
             if( object['pair:hasTopic'] && defaultToArray(object['pair:hasTopic']).includes(this.bots[botUri]) ) {
               const { '@context': context, ...announcedActivity } = activity;
 
-              console.log({
-                collectionUri: urlJoin(botUri, 'outbox'),
-                '@context': 'https://www.w3.org/ns/activitystreams',
-                actor: botUri,
-                type: ACTIVITY_TYPES.ANNOUNCE,
-                object: announcedActivity,
-                to: [urlJoin(botUri, 'followers'), PUBLIC_URI]
-              });
-
               await ctx.call('activitypub.outbox.post', {
                 collectionUri: urlJoin(botUri, 'outbox'),
                 '@context': 'https://www.w3.org/ns/activitystreams',
