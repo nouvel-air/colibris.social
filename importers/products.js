@@ -70,15 +70,19 @@ module.exports = {
       const url = urlJoin(this.settings.source.prestashop.baseUrl, mainCategory.link_rewrite, [data.id, data.link_rewrite, data.ean13].join('-') + '.html');
 
       let themes = [];
-      if( data.associations && data.associations.categories ) {
+      if( data.associations ) {
         let labels = [];
-        for( let { id } of data.associations.categories ) {
-          const category = await this.getCategory(id);
-          labels.push(category.name);
+        if( data.associations.categories ) {
+          for( let { id } of data.associations.categories ) {
+            const category = await this.getCategory(id);
+            labels.push(category.name);
+          }
         }
-        for( let { id } of data.associations.tags ) {
-          const tag = await this.getTag(id);
-          labels.push(tag.name);
+        if( data.associations.tags ) {
+          for( let { id } of data.associations.tags ) {
+            const tag = await this.getTag(id);
+            labels.push(tag.name);
+          }
         }
         themes = await this.createOrGetThemes(...labels);
       }
