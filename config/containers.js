@@ -98,6 +98,21 @@ const cods = {
       readOnly: true
     }
   ],
+  '/miniparcours': [
+    {
+      path: '/courses',
+      acceptedTypes: ['tutor:DigitalCourse', ACTOR_TYPES.APPLICATION],
+      dereference: ['sec:publicKey']
+    },
+    {
+      path: '/lessons',
+      acceptedTypes: ['tutor:Lesson'],
+    },
+    {
+      path: '/registrations',
+      acceptedTypes: ['tutor:Registration'],
+    }
+  ],
   '/payscreillois': localGroupsContainers
 };
 
