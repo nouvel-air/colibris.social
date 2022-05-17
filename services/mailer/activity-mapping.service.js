@@ -8,7 +8,8 @@ module.exports = {
     mappers,
     handlebars: {
       helpers: {
-        truncate: (length, text) => truncate(text, { length, separator: ' ' })
+        truncate: (length, text) => truncate(text, { length, separator: ' ' }),
+        firstOfArray: (value) => Array.isArray(value) ? value[0] : value
       }
     }
   }

@@ -26,7 +26,9 @@ module.exports = {
     }
   },
   methods: {
-    async filterNotification(notification, subscription) {
+    async filterNotification(notification, subscription, notifications) {
+      // If the notification is already in the digest, skip it (can happen if two bots
+      if (notifications.some(n => n.id === notification.id)) return false;
       // If no location is set in the subscription, the user wants to be notified of all objects
       if (!subscription.latitude || !subscription.longitude) return true;
       // If no location is set in the notification, it is not a geo-localized object
