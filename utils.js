@@ -41,6 +41,14 @@ const distanceBetweenPoints = (lat1, lon1, lat2, lon2) => {
   return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 };
 
+const addDays = (date, days) => {
+  let result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+const removeTime = dateTime => new Date(dateTime.toDateString());
+
 module.exports = {
   capitalize,
   convertWikiNames,
@@ -49,5 +57,7 @@ module.exports = {
   getSlugFromUri,
   getDepartmentName,
   slugify,
-  distanceBetweenPoints
+  distanceBetweenPoints,
+  addDays,
+  removeTime
 };

@@ -730,6 +730,19 @@
     "salt": "sec:salt",
     "signature": "sec:signature",
     "signatureAlgorithm": "sec:signingAlgorithm",
-    "signatureValue": "sec:signatureValue"
+    "signatureValue": "sec:signatureValue",
+
+    "tutor:course": {
+      "@type": "@id"
+    },
+    "tutor:learner": {
+      "@type": "@id"
+    },
+    "tutor:currentLesson": {
+      "@type": "@id"
+    },
+    "tutor:lessonStarted": {
+      "@type": "xsd:dateTime"
+    }
   }
 }

@@ -28,8 +28,8 @@
     "dotenv-flow": "^3.1.0",
     "express-session": "^1.17.2",
     "handlebars": "^4.7.7",
-    "lodash.truncate": "^4.4.2",
     "jwt-decode": "^3.1.2",
+    "lodash.truncate": "^4.4.2",
     "moleculer": "^0.14.18",
     "moleculer-bull": "0.2.8",
     "moleculer-cron": "^0.0.2",
@@ -38,6 +38,7 @@
     "moleculer-repl": "^0.6.6",
     "moleculer-web": "^0.10.0-beta1",
     "node-fetch": "2.6.1",
+    "showdown": "^2.1.0",
     "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
   }
