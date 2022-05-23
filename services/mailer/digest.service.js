@@ -5,6 +5,7 @@ const QueueMixin = require('moleculer-bull');
 const CONFIG = require('../../config/config');
 const transport = require('../../config/transport');
 const { distanceBetweenPoints } = require('../../utils');
+const { MIME_TYPES } = require("@semapps/mime-types");
 
 module.exports = {
   mixins: [DigestNotificationsService, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
@@ -25,8 +26,22 @@ module.exports = {
       imagesUrl: 'https://dev.colibris.social/images',
     }
   },
+  dependencies: ['ldp'],
+  async started() {
+    const servicesContainer = await this.broker.call('ldp.container.get', {
+      containerUri: urlJoin(CONFIG.HOME_URL, 'services'),
+      accept: MIME_TYPES.JSON,
+      webId: 'system'
+    });
+
+    this.servicesUris = Object.fromEntries(servicesContainer['ldp:contains'].map(s => [s.name, s.id]));
+  },
   methods: {
     async filterNotification(notification, subscription) {
+      return this.matchLocation(notification, subscription)
+        && this.matchServices(notification, subscription);
+    },
+    matchLocation(notification, subscription) {
       // If no location is set in the subscription, the user wants to be notified of all objects
       if (!subscription.latitude || !subscription.longitude) return true;
       // If no location is set in the notification, it is not a geo-localized object
@@ -38,6 +53,10 @@ module.exports = {
         parseFloat(notification.longitude)
       );
       return distance <= parseInt(subscription.radius);
+    },
+    matchServices(notification, subscription) {
+      const services = subscription.services && subscription.services.split(', ').map(label => this.servicesUris[label]);
+      return services && services.includes(notification.actor);
     }
   },
 };

@@ -23,6 +23,7 @@
                 <div class="block block-system block-main" id="block-system-main">
                     <div class="content">
                         <form accept-charset="UTF-8" action="/mailer" id="user-profile-form" method="post">
+                            <input type="hidden" name="token" value="{{ token }}" />
                             <div class="messages error" id="error-message" style="display: none"></div>
                             {{#ifCond message '===' 'updated' }}
                                 <div class="messages success" id="success-message">Vos informations ont bien été mises à jour.</div>
@@ -65,7 +66,7 @@
                             </div>
                             <br/>
                             <div class="form-item form-type-checkboxes">
-                                <label>Touchant les thématiques suivantes&nbsp;:</label>
+                                <label>Touchant les thématiques :</label>
                                 <div class="row">
                                 {{#each themes}}
                                     <div class="col-xs-12 col-sm-6">
@@ -77,6 +78,22 @@
                                         </div>
                                     </div>
                                 {{/each}}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-item form-type-checkboxes">
+                                <label>Envoyées par les projets :</label>
+                                <div class="row">
+                                    {{#each services}}
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="box form-checkboxes" id="edit-field-proj-theme-und">
+                                                <div class="form-item form-type-checkbox form-item-field-proj-theme-und-101">
+                                                    <input class="form-checkbox" id="service-{{@index}}" name="services[]" type="checkbox" value="{{this}}" {{#contains this ../subscription.services}}checked{{/contains}}>
+                                                    <label class="option" for="service-{{@index}}">{{this}}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {{/each}}
                                 </div>
                             </div>
                             <br/>

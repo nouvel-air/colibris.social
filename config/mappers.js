@@ -17,6 +17,7 @@ module.exports = [
     match: announceCreate('pair:Document'),
     mapping: {
       key: 'article',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'lemag'),
       category: "NOUVEAUX ARTICLES DU MAG",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
@@ -38,6 +39,7 @@ module.exports = [
     },
     mapping: {
       key: 'course',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'universite'),
       category: "NOUVELLES FORMATIONS DE L'UNIVERSITE",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
@@ -51,6 +53,7 @@ module.exports = [
     match: announceCreate('pair:Event'),
     mapping: {
       key: 'event',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'lemouvement'),
       category: "NOUVEAUX EVENEMENTS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
@@ -65,6 +68,7 @@ module.exports = [
     match: announceCreate('pair:Group'),
     mapping: {
       key: 'local-group',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'groupeslocaux'),
       category: "NOUVEAUX GROUPES LOCAUX",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
@@ -90,6 +94,7 @@ module.exports = [
     },
     mapping: {
       key: 'need',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
       category: "NOUVEAUX BESOINS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:description}}}',
@@ -104,6 +109,7 @@ module.exports = [
     match: announceCreate('pair:Organization'),
     mapping: {
       key: 'place',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'pdcn'),
       category: "NOUVEAUX ACTEURS PRES DE CHEZ NOUS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:description}}}',
@@ -127,6 +133,7 @@ module.exports = [
     },
     mapping: {
       key: 'product',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'laboutique'),
       category: "NOUVEAUX PRODUITS LA BOUTIQUE",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:description}}}',
@@ -140,6 +147,7 @@ module.exports = [
     match: announceCreate('pair:Project'),
     mapping: {
       key: 'project',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
       category: "NOUVEAUX PROJETS LA FABRIQUE",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
