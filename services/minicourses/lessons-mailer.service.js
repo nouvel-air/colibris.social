@@ -30,7 +30,7 @@ module.exports = {
       const { lesson, actorUri } = ctx.params;
 
       const account = await ctx.call('auth.account.findByWebId', { webId: actorUri });
-      const course = await ctx.call('activitypub.object.get', { objectUri: lesson['pair:partOf'] });
+      const course = await ctx.call('activitypub.object.get', { objectUri: lesson['pair:partOf'], webId: 'system' });
 
       await ctx.call('mailer.send', {
         to: account.email,

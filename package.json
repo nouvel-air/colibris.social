@@ -21,6 +21,7 @@
     "@semapps/signature": "0.4.0-alpha.24",
     "@semapps/sparql-endpoint": "0.4.0-alpha.24",
     "@semapps/triplestore": "0.4.0-alpha.24",
+    "@semapps/webacl": "0.4.0-alpha.24",
     "@semapps/webfinger": "0.4.0-alpha.24",
     "@semapps/webid": "0.4.0-alpha.24",
     "@sentry/node": "^5.16.1",

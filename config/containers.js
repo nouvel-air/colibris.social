@@ -1,39 +1,5 @@
-const { ACTOR_TYPES, OBJECT_TYPES } = require('@semapps/activitypub');
-
-const localGroupsContainers = [
-  {
-    path: '/pages',
-    acceptedTypes: ['semapps:Page']
-  },
-  {
-    path: '/organizations',
-    acceptedTypes: ['pair:Organization'],
-    dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress']
-  },
-  {
-    path: '/groups',
-    acceptedTypes: ['pair:Group', ACTOR_TYPES.GROUP],
-    dereference: ['sec:publicKey']
-  },
-  {
-    path: '/projects',
-    acceptedTypes: ['pair:Project', ACTOR_TYPES.GROUP],
-    dereference: ['sec:publicKey', 'pair:hasLocation/pair:hasPostalAddress'],
-  },
-  {
-    path: '/events',
-    acceptedTypes: 'pair:Event',
-    dereference: ['pair:hasLocation/pair:hasPostalAddress'],
-  },
-  {
-    path: '/documents',
-    acceptedTypes: ['pair:Document']
-  },
-  {
-    path: '/notes',
-    acceptedTypes: [OBJECT_TYPES.NOTE]
-  },
-];
+const { ACTOR_TYPES } = require('@semapps/activitypub');
+const { rootPermissions } = require('./permissions');
 
 const cods = {
   '/lemouvement': [
@@ -111,9 +77,9 @@ const cods = {
     {
       path: '/registrations',
       acceptedTypes: ['tutor:Registration'],
+      readOnly: true
     }
-  ],
-  '/payscreillois': localGroupsContainers
+  ]
 };
 
 const mapCodsToContainers = () => {
@@ -133,7 +99,8 @@ const mapCodsToContainers = () => {
 module.exports = [
   {
     path: '/',
-    readOnly: true
+    readOnly: true,
+    permissions: rootPermissions,
   },
   ...mapCodsToContainers(),
   {

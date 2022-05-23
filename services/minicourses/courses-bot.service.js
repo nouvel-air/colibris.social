@@ -44,6 +44,7 @@ module.exports = {
                   'pair:hasStatus': urlJoin(CONFIG.HOME_URL, 'status', 'finished')
                 },
                 contentType: MIME_TYPES.JSON,
+                webId: 'system'
               });
             } else {
               await this.actions.sendLesson({ lesson: lessons[currentLessonIndex+1], registration }, { parentCtx: ctx });
@@ -54,7 +55,7 @@ module.exports = {
     },
     async sendLesson(ctx) {
       const { lesson, registration } = ctx.params;
-      const course = await ctx.call('activitypub.actor.get', { actorUri: registration['tutor:course'] });
+      const course = await ctx.call('activitypub.actor.get', { actorUri: registration['tutor:course'], webId: 'system' });
 
       await ctx.call('activitypub.outbox.post', {
         collectionUri: course.outbox,
@@ -73,6 +74,7 @@ module.exports = {
           'tutor:lessonStarted': (new Date()).toISOString()
         },
         contentType: MIME_TYPES.JSON,
+        webId: 'system'
       });
     },
     async resetRegistrations(ctx) {
@@ -87,6 +89,7 @@ module.exports = {
             'tutor:lessonStarted': undefined
           },
           contentType: MIME_TYPES.JSON,
+          webId: 'system'
         });
       }
     }
@@ -106,6 +109,7 @@ module.exports = {
               'pair:hasStatus': urlJoin(CONFIG.HOME_URL, 'status', 'running')
             },
             contentType: MIME_TYPES.JSON,
+            webId: 'system'
           });
         }
       } else if ( activity.type === ACTIVITY_TYPES.UNDO && activity.object.type === ACTIVITY_TYPES.FOLLOW ) {
@@ -119,6 +123,7 @@ module.exports = {
                 'pair:hasStatus': urlJoin(CONFIG.HOME_URL, 'status', 'aborted')
               },
               contentType: MIME_TYPES.JSON,
+              webId: 'system'
             });
           }
         }
@@ -132,7 +137,8 @@ module.exports = {
       const container = await ctx.call('ldp.container.get', {
         containerUri: this.settings.registrationsContainer,
         filters,
-        accept: MIME_TYPES.JSON
+        accept: MIME_TYPES.JSON,
+        webId: 'system'
       });
 
       return container['ldp:contains'] || [];
@@ -143,7 +149,8 @@ module.exports = {
         filters: {
           'pair:partOf': courseUri
         },
-        accept: MIME_TYPES.JSON
+        accept: MIME_TYPES.JSON,
+        webId: 'system'
       });
 
       const lessons = container['ldp:contains'] || [];

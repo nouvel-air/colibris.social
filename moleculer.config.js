@@ -1,7 +1,8 @@
 const CONFIG = require('./config/config');
+const { CacherMiddleware, WebAclMiddleware } = require("@semapps/webacl");
 
 // Use the cacher only if Redis is configured
-const cacher = CONFIG.REDIS_CACHE_URL
+const cacherConfig = CONFIG.REDIS_CACHE_URL
   ? {
     type: 'Redis',
     options: {
@@ -22,5 +23,8 @@ module.exports = {
     }
     throw error;
   },
-  cacher
+  middlewares: [
+    CacherMiddleware(cacherConfig), // Set the cacher before the WebAcl middleware
+    WebAclMiddleware
+  ]
 };

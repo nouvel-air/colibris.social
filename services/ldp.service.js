@@ -10,7 +10,9 @@ module.exports = {
     ontologies,
     containers,
     defaultContainerOptions: {
-      jsonContext: CONFIG.DEFAULT_JSON_CONTEXT
+      jsonContext: CONFIG.DEFAULT_JSON_CONTEXT,
+      permissions: {},
+      newResourcesPermissions: {}
     }
   }
 };
