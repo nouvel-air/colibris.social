@@ -16,6 +16,7 @@ module.exports = {
       name: authData.field_first_name[0],
       familyName: authData.field_last_name[0]
     }),
+    accountsDataset: CONFIG.SETTINGS_DATASET,
   },
   methods: {
     async updateAccount(webId, ssoData) {

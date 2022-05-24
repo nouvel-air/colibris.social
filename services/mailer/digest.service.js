@@ -16,6 +16,7 @@ module.exports = {
       monthly: '0 30 16 1 * *', // First day of month at 4pm30
     },
     timeZone: 'Europe/Paris',
+    subscriptionsDataset: CONFIG.SETTINGS_DATASET,
     templateFolder: path.join(__dirname, '../../templates'),
     // To be set by user
     // See moleculer-mail doc https://github.com/moleculerjs/moleculer-addons/tree/master/packages/moleculer-mail
