@@ -55,10 +55,21 @@ const themes = [
   "Travail"
 ];
 
+const services = [
+  "Colibris le Mouvement",
+  "Colibris Le Mag",
+  "La Fabrique des Colibris",
+  "L'Université des Colibris",
+  "Colibris Groupes Locaux",
+  "Près de chez nous",
+  "La Boutique des Colibris"
+];
+
 module.exports = {
   groupsMapping,
   statusMapping,
   glThemesMapping,
   laFabriqueThemesMapping,
-  themes
+  themes,
+  services
 };

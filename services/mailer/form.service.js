@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const session = require('express-session');
 const { MIME_TYPES } = require('@semapps/mime-types');
 const CONFIG = require('../../config/config');
-const { themes } = require('../../config/constants')
+const { themes, services } = require('../../config/constants')
 const { slugify } = require('../../utils');
 
 const FormService = {
@@ -14,6 +14,7 @@ const FormService = {
     botsContainerUri: urlJoin(CONFIG.HOME_URL, 'bots'),
     themesContainerUri: urlJoin(CONFIG.HOME_URL, 'themes'),
     themes,
+    services
   },
   actions: {
     async display(ctx) {
@@ -43,17 +44,17 @@ const FormService = {
       let subscription = await ctx.call('digest.subscription.findByWebId', { webId });
       if (!subscription) {
         subscription = {
-          location: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:label'],
-          latitude: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:latitude'],
-          longitude: actor['pair:hasLocation'] && actor['pair:hasLocation']['pair:longitude'],
+          location: account.location,
+          latitude: account.latitude,
+          longitude: account.longitude,
           radius: '25',
           email: account.email,
-          frequency: 'weekly'
+          frequency: 'weekly',
+          services: this.settings.services
         };
-      }
-
-      if( !subscription.radius ) {
-        subscription.radius = '25';
+      } else {
+        subscription.services = subscription.services.split(', ');
+        if( !subscription.radius ) subscription.radius = '25';
       }
 
       const { items: following } = await ctx.call('activitypub.collection.get', {
@@ -64,16 +65,18 @@ const FormService = {
       ctx.meta.$responseType = 'text/html';
       return this.formTemplate({
         title: 'Suivez les actualités de Colibris',
-        themes,
+        token: ctx.meta.$session.token,
+        themes: this.settings.themes,
+        services: this.settings.services,
         subscription,
         following,
         message
       });
     },
     async process(ctx) {
-      const { unsubscribe, location, address, radius, themes, email, frequency } = ctx.params;
+      const { unsubscribe, token, location, address, radius, themes, services, email, frequency } = ctx.params;
 
-      const payload = await ctx.call('auth.jwt.verifyToken', { token: ctx.meta.$session.token });
+      const payload = await ctx.call('auth.jwt.verifyToken', { token });
       if( !payload ) throw new Error('Invalid token');
       const { webId } = payload;
 
@@ -107,6 +110,10 @@ const FormService = {
           return this.redirectToForm(ctx, 'missing-themes');
         }
 
+        if (!services) {
+          return this.redirectToForm(ctx, 'missing-services');
+        }
+
         for( const themeLabel of this.settings.themes ) {
           const botUri = this.getBotUri(themeLabel);
           if( themes.includes(themeLabel) && !following.includes(botUri) ) {
@@ -127,8 +134,8 @@ const FormService = {
           webId,
           frequency,
           email,
-          radius,
           themes: themes.join(', '),
+          services: services.join(', '),
           locale: 'fr'
         };
 
@@ -143,6 +150,7 @@ const FormService = {
             subscription.latitude = `${actor['pair:hasLocation']['pair:latitude']}`;
             subscription.longitude = `${actor['pair:hasLocation']['pair:longitude']}`;
           }
+          subscription.radius = radius;
         } else {
           // If a location was set, remove it
           if( subscription.location ) {
@@ -176,30 +184,33 @@ const FormService = {
     }
   },
   async started() {
-    await this.broker.call('api.addRoute', { route: {
-      authorization: true,
-      authentication: false,
-      bodyParsers: {
-        json: true,
-        urlencoded: { extended: true }
-      },
-      use: [session({ secret: 'co1ibris' })],
-      aliases: {
-        'POST /mailer': 'mailer.form.process',
-        'GET /mailer': 'mailer.form.display',
-      },
-      onBeforeCall(ctx, route, req, res) {
-        if( req.session.token ) {
-          ctx.meta.$session = { token: req.session.token };
+    await this.broker.call('api.addRoute', {
+      route: {
+        authorization: false,
+        authentication: true,
+        bodyParsers: {
+          json: true,
+          urlencoded: { extended: true }
+        },
+        use: [session({ secret: 'co1ibris' })],
+        aliases: {
+          'POST /mailer': 'mailer.form.process',
+          'GET /mailer': 'mailer.form.display',
+        },
+        onBeforeCall(ctx, route, req, res) {
+          if( req.session.token ) {
+            ctx.meta.$session = { token: req.session.token };
+          }
+        },
+        onAfterCall(ctx, route, req, res, data) {
+          if( ctx.meta.$session ) {
+            req.session.token = ctx.meta.$session.token;
+          }
+          return data;
         }
       },
-      onAfterCall(ctx, route, req, res, data) {
-        if( ctx.meta.$session ) {
-          req.session.token = ctx.meta.$session.token;
-        }
-        return data;
-      }
-    }});
+      toBottom: false
+    });
 
     const templateFile = await fs.readFile(__dirname + '/../../templates/form.hbs');
 
@@ -208,6 +219,12 @@ const FormService = {
       if (options.data.root.following.includes(botUri)) {
         return returnValue;
       }
+    });
+
+    Handlebars.registerHelper('contains', function(needle, haystack, options) {
+      needle = Handlebars.escapeExpression(needle);
+      haystack = Handlebars.escapeExpression(haystack);
+      return (haystack.indexOf(needle) > -1) ? options.fn(this) : options.inverse(this);
     });
 
     Handlebars.registerHelper('ifCond', (v1, operator, v2, options) => {
