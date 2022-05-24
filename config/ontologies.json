@@ -30,6 +30,11 @@
     "url": "http://virtual-assembly.org/ontologies/pair#"
   },
   {
+    "prefix": "tutor",
+    "owl": "",
+    "url": "http://virtual-assembly.org/ontologies/pair-tutor#"
+  },
+  {
     "prefix": "semapps",
     "owl": "",
     "url": "http://semapps.org/ns/core#"

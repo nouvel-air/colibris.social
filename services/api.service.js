@@ -12,5 +12,13 @@ module.exports = {
     assets: {
       folder: "./public",
     }
+  },
+  methods: {
+    authenticate(ctx, route, req, res) {
+      return ctx.call('auth.authenticate', { route, req, res });
+    },
+    authorize(ctx, route, req, res) {
+      return ctx.call('auth.authorize', { route, req, res });
+    }
   }
 };

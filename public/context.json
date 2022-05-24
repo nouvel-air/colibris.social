@@ -2,6 +2,7 @@
   "@context": {
     "@vocab": "_:",
     "pair": "http://virtual-assembly.org/ontologies/pair#",
+    "tutor": "http://virtual-assembly.org/ontologies/pair-tutor#",
     
     "as": "https://www.w3.org/ns/activitystreams#",
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -729,6 +730,19 @@
     "salt": "sec:salt",
     "signature": "sec:signature",
     "signatureAlgorithm": "sec:signingAlgorithm",
-    "signatureValue": "sec:signatureValue"
+    "signatureValue": "sec:signatureValue",
+
+    "tutor:course": {
+      "@type": "@id"
+    },
+    "tutor:learner": {
+      "@type": "@id"
+    },
+    "tutor:currentLesson": {
+      "@type": "@id"
+    },
+    "tutor:lessonStarted": {
+      "@type": "xsd:dateTime"
+    }
   }
 }

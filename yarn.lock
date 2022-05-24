@@ -429,6 +429,23 @@
     sparqljson-parse "^1.5.1"
     url-join "^4.0.1"
 
+"@semapps/webacl@0.4.0-alpha.24":
+  version "0.4.0-alpha.24"
+  resolved "https://registry.yarnpkg.com/@semapps/webacl/-/webacl-0.4.0-alpha.24.tgz#62c082556077325aebf87f110da60d4af06986b9"
+  integrity sha512-3my5v1wBViNKPGvp7cgDj4+AVXboyXaWVjdqxz9WEQZmRwFYP8tnFO6QBI8qg8jk4a34sfE8VlliXL6VH7cz7g==
+  dependencies:
+    "@semapps/middlewares" "0.4.0-alpha.24"
+    "@semapps/mime-types" "0.4.0-alpha.24"
+    "@semapps/triplestore" "0.4.0-alpha.24"
+    ioredis "^4.17.3"
+    jsonld-streaming-serializer "^1.2.0"
+    moleculer "^0.14.18"
+    n3 "^1.8.0"
+    rdf-parse "^1.7.0"
+    speakingurl "^14.0.1"
+    streamify-string "^1.0.1"
+    url-join "^4.0.1"
+
 "@semapps/webfinger@0.4.0-alpha.24":
   version "0.4.0-alpha.24"
   resolved "https://registry.yarnpkg.com/@semapps/webfinger/-/webfinger-0.4.0-alpha.24.tgz#e440c66943aa96aa5bd27377f344832cc4a58636"
@@ -1350,6 +1367,11 @@ commander@^2.15.1:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
+commander@^9.0.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-9.2.0.tgz#6e21014b2ed90d8b7c9647230d8b7a94a4a419a9"
+  integrity sha512-e2i4wANQiSXgnrBlIatyHtP1odfUp0BbV5Y5nEGbxtIrStkEOAAzCUirvLBNXHLr7kwLvJl6V+4V3XV9x7Wd9w==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -2763,6 +2785,23 @@ ioredis@^4.14.1, ioredis@^4.27.0:
     redis-parser "^3.0.0"
     standard-as-callback "^2.1.0"
 
+ioredis@^4.17.3:
+  version "4.28.5"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.28.5.tgz#5c149e6a8d76a7f8fa8a504ffc85b7d5b6797f9f"
+  integrity sha512-3GYo0GJtLqgNXj4YhrisLaNNvWSNwSS2wS4OELGfGxH8I69+XfNdnmV1AyN+ZqMh0i7eX+SWjrwFKDBDgfBC1A==
+  dependencies:
+    cluster-key-slot "^1.1.0"
+    debug "^4.3.1"
+    denque "^1.1.0"
+    lodash.defaults "^4.2.0"
+    lodash.flatten "^4.4.0"
+    lodash.isarguments "^3.1.0"
+    p-map "^2.1.0"
+    redis-commands "1.7.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+    standard-as-callback "^2.1.0"
+
 ip@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
@@ -3022,10 +3061,10 @@ json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
-jsonld-context-parser@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.2.tgz#17e9e749488cc91e91ddbb6d2edc901bdf55023f"
-  integrity sha512-zAhus+dz4IrXiYAiYf6M1PSdYkILVWPg4bqqGfim+rGrmVc3d0drFAriLOU2RMwQFKljM+41lJTau47sxt6YWA==
+jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.1.3:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.5.tgz#07f8632ce5c29072c5f91295044ab31761e84fa9"
+  integrity sha512-rsu5hB6bADa511l0QhG4lndAqlN7PQ4wsS0UKqLWUKg1GUQqYmh2SNfbwXiRiHZRJqhvCNqv9/5tQ3zzk4hMtg==
   dependencies:
     "@types/http-link-header" "^1.0.1"
     "@types/node" "^13.1.0"
@@ -3034,10 +3073,10 @@ jsonld-context-parser@^2.1.2:
     http-link-header "^1.0.2"
     relative-to-absolute-iri "^1.0.5"
 
-jsonld-context-parser@^2.1.3:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.5.tgz#07f8632ce5c29072c5f91295044ab31761e84fa9"
-  integrity sha512-rsu5hB6bADa511l0QhG4lndAqlN7PQ4wsS0UKqLWUKg1GUQqYmh2SNfbwXiRiHZRJqhvCNqv9/5tQ3zzk4hMtg==
+jsonld-context-parser@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-2.1.2.tgz#17e9e749488cc91e91ddbb6d2edc901bdf55023f"
+  integrity sha512-zAhus+dz4IrXiYAiYf6M1PSdYkILVWPg4bqqGfim+rGrmVc3d0drFAriLOU2RMwQFKljM+41lJTau47sxt6YWA==
   dependencies:
     "@types/http-link-header" "^1.0.1"
     "@types/node" "^13.1.0"
@@ -3058,6 +3097,14 @@ jsonld-streaming-parser@^2.4.0, jsonld-streaming-parser@^2.4.2:
     jsonld-context-parser "^2.1.3"
     jsonparse "^1.3.1"
     rdf-data-factory "^1.1.0"
+
+jsonld-streaming-serializer@^1.2.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-serializer/-/jsonld-streaming-serializer-1.3.0.tgz#e42ec6ffefc5b80cc1bd17e8eee7943242f17a4d"
+  integrity sha512-QGflpxpwmr659ExvAQ5TFAY9BmJQiL/yF/MDRrP5oVWHcBBLhbPjUqDv//y2OvJxUY3UQYMXulTwzmYb1ttv2Q==
+  dependencies:
+    "@rdfjs/types" "*"
+    jsonld-context-parser "^2.0.0"
 
 jsonld@^3.3.2:
   version "3.3.2"
@@ -3240,6 +3287,11 @@ lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.includes/-/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
   integrity sha1-YLuYqHy5I8aMoeUTJUgzFISfVT8=
+
+lodash.isarguments@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
+  integrity sha1-L1c9hcaiQon/AGY7SRwdM4/zRYo=
 
 lodash.isboolean@^3.0.3:
   version "3.0.3"
@@ -3800,6 +3852,14 @@ n3@^1.6.3:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.10.0.tgz#4ebc725ad4c7a1ee4fac184b7b42114d620ba8c7"
   integrity sha512-y+qpS0GktEBttOaDR+BF1t1G2fw4Xn4nCZWNn+7MvEmD2I4YpMH6OJF/xHKSwInCxOC9vu9eI6pluB9/RDUyZQ==
+  dependencies:
+    queue-microtask "^1.1.2"
+    readable-stream "^3.6.0"
+
+n3@^1.8.0:
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/n3/-/n3-1.16.2.tgz#ef86b4bf48b556505da1cc3062a3c2ef35f02976"
+  integrity sha512-5vYa2HuNEJ+a26FEs4FGgfFLgaPOODaZpJlc7FS0eUjDumc4uK0cvx216PjKXBkLzmAsSqGgQPwqztcLLvwDsw==
   dependencies:
     queue-microtask "^1.1.2"
     readable-stream "^3.6.0"
@@ -5033,6 +5093,13 @@ shebang-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
+
+showdown@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/showdown/-/showdown-2.1.0.tgz#1251f5ed8f773f0c0c7bfc8e6fd23581f9e545c5"
+  integrity sha512-/6NVYu4U819R2pUIk79n67SYgJHWCce0a5xTP979WbNp0FL9MN1I1QK662IDU1b6JzKTvmhgI7T7JYIxBi3kMQ==
+  dependencies:
+    commander "^9.0.0"
 
 side-channel@^1.0.4:
   version "1.0.4"

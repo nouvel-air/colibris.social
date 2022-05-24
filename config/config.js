@@ -4,6 +4,7 @@ require('dotenv-flow').config();
 
 module.exports = {
   HOME_URL: process.env.SEMAPPS_HOME_URL,
+  MINI_COURSES_URL: process.env.SEMAPPS_MINI_COURSES_URL,
   DEFAULT_JSON_CONTEXT: process.env.SEMAPPS_DEFAULT_JSON_CONTEXT,
   // Triple store
   SPARQL_ENDPOINT: process.env.SEMAPPS_SPARQL_ENDPOINT,

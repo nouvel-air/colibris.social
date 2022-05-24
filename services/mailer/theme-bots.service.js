@@ -46,7 +46,8 @@ const ThemeBotsService = {
               preferredUsername: themeSlug,
               'pair:hasTopic': urlJoin(themesContainerUri, themeSlug)
             },
-            contentType: MIME_TYPES.JSON
+            contentType: MIME_TYPES.JSON,
+            webId: 'system'
           });
 
           await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: botUri });

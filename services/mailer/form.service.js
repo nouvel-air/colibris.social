@@ -82,12 +82,12 @@ const FormService = {
       const actor = await ctx.call('ldp.resource.get', {
         resourceUri: webId,
         accept: MIME_TYPES.JSON,
-        webId
+        webId: 'system'
       });
 
       const { items: following } = await ctx.call('activitypub.collection.get', {
         collectionUri: actor.following,
-        webId: actor.id
+        webId: 'system'
       });
 
       if (unsubscribe) {
@@ -165,7 +165,7 @@ const FormService = {
             'pair:hasInterest': themes.map(themeLabel => this.getThemeUri(themeLabel))
           },
           contentType: MIME_TYPES.JSON,
-          webId
+          webId: 'system'
         });
 
         // // Do not wait for mail to be sent
@@ -249,7 +249,8 @@ const FormService = {
       try {
         const result = await this.broker.call('ldp.container.get', {
           containerUri: urlJoin(CONFIG.HOME_URL, 'actors'),
-          filters: { 'pair:e-mail': email }
+          filters: { 'pair:e-mail': email },
+          webId: 'system'
         });
         if (result['ldp:contains'] && result['ldp:contains'].length > 0) {
           return result['ldp:contains'][0];
