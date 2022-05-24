@@ -40,6 +40,9 @@
                             {{#ifCond message '===' 'missing-themes' }}
                             <div class="messages error">Veuillez sélectionner au moins un thème.</div>
                             {{/ifCond}}
+                            {{#ifCond message '===' 'missing-services' }}
+                                <div class="messages error">Veuillez sélectionner au moins un projet.</div>
+                            {{/ifCond}}
                             <div>
                                 <label>Oui, je souhaite être informé des actualités de Colibris&nbsp;:</label>
                                 <div class="form-item form-type-radio">
@@ -185,18 +188,33 @@
     });
 
     document.getElementById("user-profile-form").addEventListener('submit', e => {
-        var numChecked = 0;
-        var checkboxes = document.querySelectorAll('[id^=theme]');
-        checkboxes.forEach(function(checkbox) {
+        var numThemesChecked = 0;
+        var themesCheckboxes = document.querySelectorAll('[id^=theme]');
+        themesCheckboxes.forEach(function(checkbox) {
             if( checkbox.checked ) {
-                numChecked++;
+                numThemesChecked++;
             }
         });
-        if( numChecked === 0 ) {
+        if( numThemesChecked === 0 ) {
             e.preventDefault();
             if( document.getElementById("success-message") ) document.getElementById("success-message").style.display = 'none';
             document.getElementById("error-message").style.display = 'block';
             document.getElementById("error-message").innerText = 'Veuillez sélectionner au moins un thème.';
+            return false;
+        }
+
+        var numServicesChecked = 0;
+        var servicesCheckboxes = document.querySelectorAll('[id^=service]');
+        servicesCheckboxes.forEach(function(checkbox) {
+            if( checkbox.checked ) {
+                numServicesChecked++;
+            }
+        });
+        if( numServicesChecked === 0 ) {
+            e.preventDefault();
+            if( document.getElementById("success-message") ) document.getElementById("success-message").style.display = 'none';
+            document.getElementById("error-message").style.display = 'block';
+            document.getElementById("error-message").innerText = 'Veuillez sélectionner au moins un projet.';
             return false;
         }
     });

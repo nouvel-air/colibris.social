@@ -110,6 +110,10 @@ const FormService = {
           return this.redirectToForm(ctx, 'missing-themes');
         }
 
+        if (!services) {
+          return this.redirectToForm(ctx, 'missing-services');
+        }
+
         for( const themeLabel of this.settings.themes ) {
           const botUri = this.getBotUri(themeLabel);
           if( themes.includes(themeLabel) && !following.includes(botUri) ) {
