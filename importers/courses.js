@@ -50,7 +50,6 @@ module.exports = {
         'pair:endDate': convertToIsoString(data.end_date),
         'pair:hasTopic': themes,
         'pair:aboutPage': urlJoin('https://colibris-universite.org', data.path),
-        'pair:webPage': urlJoin('https://colibris-universite.org', data.path),
         'pair:offeredBy': this.settings.activitypub.actorUri,
         'pair:depictedBy': data.image ? data.image.src : undefined,
       });

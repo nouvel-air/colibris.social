@@ -37,9 +37,14 @@ module.exports = {
     this.servicesUris = Object.fromEntries(servicesContainer['ldp:contains'].map(s => [s.name, s.id]));
   },
   methods: {
-    async filterNotification(notification, subscription) {
-      return this.matchLocation(notification, subscription)
+    async filterNotification(notification, subscription, notifications) {
+      return this.newNotification(notification, notifications)
+        && this.matchLocation(notification, subscription)
         && this.matchServices(notification, subscription);
+    },
+    newNotification(notification, notifications) {
+      // If the notification is already in the digest, skip it (can happen if an object match two themes)
+      return !notifications.some(n => n.id === notification.id);
     },
     matchLocation(notification, subscription) {
       // If no location is set in the subscription, the user wants to be notified of all objects
