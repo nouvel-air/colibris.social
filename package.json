@@ -9,21 +9,21 @@
     "link-semapps-packages": "yarn link @semapps/activitypub @semapps/auth @semapps/backup @semapps/fuseki-admin @semapps/importer @semapps/inference @semapps/jsonld @semapps/ldp @semapps/middlewares @semapps/notifications @semapps/mime-types @semapps/signature @semapps/sparql-endpoint @semapps/triplestore @semapps/webacl @semapps/webfinger @semapps/webhooks @semapps/webid"
   },
   "dependencies": {
-    "@semapps/activitypub": "0.4.0-alpha.29",
-    "@semapps/auth": "0.4.0-alpha.29",
-    "@semapps/fuseki-admin": "0.4.0-alpha.29",
-    "@semapps/importer": "0.4.0-alpha.29",
-    "@semapps/inference": "0.4.0-alpha.29",
-    "@semapps/jsonld": "0.4.0-alpha.29",
-    "@semapps/ldp": "0.4.0-alpha.29",
-    "@semapps/mime-types": "0.4.0-alpha.29",
-    "@semapps/notifications": "0.4.0-alpha.28",
-    "@semapps/signature": "0.4.0-alpha.29",
-    "@semapps/sparql-endpoint": "0.4.0-alpha.29",
-    "@semapps/triplestore": "0.4.0-alpha.29",
-    "@semapps/webacl": "0.4.0-alpha.29",
-    "@semapps/webfinger": "0.4.0-alpha.29",
-    "@semapps/webid": "0.4.0-alpha.29",
+    "@semapps/activitypub": "0.4.0-alpha.30",
+    "@semapps/auth": "0.4.0-alpha.30",
+    "@semapps/fuseki-admin": "0.4.0-alpha.30",
+    "@semapps/importer": "0.4.0-alpha.30",
+    "@semapps/inference": "0.4.0-alpha.30",
+    "@semapps/jsonld": "0.4.0-alpha.30",
+    "@semapps/ldp": "0.4.0-alpha.30",
+    "@semapps/mime-types": "0.4.0-alpha.30",
+    "@semapps/notifications": "0.4.0-alpha.30",
+    "@semapps/signature": "0.4.0-alpha.30",
+    "@semapps/sparql-endpoint": "0.4.0-alpha.30",
+    "@semapps/triplestore": "0.4.0-alpha.30",
+    "@semapps/webacl": "0.4.0-alpha.30",
+    "@semapps/webfinger": "0.4.0-alpha.30",
+    "@semapps/webid": "0.4.0-alpha.30",
     "@sentry/node": "^5.16.1",
     "@sentry/utils": "^5.16.1",
     "dotenv-flow": "^3.1.0",
@@ -42,8 +42,5 @@
     "showdown": "^2.1.0",
     "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
-  },
-  "resolutions": {
-    "@semapps/notifications/@semapps/ldp": "0.4.0-alpha.29"
   }
 }
