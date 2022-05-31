@@ -6,11 +6,13 @@ const CONFIG = require('../config/config');
 module.exports = {
   methods: {
     async createOrGetThemes(...labels) {
-      const labelsArray = this.augment(labels)
-        .filter(l => l)
-        .map(l => l.trim())
-        .reduce((acc, value) => { acc.push(...value.split(/[,\n\r]+/)); return acc; }, [])
-        .map(l => capitalize(l.trim()));
+      const labelsArray = this.augment(
+        labels
+          .filter(l => l)
+          .map(l => l.trim())
+          .reduce((acc, value) => { acc.push(...value.split(/[,\n\r]+/)); return acc; }, [])
+          .map(l => capitalize(l.trim()))
+      );
 
       let themeUris = [];
 
@@ -47,7 +49,7 @@ module.exports = {
         let augmentedLabels = [...labels];
         for( let label of labels ) {
           for( let [key, value] of Object.entries(this.settings.themesAugmenter) ) {
-            if( key === label ) augmentedLabels.push(value);
+            if( slugify(key) === slugify(label) ) augmentedLabels.push(value);
           }
         }
         return augmentedLabels
