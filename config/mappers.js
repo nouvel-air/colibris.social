@@ -115,7 +115,7 @@ module.exports = [
     mapping: {
       key: 'place',
       id: '{{{activity.object.object.id}}}',
-      actor: urlJoin(CONFIG.HOME_URL, 'services', 'pdcn'),
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'presdecheznous'),
       category: "NOUVEAUX ACTEURS PRES DE CHEZ NOUS",
       title: '{{{activity.object.object.pair:label}}}',
       description: '{{{truncate 350 activity.object.object.pair:description}}}',
