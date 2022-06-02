@@ -17,7 +17,7 @@ module.exports = {
       if (resourceTypes.includes('foaf:Person')) {
         return {
           '@type': ACTOR_TYPES.PERSON,
-          name: resource['foaf:name'] + ' ' + resource['foaf:familyName'],
+          name: (resource['foaf:name'] && resource['foaf:familyName']) ? resource['foaf:name'] + ' ' + resource['foaf:familyName'] : undefined,
           preferredUsername: getSlugFromUri(resourceId)
         };
       } else if (resourceTypes.includes('pair:Organization')) {
