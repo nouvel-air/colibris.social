@@ -55,8 +55,9 @@ module.exports = {
           } : undefined,
         } : undefined,
         'pair:hasTopic': themes,
-        'pair:webPage': [...websites, this.settings.source.getOneFull(data)],
-        'pair:depictedBy': images,
+        'pair:webPage': websites,
+        'pair:aboutPage': this.settings.source.getOneFull(data),
+        'pair:depictedBy': images
       });
     }
   }

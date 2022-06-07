@@ -62,7 +62,7 @@ module.exports = [
       description: '{{{truncate 350 activity.object.object.pair:comment}}}',
       image: '{{firstOfArray activity.object.object.pair:depictedBy}}',
       actionName: "Voir l'événement",
-      actionLink: '{{activity.object.object.pair:webPage}}',
+      actionLink: '{{activity.object.object.pair:aboutPage}}',
       latitude: '{{activity.object.object.pair:hasLocation.pair:latitude}}',
       longitude: '{{activity.object.object.pair:hasLocation.pair:longitude}}',
     }
