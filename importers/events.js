@@ -26,7 +26,7 @@ module.exports = {
   },
   methods: {
     async transform(data) {
-      // if( data.actor !== 'https://mobilizon.colibris-outilslibres.org/@mouvement_colibris') return false;
+      if( data.actor !== 'https://mobilizon.colibris-outilslibres.org/@mouvement_colibris') return false;
       if( data.draft ) return false;
 
       const tagNamesWithoutHashes = data.tag.map(t => t.name.substring(1));
