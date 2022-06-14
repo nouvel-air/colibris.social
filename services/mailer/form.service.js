@@ -24,7 +24,7 @@ const FormService = {
         if( ctx.params.token ) {
           ctx.meta.$session = { token: ctx.params.token };
           ctx.meta.$statusCode = 302;
-          ctx.meta.$location = '/mailer';
+          ctx.meta.$location = '/actualites';
           return;
         } else {
           ctx.meta.$statusCode = 302;
@@ -194,8 +194,8 @@ const FormService = {
         },
         use: [session({ secret: 'co1ibris' })],
         aliases: {
-          'POST /mailer': 'mailer.form.process',
-          'GET /mailer': 'mailer.form.display',
+          'POST /actualites': 'mailer.form.process',
+          'GET /actualites': 'mailer.form.display',
         },
         onBeforeCall(ctx, route, req, res) {
           if( req.session.token ) {
@@ -260,7 +260,7 @@ const FormService = {
   methods: {
     redirectToForm(ctx, message) {
       ctx.meta.$statusCode = 302;
-      ctx.meta.$location = `/mailer/?message=${encodeURI(message)}`;
+      ctx.meta.$location = `/actualites/?message=${encodeURI(message)}`;
     },
     async findActorByEmail(email) {
       try {

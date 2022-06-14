@@ -33,6 +33,10 @@ module.exports = {
     }
   },
   methods: {
+    async list(url) {
+      const results = await this.fetch(url);
+      return results['ldp:contains'];
+    },
     async transform(data) {
       const slug = getSlugFromUri(data.id);
       const webId = urlJoin(CONFIG.HOME_URL, 'users', slug);
