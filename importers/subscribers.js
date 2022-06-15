@@ -42,6 +42,11 @@ module.exports = {
       const slug = getSlugFromUri(data.id);
       const webId = urlJoin(CONFIG.HOME_URL, 'users', slug);
 
+      if( !data['pair:e-mail'] ) {
+        this.logger.warn(`No email found for ${data.id}, skipping...`);
+        return false;
+      }
+
       if (await this.broker.call('auth.account.emailExists', { email: data['pair:e-mail'].toLowerCase() })) {
         this.logger.warn(`An account with the email ${data['pair:e-mail']} already exist, skipping...`);
         return false;
