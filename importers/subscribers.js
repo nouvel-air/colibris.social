@@ -42,7 +42,7 @@ module.exports = {
       const slug = getSlugFromUri(data.id);
       const webId = urlJoin(CONFIG.HOME_URL, 'users', slug);
 
-      if (await this.broker.call('auth.account.emailExists', { email: data['pair:e-mail'] })) {
+      if (await this.broker.call('auth.account.emailExists', { email: data['pair:e-mail'].toLowerCase() })) {
         this.logger.warn(`An account with the email ${data['pair:e-mail']} already exist, skipping...`);
         return false;
       }
@@ -53,7 +53,7 @@ module.exports = {
       await this.broker.call('auth.account.create', {
         webId,
         username: slug,
-        email: data['pair:e-mail'],
+        email: data['pair:e-mail'].toLowerCase(),
         uuid: slug.includes('-') ? slug : undefined, // If the slug includes an hyphen, the user connected through the SSO
         latitude: data.location ? data.location.latitude : undefined,
         longitude: data.location ? data.location.longitude : undefined,
@@ -62,7 +62,7 @@ module.exports = {
 
       let subscription = {
         webId,
-        email: data['pair:e-mail'],
+        email: data['pair:e-mail'].toLowerCase(),
         frequency: data['semapps:mailFrequency'],
         locale: 'fr',
         services: 'La Fabrique des Colibris',
