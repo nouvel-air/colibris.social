@@ -1,3 +1,8 @@
 const { SparqlEndpointService } = require('@semapps/sparql-endpoint');
 
-module.exports = SparqlEndpointService;
+module.exports = module.exports = {
+  mixins: [SparqlEndpointService],
+  settings: {
+    ignoreAcl: true
+  }
+};

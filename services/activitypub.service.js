@@ -1,15 +1,14 @@
 const { ActivityPubService, ACTOR_TYPES } = require('@semapps/activitypub');
 const { getPrefixJSON, getSlugFromUri } = require('@semapps/ldp');
-const CONFIG = require('../config');
-const containers = require('../containers');
-const ontologies = require('../ontologies');
+const CONFIG = require('../config/config');
+const containers = require('../config/containers');
+const ontologies = require('../config/ontologies.json');
 
 module.exports = {
   mixins: [ActivityPubService],
   settings: {
     baseUri: CONFIG.HOME_URL,
     additionalContext: getPrefixJSON(ontologies),
-    queueServiceUrl: CONFIG.QUEUE_SERVICE_URL,
     containers,
     selectActorData: resource => {
       let resourceId = resource.id || resource['@id'],
@@ -18,7 +17,7 @@ module.exports = {
       if (resourceTypes.includes('foaf:Person')) {
         return {
           '@type': ACTOR_TYPES.PERSON,
-          name: resource['foaf:name'] + ' ' + resource['foaf:familyName'],
+          name: (resource['foaf:name'] && resource['foaf:familyName']) ? resource['foaf:name'] + ' ' + resource['foaf:familyName'] : undefined,
           preferredUsername: getSlugFromUri(resourceId)
         };
       } else if (resourceTypes.includes('pair:Organization')) {
@@ -29,19 +28,16 @@ module.exports = {
         };
       } else if (resourceTypes.includes('pair:Group')) {
         return {
-          '@type': ACTOR_TYPES.GROUP,
-          name: resource['pair:label'],
-          preferredUsername: getSlugFromUri(resourceId)
-        };
-      } else if (resourceTypes.includes('pair:Project')) {
-        return {
-          '@type': ACTOR_TYPES.GROUP,
+          type: ACTOR_TYPES.GROUP,
           name: resource['pair:label'],
           preferredUsername: getSlugFromUri(resourceId)
         };
       } else {
-        throw new Error(`Unknown resource type: ${resourceTypes}`);
+        return false;
       }
+    },
+    dispatch: {
+      queueServiceUrl: CONFIG.QUEUE_SERVICE_URL
     }
   }
 };

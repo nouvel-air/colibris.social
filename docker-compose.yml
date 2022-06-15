@@ -2,11 +2,10 @@ version: '3.5'
 
 services:
   fuseki:
-    image: stain/jena-fuseki
+    image: semapps/jena-fuseki-webacl
     container_name: colibris_fuseki
     volumes:
-      - ./data/rdf_data:/fuseki
-      - ./data/staging:/staging
+      - ./data/fuseki:/fuseki
     ports:
       - "3030:3030"
     expose:
@@ -22,5 +21,28 @@ services:
     expose:
       - "6379"
     volumes:
-      - ./data/redis_data:/data
+      - ./data/redis:/data
     command: ["redis-server", "--appendonly", "yes"]
+
+  arena:
+    build: ./arena
+    container_name: arena
+    restart: always
+    volumes:
+      - ./arena/config:/opt/arena/src/server/config
+    depends_on:
+      - redis
+    ports:
+      - "4567:4567"
+    expose:
+      - "4567"
+    environment:
+      REDIS_HOST: 'redis'
+
+  mailcatcher:
+    image: dockage/mailcatcher:0.7.1
+    container_name: mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    restart: on-failure

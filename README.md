@@ -15,22 +15,16 @@ Requirements:
 docker-compose up
 ```
 
-Go to `http://localhost:3030` and create a new dataset called `colibris`.
+It is now running on http://localhost:3030
 
-### 2. Generate the JWT keys
-
-```bash
-./initialize.sh
-```
-
-### 3. Configure the CAS URL
+### 2. Configure the CAS URL
 
 Edit the `.env` file or add a `.env.local` file.
 
 Add the URL to your CAS server.
 
+### 3. Launch in dev mode
 
-### 4. Launch in dev mode
 ```bash
 npm install
 npm run dev

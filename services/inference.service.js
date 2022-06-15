@@ -1,5 +1,5 @@
 const { InferenceService } = require('@semapps/inference');
-const ontologies = require('../ontologies');
+const ontologies = require('../config/ontologies.json');
 
 module.exports = {
   mixins: [InferenceService],

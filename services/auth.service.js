@@ -1,68 +1,55 @@
 const urlJoin = require('url-join');
 const path = require('path');
-const { AuthService } = require('@semapps/auth');
+const { AuthCASService } = require('@semapps/auth');
 const { MIME_TYPES } = require('@semapps/mime-types');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
-  mixins: [AuthService],
+  mixins: [AuthCASService],
   settings: {
     baseUrl: CONFIG.HOME_URL,
     jwtPath: path.resolve(__dirname, '../jwt'),
-    cas: {
-      url: CONFIG.CAS_URL
-    },
-    selectProfileData: authData => ({
-      nick: authData.displayName,
+    casUrl: CONFIG.CAS_URL,
+    selectSsoData: authData => ({
+      uuid: authData.uuid,
       email: authData.mail[0],
       name: authData.field_first_name[0],
       familyName: authData.field_last_name[0]
     }),
+    webIdSelection: ['nick', 'name', 'familyName'],
+    accountsDataset: CONFIG.SETTINGS_DATASET,
+  },
+  methods: {
+    async updateAccount(webId, ssoData) {
+      const account = await this.broker.call('auth.account.findByWebId', { webId });
+
+      if( account && ssoData.field_address[0] && ssoData.field_lat_lon[0] ) {
+        const address = JSON.parse(ssoData.field_address[0]);
+        const latLng = JSON.parse(ssoData.field_lat_lon[0]);
+
+        const labelArray = [];
+        if( address.address_line1 ) labelArray.push(address.address_line1);
+        if( address.address_line2 ) labelArray.push(address.address_line2);
+        if( address.postal_code && address.locality ) labelArray.push(address.postal_code + ' ' + address.locality);
+        if( address.country_code ) labelArray.push(address.country_code === 'FR' ? 'France' : address.country_code);
+
+        await this.broker.call('auth.account.update', {
+          '@id': account['@id'],
+          location: labelArray.join(', '),
+          latitude: latLng.lat,
+          longitude: latLng.lon
+        });
+      }
+    }
   },
   events: {
+    async 'auth.connected'(ctx) {
+      const { webId, ssoData } = ctx.params;
+      await this.updateAccount(webId, ssoData);
+    },
     async 'auth.registered'(ctx) {
-      const { webId, profileData, authData } = ctx.params;
-
-      const resource = {
-        '@context': urlJoin(CONFIG.HOME_URL, 'context.json'),
-        '@id': webId,
-        '@type': ['pair:Person', 'foaf:Person', 'Person'],
-        'pair:label': profileData.name,
-        'pair:firstName': profileData.name,
-        'pair:lastName': profileData.familyName,
-        'pair:e-mail': profileData.email,
-        'pair:image': authData.field_avatar[0],
-        // TODO find a solution to add this information on the frontend side
-        'pair:affiliatedBy': urlJoin(CONFIG.HOME_URL, 'groupeslocaux', 'groups', 'payscreillois')
-      };
-
-      if( authData.field_address[0] && authData.field_lat_lon[0] ) {
-        const address = JSON.parse(authData.field_address[0]);
-        const latLng = JSON.parse(authData.field_lat_lon[0]);
-
-        resource['pair:hasLocation'] = {
-          '@type': 'pair:Place',
-          'pair:hasPostalAddress': {
-            '@type': 'pair:PostalAddress',
-            'pair:addressCountry': address.country_code === 'FR' ? 'France' : address.country_code,
-            'pair:addressLocality': address.locality,
-            'pair:addressStreet': address.address_line1,
-            'pair:addressZipCode': address.postal_code
-          },
-          'pair:label': address.locality,
-          'pair:latitude': latLng.lat,
-          'pair:longitude': latLng.lon
-        };
-      }
-
-      await this.broker.call(
-        'ldp.resource.patch',
-        {
-          resource,
-          contentType: MIME_TYPES.JSON
-        },
-        { meta: { webId: 'system' } }
-      );
+      const { webId, ssoData } = ctx.params;
+      await this.updateAccount(webId, ssoData);
     }
   }
 };

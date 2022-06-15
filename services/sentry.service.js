@@ -1,6 +1,6 @@
 const Sentry = require('@sentry/node');
 const SentryUtils = require('@sentry/utils');
-const CONFIG = require('../config');
+const CONFIG = require('../config/config');
 
 module.exports = {
   name: 'sentry',

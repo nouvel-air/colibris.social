@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <title>{{ title }}</title>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <link href="/css/form.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" >
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css">
+    <script type="text/javascript" src="/js/iframeResizer.contentWindow.min.js"></script>
+</head>
+<body class="page-user">
+<br/><br/>
+<div id="page">
+    <div id="main">
+        <div class="wrapper">
+            <div id="title-page">
+                <h1>{{ title }}</h1>
+            </div>
+            <div class="region region-content">
+                <div class="block block-system block-main" id="block-system-main">
+                    <div class="content">
+                        <form accept-charset="UTF-8" action="/mailer" id="user-profile-form" method="post">
+                            <input type="hidden" name="token" value="{{ token }}" />
+                            <div class="messages error" id="error-message" style="display: none"></div>
+                            {{#ifCond message '===' 'updated' }}
+                                <div class="messages success" id="success-message">Vos informations ont bien été mises à jour.</div>
+                            {{/ifCond}}
+                            {{#ifCond message '===' 'created' }}
+                                <div class="messages success" id="success-message">Vous êtes bien inscrits pour recevoir les nouveaux projets.</div>
+                            {{/ifCond}}
+                            {{#ifCond message '===' 'deleted' }}
+                                <div class="messages success" id="success-message">Vous avez été désinscrit et vos informations ont été supprimées.</div>
+                            {{/ifCond}}
+                            {{#ifCond message '===' 'email-exist' }}
+                            <div class="messages error">Un compte avec cette adresse e-mail existe déjà. Vous pouvez le mettre à jour ci-dessous.</div>
+                            {{/ifCond}}
+                            {{#ifCond message '===' 'missing-themes' }}
+                            <div class="messages error">Veuillez sélectionner au moins un thème.</div>
+                            {{/ifCond}}
+                            {{#ifCond message '===' 'missing-services' }}
+                                <div class="messages error">Veuillez sélectionner au moins un projet.</div>
+                            {{/ifCond}}
+                            <div>
+                                <label>Oui, je souhaite être informé des actualités de Colibris&nbsp;:</label>
+                                <div class="form-item form-type-radio">
+                                    <input id="whole-world" type="radio" name="location" value="whole-world" {{#unless subscription.location }}checked{{/unless}}>
+                                    <label class="option" for="whole-world">Dans le monde entier</label>
+                                </div>
+                                <div class="form-item form-type-radio">
+                                    <input id="close-to-me" name="location" type="radio" value="close-to-me" {{#if subscription.location }}checked{{/if}}>
+                                    <label class="option" for="close-to-me">Près de chez moi :</label>
+                                </div>
+                                <div class="side">
+                                    <div id="geocoder"></div>
+                                    <input id="address" name="address" type="hidden">
+                                    <div class="radio-buttons">
+                                        <span>Distance</span>
+                                        <input type="radio" name="radius" value="25" id="radius25" {{#ifCond subscription.radius '===' 25 }}checked{{/ifCond}}/>
+                                        <label for="radius25">< 25km</label>
+                                        <input type="radio" name="radius" value="50" id="radius50" {{#ifCond subscription.radius '===' 50 }}checked{{/ifCond}}/>
+                                        <label for="radius50">< 50km</label>
+                                        <input type="radio" name="radius" value="100" id="radius100" {{#ifCond subscription.radius '===' 100 }}checked{{/ifCond}}/>
+                                        <label for="radius100">< 100km</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-item form-type-checkboxes">
+                                <label>Touchant les thématiques :</label>
+                                <div class="row">
+                                {{#each themes}}
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="box form-checkboxes" id="edit-field-proj-theme-und">
+                                            <div class="form-item form-type-checkbox form-item-field-proj-theme-und-101">
+                                                <input class="form-checkbox" id="theme-{{@index}}" name="themes[]" type="checkbox" value="{{this}}" {{ifSubscribedTheme this "checked"}}>
+                                                <label class="option" for="theme-{{@index}}">{{this}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-item form-type-checkboxes">
+                                <label>Envoyées par les projets :</label>
+                                <div class="row">
+                                    {{#each services}}
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="box form-checkboxes" id="edit-field-proj-theme-und">
+                                                <div class="form-item form-type-checkbox form-item-field-proj-theme-und-101">
+                                                    <input class="form-checkbox" id="service-{{@index}}" name="services[]" type="checkbox" value="{{this}}" {{#contains this ../subscription.services}}checked{{/contains}}>
+                                                    <label class="option" for="service-{{@index}}">{{this}}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-wrapper" id="edit-account">
+                                <div class="form-item form-type-textfield form-item-mail">
+                                    <label for="email">Mon adresse de courriel
+                                        <!-- <span class="form-required" title="Ce champ est requis.">*</span>-->
+                                    </label>
+                                    <input class="form-text required" id="email" maxlength="254" name="email" placeholder="Adresse de courriel" type="email" value="{{subscription.email}}" required>
+                                    <div class="description">Ne sera pas rendue publique et ne sera utilisée que
+                                        pour la réception des actualités du mouvement Colibris. Vous pourrez à tout
+                                        moment vous désinscrire.
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-wrapper">
+                                <div class="form-item form-type-textfield form-item-mail">
+                                    <label for="email">Fréquence maximale des envois
+                                        <!-- <span class="form-required" title="Ce champ est requis.">*</span>-->
+                                    </label>
+                                    <div class="radio-buttons">
+                                        <input type="radio" name="frequency" value="weekly" id="weekly" {{#ifCond subscription.frequency '==' 'weekly' }}checked{{/ifCond}}/>
+                                        <label for="weekly">Une fois / semaine</label>
+                                        <input type="radio" name="frequency" value="daily" id="daily" {{#ifCond subscription.frequency '==' 'daily' }}checked{{/ifCond}}/>
+                                        <label for="daily">Une fois / jour</label>
+                                        <input type="radio" name="frequency" value="monthly" id="monthly" {{#ifCond subscription.frequency '==' 'monthly' }}checked{{/ifCond}}/>
+                                        <label for="monthly">Une fois / mois</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                        <div class="buttons">
+                            {{#if subscription.[@id] }}
+                                <div class="divide">
+                                    <input class="form-submit" id="edit-submit" type="submit" value="Mettre à jour">
+                                </div>
+                                <div class="divide">
+                                    <input class="form-submit" id="edit-submit" type="submit" value="Se désabonner" name="unsubscribe">
+                                </div>
+                            {{else}}
+                                <input class="form-submit" id="edit-submit" type="submit" value="S'abonner">
+                            {{/if}}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+<script>
+    var geocoder = new MapboxGeocoder({
+        accessToken: 'pk.eyJ1Ijoic3Jvc3NldDgxIiwiYSI6ImNrbDd0b2VkMzA1dDMycG9iemU4NnpuemsifQ.HvpZ3tnweVHEUYLb0tDvTg',
+        placeholder: 'Ma ville ou mon adresse',
+        types: 'place,postcode,locality,neighborhood,address',
+        countries: 'fr,ch,be,ca'
+    });
+
+    geocoder.addTo('#geocoder');
+
+    {{#if subscription.location }}
+        geocoder.setInput('{{ subscription.location }}');
+        document.getElementById("close-to-me").checked = true;
+
+        setTimeout(function() {
+          var clearButton = document.querySelector('.mapboxgl-ctrl-geocoder--button');
+          clearButton.style.display = 'block';
+        }, 500);
+    {{/if}}
+
+    // Add geocoder result to container.
+    geocoder.on('result', (e) => {
+        document.getElementById("address").value = JSON.stringify(e.result);
+        document.getElementById("close-to-me").checked = true;
+    });
+
+    // Clear results container when search is cleared.
+    geocoder.on('clear', (e) => {
+        document.getElementById("address").value = '';
+        document.getElementById("whole-world").checked = true;
+    });
+
+    document.getElementById("whole-world").addEventListener('change', () => {
+        geocoder.setInput('');
+        document.getElementById("address").value = '';
+    });
+
+    document.getElementById("user-profile-form").addEventListener('submit', e => {
+        var numThemesChecked = 0;
+        var themesCheckboxes = document.querySelectorAll('[id^=theme]');
+        themesCheckboxes.forEach(function(checkbox) {
+            if( checkbox.checked ) {
+                numThemesChecked++;
+            }
+        });
+        if( numThemesChecked === 0 ) {
+            e.preventDefault();
+            if( document.getElementById("success-message") ) document.getElementById("success-message").style.display = 'none';
+            document.getElementById("error-message").style.display = 'block';
+            document.getElementById("error-message").innerText = 'Veuillez sélectionner au moins un thème.';
+            return false;
+        }
+
+        var numServicesChecked = 0;
+        var servicesCheckboxes = document.querySelectorAll('[id^=service]');
+        servicesCheckboxes.forEach(function(checkbox) {
+            if( checkbox.checked ) {
+                numServicesChecked++;
+            }
+        });
+        if( numServicesChecked === 0 ) {
+            e.preventDefault();
+            if( document.getElementById("success-message") ) document.getElementById("success-message").style.display = 'none';
+            document.getElementById("error-message").style.display = 'block';
+            document.getElementById("error-message").innerText = 'Veuillez sélectionner au moins un projet.';
+            return false;
+        }
+    });
+
+</script>
+</body>
+</html>
