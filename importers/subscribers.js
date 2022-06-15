@@ -5,6 +5,7 @@ const { ACTOR_TYPES } = require("@semapps/activitypub");
 const CONFIG = require('../config/config');
 const { getSlugFromUri, frenchAddressReverseSearch } = require("../utils");
 const ThemeCreatorMixin = require("../mixins/theme-creator");
+const {delay} = require("@semapps/ldp");
 
 const themesMapping = {
   "https://colibris.social/themes/education": ["Education et formation"],
@@ -70,7 +71,17 @@ module.exports = {
       };
 
       if( data.location ) {
-        const feature = await frenchAddressReverseSearch(data.location.latitude, data.location.longitude);
+        let error = null, feature;
+        do {
+          try {
+            feature = await frenchAddressReverseSearch(data.location.latitude, data.location.longitude);
+            error = null;
+          } catch(e) {
+            error = e;
+            console.log('Error: ' + e.message + ' Retrying...');
+            await delay(5000);
+          }
+        } while(!error)
 
         subscription = {
           ...subscription,
