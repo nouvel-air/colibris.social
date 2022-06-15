@@ -140,26 +140,21 @@ const FormService = {
           services: services.join(', ')
         };
 
-        if( location === 'close-to-me' ) {
-          if (address) {
-            const parsedAddress = JSON.parse(address);
-            subscription.location =  parsedAddress.place_name;
-            subscription.longitude =  parsedAddress.geometry.coordinates[0];
-            subscription.latitude =  parsedAddress.geometry.coordinates[1];
-          } else if (actor['pair:hasLocation'] && !subscription.location) {
-            subscription.location = actor['pair:hasLocation']['pair:label'];
-            subscription.latitude = `${actor['pair:hasLocation']['pair:latitude']}`;
-            subscription.longitude = `${actor['pair:hasLocation']['pair:longitude']}`;
-          }
+        if( location === 'close-to-me' && address ) {
+          const parsedAddress = JSON.parse(address);
+          const postCodeContext = parsedAddress.context.find(c => c.id.startsWith('postcode.'));
+          subscription.location =  parsedAddress.place_name;
+          subscription.longitude =  parsedAddress.geometry.coordinates[0];
+          subscription.latitude =  parsedAddress.geometry.coordinates[1];
+          subscription.zipCode = postCodeContext ? postCodeContext.text : undefined;
           subscription.radius = radius;
-        } else {
+        } else if( subscription.location ) {
           // If a location was set, remove it
-          if( subscription.location ) {
-            subscription.location = null;
-            subscription.latitude = null;
-            subscription.longitude = null;
-            subscription.radius = null;
-          }
+          subscription.location = null;
+          subscription.latitude = null;
+          subscription.longitude = null;
+          subscription.zipCode = null;
+          subscription.radius = null;
         }
 
         if( subscription['@id'] ) {
