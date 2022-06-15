@@ -81,7 +81,7 @@ module.exports = {
             console.log('Error: ' + e.message + ' Retrying...');
             await delay(5000);
           }
-        } while(!error)
+        } while(error)
 
         subscription = {
           ...subscription,
