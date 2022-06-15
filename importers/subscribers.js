@@ -70,6 +70,7 @@ module.exports = {
         longitude: data.location ? data.location.longitude : undefined,
         location: data.location ? data.location.name : undefined,
         radius: data.location ? `${parseInt(data.location.radius, 10) / 1000}` : undefined,
+        started: data.published
       });
 
       return({

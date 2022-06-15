@@ -28,7 +28,7 @@ const FormService = {
           return;
         } else {
           ctx.meta.$statusCode = 302;
-          ctx.meta.$location = `/auth?redirectUrl=${encodeURI(urlJoin(CONFIG.HOME_URL, 'mailer'))}`;
+          ctx.meta.$location = `/auth?redirectUrl=${encodeURI(urlJoin(CONFIG.HOME_URL, 'actualites'))}`;
           return;
         }
       }
@@ -130,13 +130,14 @@ const FormService = {
         }
 
         subscription = {
+          locale: 'fr',
+          started: (new Date()).toISOString(),
           ...subscription,
           webId,
           frequency,
           email,
           themes: themes.join(', '),
-          services: services.join(', '),
-          locale: 'fr'
+          services: services.join(', ')
         };
 
         if( location === 'close-to-me' ) {
