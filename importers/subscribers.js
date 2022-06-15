@@ -3,7 +3,7 @@ const path = require("path");
 const { ImporterMixin } = require('@semapps/importer');
 const { ACTOR_TYPES } = require("@semapps/activitypub");
 const CONFIG = require('../config/config');
-const { getSlugFromUri, delay} = require("../utils");
+const { getSlugFromUri, frenchAddressReverseSearch } = require("../utils");
 const ThemeCreatorMixin = require("../mixins/theme-creator");
 
 const themesMapping = {
@@ -59,19 +59,30 @@ module.exports = {
         location: data.location ? data.location.name : undefined,
       });
 
-      await this.broker.call('digest.subscription.create', {
+      let subscription = {
         webId,
         email: data['pair:e-mail'],
         frequency: data['semapps:mailFrequency'],
         locale: 'fr',
         services: 'La Fabrique des Colibris',
         themes: themesLabels.join(', '),
-        latitude: data.location ? data.location.latitude : undefined,
-        longitude: data.location ? data.location.longitude : undefined,
-        location: data.location ? data.location.name : undefined,
-        radius: data.location ? `${parseInt(data.location.radius, 10) / 1000}` : undefined,
         started: data.published
-      });
+      };
+
+      if( data.location ) {
+        const feature = await frenchAddressReverseSearch(data.location.latitude, data.location.longitude);
+
+        subscription = {
+          ...subscription,
+          latitude: data.location.latitude,
+          longitude: data.location.longitude,
+          location: data.location.name,
+          radius: `${parseInt(data.location.radius, 10) / 1000}`,
+          zipCode: (feature && feature.properties) ? feature.properties.postcode : undefined
+        };
+      }
+
+      await this.broker.call('digest.subscription.create', subscription);
 
       return({
         type: ['foaf:Person', ACTOR_TYPES.PERSON],

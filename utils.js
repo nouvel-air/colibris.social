@@ -3,24 +3,6 @@ const departments = require('./config/departments.json');
 
 const capitalize = s => (s && s[0].toUpperCase() + s.slice(1)) || "";
 
-const convertWikiNames = str =>
-  str
-    .substring(0, 36)
-    .replace(/([a-zA-Z])(?=[A-Z])/g, '$1-')
-    .toLowerCase();
-
-const convertWikiDate = str => str && str.replace(' ', 'T');
-
-const convertGogoDate = str => {
-  if( !str ) return undefined;
-  const [date, time] = str.split(' à ');
-  if( !time ) return undefined;
-  const [day, month, year] = date.split('/');
-  const [hours, minutes] = time.split(':');
-  const formattedDate = new Date(year, month, day, hours, minutes);
-  return formattedDate.toISOString();
-}
-
 const getSlugFromUri = str => str.replace(/\/$/, '').replace(/.*\//, '');
 
 const getDepartmentName = zip => {
@@ -49,15 +31,27 @@ const addDays = (date, days) => {
 
 const removeTime = dateTime => new Date(dateTime.toDateString());
 
+const frenchAddressReverseSearch = async (lat, lon) => {
+  const url = new URL('https://api-adresse.data.gouv.fr/reverse/');
+  url.searchParams.set('lat', lat);
+  url.searchParams.set('lon', lon);
+  const response = await fetch(url.toString());
+
+  if (response.ok) {
+    const json = await response.json();
+    return json.features.length > 0 ? json.features[0] : false;
+  } else {
+    return false;
+  }
+};
+
 module.exports = {
   capitalize,
-  convertWikiNames,
-  convertWikiDate,
-  convertGogoDate,
   getSlugFromUri,
   getDepartmentName,
   slugify,
   distanceBetweenPoints,
   addDays,
-  removeTime
+  removeTime,
+  frenchAddressReverseSearch
 };
