@@ -23,8 +23,8 @@ module.exports = {
     from: `"${CONFIG.FROM_NAME}" <${CONFIG.FROM_EMAIL}>`,
     transport,
     data: {
-      frontUrl: urlJoin(CONFIG.HOME_URL, 'mailer'),
-      imagesUrl: 'https://dev.colibris.social/images',
+      frontUrl: urlJoin(CONFIG.HOME_URL, 'actualites'),
+      imagesUrl: 'https://colibris.social/images',
     }
   },
   dependencies: ['ldp'],
