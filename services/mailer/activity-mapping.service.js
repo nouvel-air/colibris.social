@@ -9,6 +9,7 @@ module.exports = {
     handlebars: {
       helpers: {
         truncate: (length, text) => truncate(text, { length, separator: ' ' }),
+        slice: (start, text) => text.slice(start),
         firstOfArray: (value) => Array.isArray(value) ? value[0] : value
       }
     }

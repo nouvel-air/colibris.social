@@ -101,7 +101,7 @@ module.exports = [
       id: '{{{activity.object.object.id}}}',
       actor: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique'),
       category: "NOUVEAUX BESOINS",
-      title: '{{{activity.object.object.pair:label}}}',
+      title: '{{{activity.object.object.pair:neededBy.pair:label}}} {{{slice 3 activity.object.object.pair:label}}}', // {projet} recherche {besoin}
       description: '{{{truncate 350 activity.object.object.pair:description}}}',
       image: '{{firstOfArray activity.object.object.pair:neededBy.pair:depictedBy}}',
       actionName: 'Voir le projet',
