@@ -75,7 +75,7 @@ module.exports = {
         started: data.published
       };
 
-      if( data.location ) {
+      if( data.location && data.location.name ) {
         let error = null, feature;
         do {
           try {
