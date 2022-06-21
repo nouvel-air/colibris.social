@@ -13,7 +13,7 @@
 
 #geocoder input {
     background: #eef0f0;
-    color: #5b6a6c;
+    color: #5a696b;
     font-family: 'sans-serif' !important;
     font-size: 14px !important;
 }
@@ -157,7 +157,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 
 body {
     background-color: #fff;
-    color: #7e7e7e;
+    color: #5a696b;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: 'Ubuntu', sans-serif;
@@ -178,7 +178,7 @@ h1 {
 }
 
 h1 {
-    color: #5b6a6c;
+    color: #5a696b;
     font-size: 2em;
     text-transform: uppercase;
     margin: 0.5em 0 0.1em;
@@ -186,9 +186,9 @@ h1 {
 
 #edit-submit {
     margin: 18px 0 0 0;
-    background: #afc544;
+    background: #b9cd00;
     border-radius: 0 4px 4px 0;
-    color: #5b6a6c;
+    color: #5a696b;
     padding: 1px 8px;
     font-size: 14px;
 }
@@ -216,7 +216,7 @@ h1 {
     width: 100%;
     display: block;
     background: #eef0f0;
-    color: #5b6a6c;
+    color: #5a696b;
     padding: .5em;
     border: none;
     margin: 0 0 .5em 0;
@@ -230,12 +230,12 @@ h1 {
     font-size: 1.2em;
     text-align: center;
     color: #fff;
-    background: #afc544;
+    background: #b9cd00;
 }
 
 .page-user #user-profile-form #edit-submit:hover {
     color: #fff;
-    background: #5b6a6c;
+    background: #5a696b;
 }
 
 .page-user #user-profile-form {
@@ -261,13 +261,13 @@ h1 {
 }
 
 #title-page h1 {
-    color: #afc544;
+    color: #b9cd00;
     font-size: 1.8em;
 }
 
 .form-submit {
     border-radius: 4px;
-    background: #5b6a6c;
+    background: #5a696b;
     color: #fff;
     display: inline-block;
     font-family: 'geomanistmedium';
@@ -280,7 +280,7 @@ h1 {
 }
 
 .form-submit:hover, .form-submit:active, .form-submit:focus {
-    background: #afc544;
+    background: #b9cd00;
     color: #fff;
 }
 
