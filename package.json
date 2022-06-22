@@ -38,7 +38,7 @@
     "moleculer-mail": "^1.2.5",
     "moleculer-repl": "^0.6.6",
     "moleculer-web": "^0.10.0-beta1",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.7",
     "showdown": "^2.1.0",
     "speakingurl": "^14.0.1",
     "url-join": "^4.0.1"
