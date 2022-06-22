@@ -10,11 +10,19 @@ module.exports = {
     source: {
       getAllFull: path.resolve(__dirname, './files/status.json'),
       fieldsMapping: {
-        slug: 'pair:label'
+        slug: 'slug'
       },
     },
     dest: {
       containerUri: urlJoin(CONFIG.HOME_URL, 'status')
+    }
+  },
+  methods: {
+    async transform(data) {
+      return ({
+        type: data.type,
+        'pair:label': data['pair:label']
+      });
     }
   }
 };

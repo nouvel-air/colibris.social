@@ -7,8 +7,7 @@ module.exports = {
   settings: {
     baseUrl: CONFIG.HOME_URL,
     superAdmins: [
-      urlJoin(CONFIG.HOME_URL, 'users', 'srosset81'),
-      urlJoin(CONFIG.HOME_URL, 'users', 'florian')
+      urlJoin(CONFIG.HOME_URL, 'users', '11cabcfa-0293-4e71-88f5-84c13978b1ca')
     ]
   }
 };

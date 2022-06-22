@@ -132,7 +132,7 @@ module.exports = {
     async getRunningRegistrations(ctx, courseUri, actorUri) {
       const filters = { 'pair:hasStatus': urlJoin(CONFIG.HOME_URL, 'status', 'running') };
       if( courseUri ) filters['tutor:course'] = courseUri;
-      if( actorUri ) filters['tutor:learner'] = courseUri;
+      if( actorUri ) filters['tutor:learner'] = actorUri;
 
       const container = await ctx.call('ldp.container.get', {
         containerUri: this.settings.registrationsContainer,
