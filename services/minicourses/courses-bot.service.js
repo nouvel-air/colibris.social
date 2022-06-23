@@ -24,7 +24,9 @@ module.exports = {
       const registrations = await this.getRunningRegistrations(ctx);
       for( let registration of registrations ) {
         const lessons = await this.getLessons(ctx, registration['tutor:course']);
-        if( !registration['tutor:currentLesson'] ) {
+        if( lessons.length === 0 ) {
+          this.logger.warn('No lesson attached to course ' + registration['tutor:course']);
+        } else if( !registration['tutor:currentLesson'] ) {
           // If no lesson received yet, send first lesson
           await this.actions.sendLesson({ lesson: lessons[0], registration }, { parentCtx: ctx });
         } else {
