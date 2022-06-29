@@ -31,7 +31,7 @@
   },
   {
     "prefix": "tutor",
-    "owl": "",
+    "owl": "https://gist.githubusercontent.com/srosset81/be3ea9c820d75995ed967fdac8d8a8ca/raw/ba3ff61d5d3ee6eb6294b6c1b7de385808ecc624/pair-tutor.owl",
     "url": "http://virtual-assembly.org/ontologies/pair-tutor#"
   },
   {

@@ -64,22 +64,7 @@ const cods = {
       readOnly: true
     }
   ],
-  '/miniparcours': [
-    {
-      path: '/courses',
-      acceptedTypes: ['tutor:DigitalCourse', ACTOR_TYPES.APPLICATION],
-      dereference: ['sec:publicKey']
-    },
-    {
-      path: '/lessons',
-      acceptedTypes: ['tutor:Lesson'],
-    },
-    {
-      path: '/registrations',
-      acceptedTypes: ['tutor:Registration'],
-      readOnly: true
-    }
-  ]
+  '/miniparcours': []
 };
 
 const mapCodsToContainers = () => {
@@ -87,11 +72,13 @@ const mapCodsToContainers = () => {
   Object.keys(cods).forEach(key => {
     // Parent container
     containers.push({ path: key, readOnly: true });
-    // Child containers
-    containers.push(...cods[key].map(container => {
-      container.path = key + container.path;
-      return container;
-    }));
+    if( cods[key].length > 0 ) {
+      // Child containers
+      containers.push(...cods[key].map(container => {
+        container.path = key + container.path;
+        return container;
+      }));
+    }
   });
   return containers;
 };
@@ -128,7 +115,7 @@ module.exports = [
   },
   {
     path: '/status',
-    acceptedTypes: ['pair:ProjectStatus'],
+    acceptedTypes: ['pair:ProjectStatus', 'tutor:CourseStatus', 'tutor:RegistrationStatus'],
     readOnly: true
   },
   {

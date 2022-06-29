@@ -732,13 +732,19 @@
     "signatureAlgorithm": "sec:signingAlgorithm",
     "signatureValue": "sec:signatureValue",
 
-    "tutor:course": {
-      "@type": "@id"
-    },
-    "tutor:learner": {
-      "@type": "@id"
-    },
     "tutor:currentLesson": {
+      "@type": "@id"
+    },
+    "tutor:hasRegistration": {
+      "@type": "@id"
+    },
+    "tutor:registeredFor": {
+      "@type": "@id"
+    },
+    "tutor:registrant": {
+      "@type": "@id"
+    },
+    "tutor:registrationFor": {
       "@type": "@id"
     },
     "tutor:lessonStarted": {
