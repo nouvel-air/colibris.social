@@ -24,7 +24,7 @@ module.exports = {
       },
     },
     templateFolder: path.join(__dirname, "../../templates"),
-    cronJob: '0 0 17 * * *', // Everyday at 5pm
+    cronJob: '0 0 18 * * *', // Everyday at 8pm
     timeZone: 'Europe/Paris',
   },
   created() {
