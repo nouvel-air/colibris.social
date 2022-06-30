@@ -49,6 +49,9 @@ module.exports = {
           case 'Don':
             title = 'des dons';
             break;
+          default:
+            title = 'des financements';
+            break;
         }
       } else {
         title = data.title.toLowerCase();
