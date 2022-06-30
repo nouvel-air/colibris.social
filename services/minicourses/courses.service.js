@@ -122,7 +122,7 @@ module.exports = {
   },
   hooks: {
     before: {
-      async create(ctx) {
+      create(ctx) {
         ctx.params.resource['pair:hasStatus'] = urlJoin(CONFIG.HOME_URL, 'status', 'unavailable');
       }
     },
