@@ -12,6 +12,7 @@ module.exports = {
     async getFromCourse(ctx) {
       const { courseUri } = ctx.params;
       const container = await this.actions.list({
+        containerUri: await this.actions.getContainerUri(),
         filters: {
           'pair:partOf': courseUri
         },

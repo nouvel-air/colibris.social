@@ -19,6 +19,7 @@ module.exports = {
       if( actorUri ) filters['tutor:registrant'] = actorUri;
 
       const container = await this.actions.list({
+        containerUri: await this.actions.getContainerUri(),
         filters,
         accept: MIME_TYPES.JSON,
         webId: 'system'
