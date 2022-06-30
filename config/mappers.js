@@ -166,4 +166,18 @@ module.exports = [
       longitude: '{{activity.object.object.pair:hasLocation.pair:longitude}}',
     }
   },
+  {
+    match: announceCreate('tutor:DigitalCourse'),
+    mapping: {
+      key: 'minicourse',
+      id: '{{{activity.object.object.id}}}',
+      actor: urlJoin(CONFIG.HOME_URL, 'services', 'minicourses'),
+      category: "NOUVEAU MINI-PARCOURS",
+      title: '{{{activity.object.object.pair:label}}}',
+      description: '{{{truncate 350 activity.object.object.pair:description}}}',
+      image: '{{firstOfArray activity.object.object.pair:depictedBy}}',
+      actionName: 'Voir le mini-parcours',
+      actionLink: 'https://miniparcours.colibris-lemouvement.org/Course/{{encodeUri activity.object.object.id}}/show'
+    }
+  },
 ]

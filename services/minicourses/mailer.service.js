@@ -11,7 +11,7 @@ const { removeTime, addDays } = require("../../utils");
 
 module.exports = {
   name: 'minicourses.mailer',
-  mixins: [MailerService, ActivitiesHandlerMixin, QueueMixin(CONFIG.QUEUE_SERVICE_URL)],
+  mixins: [MailerService, ActivitiesHandlerMixin, CONFIG.QUEUE_SERVICE_URL ? QueueMixin(CONFIG.QUEUE_SERVICE_URL) : {}],
   settings: {
     from: `${CONFIG.FROM_NAME} <${CONFIG.FROM_EMAIL}>`,
     transport: {
@@ -44,7 +44,9 @@ module.exports = {
     });
   },
   started() {
-    // this.createJob('sendLessons', {}, { repeat: { cron: this.settings.cronJob, tz: this.settings.timeZone } });
+    if( this.createJob ) {
+      this.createJob('sendLessons', {}, { repeat: { cron: this.settings.cronJob, tz: this.settings.timeZone } });
+    }
   },
   actions: {
     async sendLessons(ctx) {
@@ -57,10 +59,14 @@ module.exports = {
         } else if( !registration['tutor:currentLesson'] ) {
           // If no lesson received yet, send first lesson
           await this.actions.sendLesson({ lesson: lessons[0], registration }, { parentCtx: ctx });
+          results.push({
+            registration,
+            lesson: lessons[0]
+          });
         } else {
           // If lesson already received, check if it is finished
           const currentLessonIndex = lessons.findIndex(l => l.id === registration['tutor:currentLesson']);
-          if( +removeTime(new Date()) === +removeTime(addDays(registration['tutor:lessonStarted'], lessons[currentLessonIndex]['tutor:duration'])) ) {
+          if( +removeTime(new Date()) > +removeTime(addDays(registration['tutor:lessonStarted'], lessons[currentLessonIndex]['tutor:duration'])) ) {
             const lastLessonIndex = lessons.length -1;
             if( currentLessonIndex === lastLessonIndex ) {
               // If current lesson is last lesson, mark registration as finished
@@ -78,10 +84,15 @@ module.exports = {
               });
             } else {
               await this.actions.sendLesson({ lesson: lessons[currentLessonIndex+1], registration }, { parentCtx: ctx });
+              results.push({
+                registration,
+                lesson: lessons[currentLessonIndex+1]
+              });
             }
           }
         }
       }
+      return results;
     },
     async sendLesson(ctx) {
       const { lesson, registration } = ctx.params;

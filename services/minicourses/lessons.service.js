@@ -22,19 +22,35 @@ module.exports = {
       const lessons = container['ldp:contains'] || [];
 
       return lessons.sort((a, b) => a['tutor:order'] - b['tutor:order']);
+    },
+    async getHighestOrder(ctx) {
+      const { courseUri } = ctx.params;
+
+      const allLessons = await this.actions.getFromCourse({ courseUri });
+
+      return allLessons.reduce((acc, lesson) =>
+        (!lesson['tutor:order'] || lesson['tutor:order'] < acc) ? acc : lesson['tutor:order'],
+        0
+      );
     }
   },
   hooks: {
+    before: {
+      async create(ctx) {
+        const highestOrder = await this.actions.getHighestOrder({ courseUri: ctx.params.resource['pair:partOf'] }, { parentCtx: ctx });
+        ctx.params.resource['tutor:order'] = highestOrder + 1;
+      }
+    },
     after: {
-      create(ctx, res) {
+      async create(ctx, res) {
+        await ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
+        return res;
+      },
+      async put(ctx, res) {
         ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
         return res;
       },
-      put(ctx, res) {
-        ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
-        return res;
-      },
-      delete(ctx, res) {
+      async delete(ctx, res) {
         ctx.call('minicourses.courses.updateDuration', { courseUri: res.oldData['pair:partOf'] });
         return res;
       }
