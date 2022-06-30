@@ -43,15 +43,15 @@ module.exports = {
       }
     },
     after: {
-      async create(ctx, res) {
-        await ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
-        return res;
-      },
-      async put(ctx, res) {
+      create(ctx, res) {
         ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
         return res;
       },
-      async delete(ctx, res) {
+      put(ctx, res) {
+        ctx.call('minicourses.courses.updateDuration', { courseUri: res.newData['pair:partOf'] });
+        return res;
+      },
+      delete(ctx, res) {
         ctx.call('minicourses.courses.updateDuration', { courseUri: res.oldData['pair:partOf'] });
         return res;
       }
