@@ -12,7 +12,7 @@ module.exports = {
     async getFromCourse(ctx) {
       const { courseUri } = ctx.params;
       const container = await this.actions.list({
-        containerUri: await this.actions.getContainerUri(),
+        containerUri: await this.actions.getContainerUri({ webId: ctx.params.webId }, { parentCtx: ctx }),
         filters: {
           'pair:partOf': courseUri
         },
