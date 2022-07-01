@@ -5,7 +5,8 @@
 ## Getting started
 
 Requirements:
-- Node (v13+ recommended)
+- Node (v12.20 recommended)
+- Yarn
 - Docker
 - Docker-compose
 
@@ -26,6 +27,6 @@ Add the URL to your CAS server.
 ### 3. Launch in dev mode
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn run dev
 ```

@@ -1,7 +1,6 @@
 const { ActivityPubService, ACTOR_TYPES } = require('@semapps/activitypub');
 const { getPrefixJSON, getSlugFromUri } = require('@semapps/ldp');
 const CONFIG = require('../config/config');
-const containers = require('../config/containers');
 const ontologies = require('../config/ontologies.json');
 
 module.exports = {
@@ -9,7 +8,6 @@ module.exports = {
   settings: {
     baseUri: CONFIG.HOME_URL,
     additionalContext: getPrefixJSON(ontologies),
-    containers,
     selectActorData: resource => {
       let resourceId = resource.id || resource['@id'],
         resourceTypes = resource.type || resource['@type'];
