@@ -30,7 +30,7 @@ const ThemeBotsService = {
     async generateBots(ctx) {
       const { botsContainerUri, themesContainerUri, watchedActors } = this.settings;
 
-      for( const[botUri, themeUri] of Object.entries(this.bots) ) {
+      for( const botUri of Object.keys(this.bots) ) {
         const botExist = await ctx.call('ldp.resource.exist', { resourceUri: botUri });
 
         if (!botExist) {
