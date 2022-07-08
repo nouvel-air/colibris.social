@@ -148,6 +148,6 @@ module.exports = [
   },
   {
     path: '/files',
-    accept: MIME_TYPES.JSON
+    accept: MIME_TYPES.JSON // Fix https://github.com/assemblee-virtuelle/semapps/issues/1011
   }
 ];
