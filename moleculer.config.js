@@ -25,6 +25,6 @@ module.exports = {
   },
   middlewares: [
     CacherMiddleware(cacherConfig), // Set the cacher before the WebAcl middleware
-    WebAclMiddleware
+    WebAclMiddleware({ baseUrl: CONFIG.HOME_URL })
   ]
 };
