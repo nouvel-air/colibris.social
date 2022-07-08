@@ -66,7 +66,9 @@ module.exports = {
         } else {
           // If lesson already received, check if it is finished
           const currentLessonIndex = lessons.findIndex(l => l.id === registration['tutor:currentLesson']);
-          if( +removeTime(new Date()) > +removeTime(addDays(registration['tutor:lessonStarted'], lessons[currentLessonIndex]['tutor:duration'])) ) {
+          const currentDay = +removeTime(new Date());
+          const nextLessonDay = +removeTime(addDays(registration['tutor:lessonStarted'], lessons[currentLessonIndex]['tutor:duration']));
+          if( currentDay >= nextLessonDay ) {
             const lastLessonIndex = lessons.length -1;
             if( currentLessonIndex === lastLessonIndex ) {
               // If current lesson is last lesson, mark registration as finished
@@ -85,6 +87,8 @@ module.exports = {
             } else {
               await this.actions.sendLesson({ lesson: lessons[currentLessonIndex+1], registration }, { parentCtx: ctx });
               results.push({
+                currentDay,
+                nextLessonDay,
                 registration,
                 lesson: lessons[currentLessonIndex+1]
               });
