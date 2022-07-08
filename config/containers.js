@@ -1,5 +1,6 @@
 const { ACTOR_TYPES } = require('@semapps/activitypub');
 const { rootPermissions } = require('./permissions');
+const { MIME_TYPES } = require("@semapps/mime-types");
 
 const cods = {
   '/lemouvement': [
@@ -146,6 +147,7 @@ module.exports = [
     readOnly: true
   },
   {
-    path: '/files'
+    path: '/files',
+    accept: MIME_TYPES.JSON
   }
 ];
