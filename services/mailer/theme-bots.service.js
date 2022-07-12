@@ -50,11 +50,11 @@ const ThemeBotsService = {
             webId: 'system'
           });
 
-          await ctx.call('auth.account.create', {
-            slug: themeSlug,
-            username: themeSlug,
-            webId: botUri
-          });
+          // await ctx.call('auth.account.create', {
+          //   slug: themeSlug,
+          //   username: themeSlug,
+          //   webId: botUri
+          // });
 
           await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: botUri });
         } else {
