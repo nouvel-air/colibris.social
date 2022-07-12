@@ -50,6 +50,12 @@ const ThemeBotsService = {
             webId: 'system'
           });
 
+          await ctx.call('auth.account.create', {
+            slug: themeSlug,
+            username: themeSlug,
+            webId: botUri
+          });
+
           await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: botUri });
         } else {
           this.logger.info(`Bot ${botUri} already exist, skipping...`);
@@ -96,7 +102,8 @@ const ThemeBotsService = {
       if( matchingBots.length > 0 ) {
         // If the activity is of type create
         if( activity.type === ACTIVITY_TYPES.CREATE ) {
-          const object = await ctx.call('activitypub.object.get', { objectUri: activity.object });
+          // TODO see why calling activitypub.object.get throws an error in Moleculer code
+          const object = await ctx.call('ldp.resource.get', { resourceUri: activity.object, accept: MIME_TYPES.JSON, webId: 'system' });
 
           for( const botUri of matchingBots ) {
             if( object['pair:hasTopic'] && defaultToArray(object['pair:hasTopic']).includes(this.bots[botUri]) ) {
