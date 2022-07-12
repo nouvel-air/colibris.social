@@ -50,11 +50,11 @@ const ThemeBotsService = {
             webId: 'system'
           });
 
-          // await ctx.call('auth.account.create', {
-          //   slug: themeSlug,
-          //   username: themeSlug,
-          //   webId: botUri
-          // });
+          await ctx.call('auth.account.create', {
+            slug: themeSlug,
+            username: themeSlug,
+            webId: botUri
+          });
 
           await ctx.call('activitypub.actor.awaitCreateComplete', { actorUri: botUri });
         } else {
@@ -84,9 +84,16 @@ const ThemeBotsService = {
         }
       }
     },
-    getBotUri(themeLabel) {
-      const themeSlug = slugify(themeLabel);
-      return urlJoin(this.settings.botsContainerUri, themeSlug);
+    async generateBotsAccounts(ctx) {
+      for( const botUri of Object.keys(this.bots) ) {
+        const themeSlug = getSlugFromUri(botUri);
+
+        await ctx.call('auth.account.create', {
+          slug: themeSlug,
+          username: themeSlug,
+          webId: botUri
+        });
+      }
     },
     getBots() {
       return this.bots;
