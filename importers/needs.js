@@ -24,10 +24,10 @@ module.exports = {
     activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'lafabrique')
     },
-    cronJob: {
+    cronJob: CONFIG.QUEUE_SERVICE_URL ? {
       time: '0 0 5 * * *', // Every night at 4am (after projects)
       timeZone: 'Europe/Paris'
-    }
+    } : undefined
   },
   methods: {
     async transform(data) {

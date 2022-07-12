@@ -22,10 +22,10 @@ module.exports = {
     activitypub: {
       actorUri: urlJoin(CONFIG.HOME_URL, 'services', 'universite')
     },
-    cronJob: {
+    cronJob: CONFIG.QUEUE_SERVICE_URL ? {
       time: '0 0 4 * * *', // Every night at 4am
       timeZone: 'Europe/Paris'
-    },
+    } : undefined,
     themesAugmenter: {
       'Agriculture & Alimentation': 'Alimentation et agriculture',
       'Arts & Culture': 'Culture',
