@@ -29,17 +29,17 @@ module.exports = {
       });
     }
   },
-  hooks: {
-    after: {
-      async importOne(ctx, actorUri) {
-        if (actorUri !== false) {
-          await ctx.call('auth.account.create', {
-            username: getSlugFromUri(actorUri),
-            webId: actorUri
-          });
-        }
-        return actorUri;
-      }
-    }
-  }
+  // hooks: {
+  //   after: {
+  //     async importOne(ctx, actorUri) {
+  //       if (actorUri !== false) {
+  //         await ctx.call('auth.account.create', {
+  //           username: getSlugFromUri(actorUri),
+  //           webId: actorUri
+  //         });
+  //       }
+  //       return actorUri;
+  //     }
+  //   }
+  // }
 };
